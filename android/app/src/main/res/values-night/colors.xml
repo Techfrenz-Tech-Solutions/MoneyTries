@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark navy brand background used behind the native/OS splash and as
+         the Flutter window background while the engine warms up, so there
+         is no white/default flash before the MoneyTries splash appears. -->
+    <color name="launch_background">#FF0A1A22</color>
+</resources>
