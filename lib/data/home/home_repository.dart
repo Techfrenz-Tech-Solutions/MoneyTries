@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/date_time_utils.dart';
 
 /// Base URL — matches the same value used in DepositRepository / WithdrawalRepository.
 const String _kBaseUrl = 'http://192.168.0.17:3000';
@@ -41,7 +42,7 @@ class RecentTransaction {
       amount:   double.tryParse(j['amount']?.toString() ?? '0') ?? 0,
       isCredit: j['is_credit'] == true,
       status:   j['status']?.toString() ?? 'pending',
-      date:     j['date'] != null ? DateTime.tryParse(j['date'].toString()) ?? DateTime.now() : DateTime.now(),
+      date:     parseServerDateTime(j['date']) ?? DateTime.now(),
     );
   }
 }

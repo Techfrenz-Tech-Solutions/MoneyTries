@@ -7,22 +7,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/home/home_repository.dart';
+import '../../utils/date_time_utils.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
-const _bgColor        = Color(0xFFECEFF5);
-const _brandGreen     = Color(0xFF3D9E6A);
-const _white          = Color(0xFFFFFFFF);
-const _titleDark      = Color(0xFF111827);
-const _subtitleGrey   = Color(0xFF6B7280);
-const _labelGrey      = Color(0xFF9CA3AF);
-const _surfaceWhite   = Color(0xFFFFFFFF);
-const _dividerColor   = Color(0xFFE5E7EB);
-const _successGreen   = Color(0xFF16A34A);
-const _successBg      = Color(0xFFDCFCE7);
-const _processingBg   = Color(0xFFFEF3C7);
+const _bgColor = Color(0xFFECEFF5);
+const _brandGreen = Color(0xFF3D9E6A);
+const _white = Color(0xFFFFFFFF);
+const _titleDark = Color(0xFF111827);
+const _subtitleGrey = Color(0xFF6B7280);
+const _labelGrey = Color(0xFF9CA3AF);
+const _surfaceWhite = Color(0xFFFFFFFF);
+const _dividerColor = Color(0xFFE5E7EB);
+const _successGreen = Color(0xFF16A34A);
+const _successBg = Color(0xFFDCFCE7);
+const _processingBg = Color(0xFFFEF3C7);
 const _processingText = Color(0xFFD97706);
-const _withdrawRed    = Color(0xFFEF4444);
-const _bottomNavSel   = Color(0xFF3D9E6A);
+const _withdrawRed = Color(0xFFEF4444);
+const _bottomNavSel = Color(0xFF3D9E6A);
 const _bottomNavUnsel = Color(0xFF9CA3AF);
 
 // ── Banner data model ─────────────────────────────────────────────────────────
@@ -83,32 +84,36 @@ class _HomeScreenState extends State<HomeScreen> {
     _BannerData(
       gradientColors: [Color(0xFF4DAA75), Color(0xFF86C9A0)],
       tag: '0.30% DAILY ROI',
-      title: 'Boost Your Returns',
-      subtitle: 'Get 0.30% Daily ROI on your investments.\nStart growing your wealth today.',
+      title: 'Grow Your Wealth with MoneyTries',
+      subtitle:
+          'Flexible plans, daily ROI, referral rewards.\nBuild your financial future with confidence.',
       decoIcon: Icons.trending_up_rounded,
       painterType: _BannerPainterType.chart,
     ),
     _BannerData(
       gradientColors: [Color(0xFF3D9E6A), Color(0xFF7DC49A)],
       tag: 'PLANS',
-      title: 'Maximum ROI Plans',
-      subtitle: 'Unlock exclusive investment plans\nwith the highest possible returns.',
+      title: 'Invest Today. Grow Every Day.',
+      subtitle:
+          '3, 6, or 12-month plans with daily ROI\ndirectly to your wallet.',
       decoIcon: Icons.rocket_launch_rounded,
       painterType: _BannerPainterType.star,
     ),
     _BannerData(
       gradientColors: [Color(0xFF56B47E), Color(0xFF90CFA8)],
       tag: 'REFER & EARN',
-      title: 'Earn by Referring',
-      subtitle: 'Invite friends & earn a one-time bonus\non their first plan payment.',
+      title: 'Invite Friends. Earn Rewards.',
+      subtitle:
+          'Refer investors & receive one-time bonuses\ndirectly to your wallet.',
       decoIcon: Icons.people_alt_rounded,
       painterType: _BannerPainterType.referral,
     ),
     _BannerData(
       gradientColors: [Color(0xFF48A872), Color(0xFF82C99E)],
       tag: 'SECURE & TRUSTED',
-      title: 'Your Money is Safe',
-      subtitle: 'Bank-grade security & end-to-end\nencryption protects your funds.',
+      title: 'Secure Investments, Trusted Future',
+      subtitle:
+          'Your funds protected with secure verification\nand transparent management.',
       decoIcon: Icons.verified_user_rounded,
       painterType: _BannerPainterType.shield,
     ),
@@ -152,10 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
       if (token == null) return;
-      final res = await http.get(
-        Uri.parse('$_kBaseUrl/api/kyc/status'),
-        headers: {'Authorization': 'Bearer $token'},
-      ).timeout(const Duration(seconds: 10));
+      final res = await http
+          .get(
+            Uri.parse('$_kBaseUrl/api/kyc/status'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200 && mounted) {
         final body = jsonDecode(res.body) as Map<String, dynamic>;
         final data = body['data'] as Map<String, dynamic>?;
@@ -175,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showKycGateSheet() {
-    final isPending  = _kycStatus == 'pending';
+    final isPending = _kycStatus == 'pending';
     final isRejected = _kycStatus == 'rejected';
 
     showModalBottomSheet(
@@ -193,7 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Handle bar
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: const Color(0xFFE5E7EB),
                 borderRadius: BorderRadius.circular(2),
@@ -202,27 +210,28 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 28),
             // Icon
             Container(
-              width: 72, height: 72,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
                 color: isPending
                     ? const Color(0xFFFEF3C7)
                     : isRejected
-                        ? const Color(0xFFFEE2E2)
-                        : const Color(0xFFDCFCE7),
+                    ? const Color(0xFFFEE2E2)
+                    : const Color(0xFFDCFCE7),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isPending
                     ? Icons.hourglass_top_rounded
                     : isRejected
-                        ? Icons.cancel_outlined
-                        : Icons.verified_user_outlined,
+                    ? Icons.cancel_outlined
+                    : Icons.verified_user_outlined,
                 size: 36,
                 color: isPending
                     ? const Color(0xFFD97706)
                     : isRejected
-                        ? const Color(0xFFDC2626)
-                        : _brandGreen,
+                    ? const Color(0xFFDC2626)
+                    : _brandGreen,
               ),
             ),
             const SizedBox(height: 20),
@@ -231,8 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
               isPending
                   ? 'KYC Under Review'
                   : isRejected
-                      ? 'KYC Rejected'
-                      : 'Complete KYC First',
+                  ? 'KYC Rejected'
+                  : 'Complete KYC First',
               style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -245,8 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
               isPending
                   ? 'Your KYC documents are being reviewed.\nThis usually takes 24–48 hours.'
                   : isRejected
-                      ? 'Your KYC was rejected. Please re-submit\nyour documents to access this feature.'
-                      : 'You need to complete KYC verification\nbefore you can use Deposit, Withdraw,\nor Investment Plans.',
+                  ? 'Your KYC was rejected. Please re-submit\nyour documents to access this feature.'
+                  : 'You need to complete KYC verification\nbefore you can use Deposit, Withdraw,\nor Investment Plans.',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 13.5,
@@ -263,20 +272,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, AppRoutes.kyc)
-                        .then((_) => _fetchKycStatus());
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.kyc,
+                    ).then((_) => _fetchKycStatus());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _brandGreen,
                     foregroundColor: _white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(
                     isRejected ? 'Re-submit KYC' : 'Verify Now',
                     style: GoogleFonts.poppins(
-                        fontSize: 15, fontWeight: FontWeight.w600),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -290,12 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     side: const BorderSide(color: _brandGreen),
                     foregroundColor: _brandGreen,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: Text(
                     'OK, Got It',
                     style: GoogleFonts.poppins(
-                        fontSize: 15, fontWeight: FontWeight.w600),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -310,10 +327,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
       if (token == null) return;
-      final res = await http.get(
-        Uri.parse('$_kBaseUrl/api/profile'),
-        headers: {'Authorization': 'Bearer $token'},
-      ).timeout(const Duration(seconds: 10));
+      final res = await http
+          .get(
+            Uri.parse('$_kBaseUrl/api/profile'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body) as Map<String, dynamic>;
         final data = body['data'] as Map<String, dynamic>?;
@@ -323,7 +342,9 @@ class _HomeScreenState extends State<HomeScreen> {
             final ln = data['last_name']?.toString() ?? '';
             _userName = '$fn $ln'.trim();
             final img = data['profile_image']?.toString();
-            _avatarUrl = (img != null && img.isNotEmpty) ? '$_kBaseUrl/uploads/$img' : null;
+            _avatarUrl = (img != null && img.isNotEmpty)
+                ? '$_kBaseUrl/uploads/$img'
+                : null;
           });
         }
       }
@@ -345,7 +366,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final txns = await _homeRepo.fetchRecentTransactions();
       if (!mounted) return;
-      setState(() { _recentTxns = txns; _txnsLoading = false; });
+      setState(() {
+        _recentTxns = txns;
+        _txnsLoading = false;
+      });
     } catch (_) {
       if (!mounted) return;
       setState(() => _txnsLoading = false);
@@ -377,7 +401,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bgColor),
+      data: ThemeData(
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: _bgColor,
+      ),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
@@ -420,7 +447,10 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.profile).then((_) => _fetchBalance()),
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.profile,
+            ).then((_) => _fetchBalance()),
             child: Container(
               width: 46,
               height: 46,
@@ -434,8 +464,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Image.network(
                         _avatarUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.person, color: Colors.white, size: 24),
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       )
                     : const Icon(Icons.person, color: Colors.white, size: 24),
               ),
@@ -445,14 +478,34 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Hello,', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.2)),
-              Text(_userName.isEmpty ? '' : '$_userName!', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: _titleDark, height: 1.2)),
+              Text(
+                'Hello,',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: _subtitleGrey,
+                  height: 1.2,
+                ),
+              ),
+              Text(
+                _userName.isEmpty ? '' : '$_userName!',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: _titleDark,
+                  height: 1.2,
+                ),
+              ),
             ],
           ),
           const Spacer(),
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
-            child: const Icon(Icons.notifications_outlined, size: 26, color: _brandGreen),
+            child: const Icon(
+              Icons.notifications_outlined,
+              size: 26,
+              color: _brandGreen,
+            ),
           ),
         ],
       ),
@@ -467,7 +520,8 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 168,
           child: PageView.builder(
             controller: _bannerController,
-            onPageChanged: (i) => setState(() => _currentBannerIndex = i % _banners.length),
+            onPageChanged: (i) =>
+                setState(() => _currentBannerIndex = i % _banners.length),
             itemCount: _kBannerVirtualCount,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
@@ -539,7 +593,10 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // Tag pill
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -567,6 +624,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 6),
                 Text(
                   b.subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w400,
@@ -621,9 +680,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onTap: () => setState(() => _balanceVisible = !_balanceVisible),
+                  onTap: () =>
+                      setState(() => _balanceVisible = !_balanceVisible),
                   child: Icon(
-                    _balanceVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _balanceVisible
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 16,
                     color: _white.withOpacity(0.75),
                   ),
@@ -636,26 +698,28 @@ class _HomeScreenState extends State<HomeScreen> {
               duration: const Duration(milliseconds: 300),
               child: _balanceVisible
                   ? (_balanceLoading
-                      ? SizedBox(
-                          key: const ValueKey('loading'),
-                          height: 34,
-                          width: 34,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(_white.withOpacity(0.85)),
-                          ),
-                        )
-                      : Text(
-                          '₹${_formatINR(_walletBalance)}',
-                          key: const ValueKey('visible'),
-                          style: GoogleFonts.poppins(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w800,
-                            color: _white,
-                            letterSpacing: -0.5,
-                            height: 1.15,
-                          ),
-                        ))
+                        ? SizedBox(
+                            key: const ValueKey('loading'),
+                            height: 34,
+                            width: 34,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                _white.withOpacity(0.85),
+                              ),
+                            ),
+                          )
+                        : Text(
+                            '₹${_formatINR(_walletBalance)}',
+                            key: const ValueKey('visible'),
+                            style: GoogleFonts.poppins(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w800,
+                              color: _white,
+                              letterSpacing: -0.5,
+                              height: 1.15,
+                            ),
+                          ))
                   : Row(
                       key: const ValueKey('hidden'),
                       children: List.generate(
@@ -677,7 +741,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   'Could not refresh balance. Pull down to retry.',
-                  style: GoogleFonts.poppins(fontSize: 11, color: _white.withOpacity(0.85)),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: _white.withOpacity(0.85),
+                  ),
                 ),
               ),
             const SizedBox(height: 6),
@@ -687,7 +754,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () => setState(() => _balanceVisible = true),
                 child: Row(
                   children: [
-                    Icon(Icons.remove_red_eye_outlined, size: 13, color: _white.withOpacity(0.7)),
+                    Icon(
+                      Icons.remove_red_eye_outlined,
+                      size: 13,
+                      color: _white.withOpacity(0.7),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Tap to check balance',
@@ -703,9 +774,36 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _buildCardButton(icon: Icons.add_circle_outline, label: 'Deposit', filled: true, onTap: () { if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.deposit).then((_) => _fetchBalance()); })),
+                Expanded(
+                  child: _buildCardButton(
+                    icon: Icons.add_circle_outline,
+                    label: 'Deposit',
+                    filled: true,
+                    onTap: () {
+                      if (_requireKyc())
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.deposit,
+                        ).then((_) => _fetchBalance());
+                    },
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildCardButton(icon: Icons.account_balance_wallet_outlined, label: 'Withdraw', filled: false, onTap: () { if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.withdrawal, arguments: {'type': 'wallet'}).then((_) => _fetchBalance()); })),
+                Expanded(
+                  child: _buildCardButton(
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: 'Withdraw',
+                    filled: false,
+                    onTap: () {
+                      if (_requireKyc())
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.withdrawal,
+                          arguments: {'type': 'wallet'},
+                        ).then((_) => _fetchBalance());
+                    },
+                  ),
+                ),
               ],
             ),
           ],
@@ -714,7 +812,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCardButton({required IconData icon, required String label, required bool filled, VoidCallback? onTap}) {
+  Widget _buildCardButton({
+    required IconData icon,
+    required String label,
+    required bool filled,
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap ?? () {},
       child: Container(
@@ -722,14 +825,23 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: filled ? _white : _white.withOpacity(0.18),
           borderRadius: BorderRadius.circular(30),
-          border: filled ? null : Border.all(color: _white.withOpacity(0.5), width: 1),
+          border: filled
+              ? null
+              : Border.all(color: _white.withOpacity(0.5), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 18, color: filled ? _brandGreen : _white),
             const SizedBox(width: 6),
-            Text(label, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: filled ? _brandGreen : _white)),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: filled ? _brandGreen : _white,
+              ),
+            ),
           ],
         ),
       ),
@@ -739,14 +851,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // ── Quick Actions ─────────────────────────────────────────────────────────
   Widget _buildQuickActions() {
     final row1 = [
-      _QuickAction(icon: Icons.swap_horiz_rounded,     label: 'Deposit'),
-      _QuickAction(icon: Icons.credit_card_outlined,   label: 'Withdraw'),
-      _QuickAction(icon: Icons.bar_chart_rounded,      label: 'Plan'),
+      _QuickAction(icon: Icons.swap_horiz_rounded, label: 'Deposit'),
+      _QuickAction(icon: Icons.credit_card_outlined, label: 'Withdraw'),
+      _QuickAction(icon: Icons.bar_chart_rounded, label: 'Plan'),
     ];
     final row2 = [
       _QuickAction(icon: Icons.verified_user_outlined, label: 'KYC'),
-      _QuickAction(icon: Icons.history_rounded,        label: 'History'),
-      _QuickAction(icon: Icons.headset_mic_outlined,   label: 'Support'),
+      _QuickAction(icon: Icons.history_rounded, label: 'History'),
+      _QuickAction(icon: Icons.headset_mic_outlined, label: 'Support'),
     ];
 
     return Padding(
@@ -754,11 +866,24 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Quick Actions', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: _titleDark)),
+          Text(
+            'Quick Actions',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _titleDark,
+            ),
+          ),
           const SizedBox(height: 14),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: row1.map(_buildQuickActionItem).toList()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: row1.map(_buildQuickActionItem).toList(),
+          ),
           const SizedBox(height: 14),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: row2.map(_buildQuickActionItem).toList()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: row2.map(_buildQuickActionItem).toList(),
+          ),
         ],
       ),
     );
@@ -774,9 +899,18 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (action.label == 'Support') {
           Navigator.pushNamed(context, AppRoutes.support);
         } else if (action.label == 'Deposit') {
-          if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.deposit).then((_) => _fetchBalance());
+          if (_requireKyc())
+            Navigator.pushNamed(
+              context,
+              AppRoutes.deposit,
+            ).then((_) => _fetchBalance());
         } else if (action.label == 'Withdraw') {
-          if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.withdrawal, arguments: {'type': 'wallet'}).then((_) => _fetchBalance());
+          if (_requireKyc())
+            Navigator.pushNamed(
+              context,
+              AppRoutes.withdrawal,
+              arguments: {'type': 'wallet'},
+            ).then((_) => _fetchBalance());
         } else if (action.label == 'KYC') {
           Navigator.pushNamed(context, AppRoutes.kyc);
         }
@@ -788,12 +922,26 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: 54,
               height: 54,
-              decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(16)),
-              child: Icon(action.icon, size: 24, color: const Color(0xFF3B82F6)),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                action.icon,
+                size: 24,
+                color: const Color(0xFF3B82F6),
+              ),
             ),
             const SizedBox(height: 6),
-            Text(action.label, textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(fontSize: 11.5, fontWeight: FontWeight.w500, color: _subtitleGrey)),
+            Text(
+              action.label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                color: _subtitleGrey,
+              ),
+            ),
           ],
         ),
       ),
@@ -810,81 +958,127 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Recent Transactions', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: _titleDark)),
+              Text(
+                'Recent Transactions',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: _titleDark,
+                ),
+              ),
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.history),
-                child: Text('See All', style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w600, color: _successGreen)),
+                child: Text(
+                  'See All',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: _successGreen,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (_txnsLoading)
-            const Center(child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: CircularProgressIndicator(color: _successGreen, strokeWidth: 2),
-            ))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: CircularProgressIndicator(
+                  color: _successGreen,
+                  strokeWidth: 2,
+                ),
+              ),
+            )
           else if (_recentTxns.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: Text('No transactions yet', style: GoogleFonts.poppins(fontSize: 13, color: _labelGrey))),
+              child: Center(
+                child: Text(
+                  'No transactions yet',
+                  style: GoogleFonts.poppins(fontSize: 13, color: _labelGrey),
+                ),
+              ),
             )
           else
             ..._recentTxns.map((txn) {
               final t = txn as RecentTransaction;
               final isCredit = t.isCredit;
-              final status   = t.status.toUpperCase();
+              final status = t.status.toUpperCase();
 
               // Icon style based on type
               IconData iconData;
               Color iconBg;
               Color iconColor;
               if (t.type == 'deposit') {
-                iconData  = Icons.account_balance_outlined;
-                iconBg    = const Color(0xFFEFF6FF);
+                iconData = Icons.account_balance_outlined;
+                iconBg = const Color(0xFFEFF6FF);
                 iconColor = const Color(0xFF3B82F6);
               } else if (t.type == 'withdrawal') {
-                iconData  = Icons.wallet_outlined;
-                iconBg    = const Color(0xFFFEF2F2);
+                iconData = Icons.wallet_outlined;
+                iconBg = const Color(0xFFFEF2F2);
                 iconColor = _withdrawRed;
               } else if (t.type == 'referral') {
-                iconData  = Icons.people_alt_outlined;
-                iconBg    = const Color(0xFFF3E8FF);
+                iconData = Icons.people_alt_outlined;
+                iconBg = const Color(0xFFF3E8FF);
                 iconColor = const Color(0xFF9333EA);
               } else {
-                iconData  = Icons.trending_up_rounded;
-                iconBg    = const Color(0xFFECFDF5);
+                iconData = Icons.trending_up_rounded;
+                iconBg = const Color(0xFFECFDF5);
                 iconColor = _successGreen;
               }
 
               // Amount widget
-              final amountStr = '${isCredit ? '+' : '-'}₹${t.amount.toStringAsFixed(2)}';
+              final amountStr =
+                  '${isCredit ? '+' : '-'}₹${t.amount.toStringAsFixed(2)}';
               final amountColor = isCredit ? _successGreen : _withdrawRed;
-              final amountWidget = Text(amountStr, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: amountColor));
+              final amountWidget = Text(
+                amountStr,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: amountColor,
+                ),
+              );
 
               // Status badge colours
               Color statusBg;
               Color statusColor;
               if (status == 'APPROVED') {
-                statusBg = _successBg; statusColor = _successGreen;
+                statusBg = _successBg;
+                statusColor = _successGreen;
               } else if (status == 'REJECTED') {
-                statusBg = const Color(0xFFFEE2E2); statusColor = _withdrawRed;
+                statusBg = const Color(0xFFFEE2E2);
+                statusColor = _withdrawRed;
               } else {
-                statusBg = _processingBg; statusColor = _processingText;
+                statusBg = _processingBg;
+                statusColor = _processingText;
               }
 
               // Date formatting
-              // NOTE: t.date already represents the correct wall-clock time
-              // returned by the backend, matching exactly what the
-              // Transaction History screen displays (which also uses the
-              // raw value without calling .toLocal()). Calling .toLocal()
-              // here was double-applying the device's UTC offset on top of
-              // that value, which is why this card showed a time several
-              // hours ahead of the correct one.
-              final dt = t.date;
-              final months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              final hour   = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-              final ampm   = dt.hour < 12 ? 'AM' : 'PM';
-              final dateStr = '${dt.day} ${months[dt.month - 1]} ${dt.year} • ${hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')} $ampm';
+              // The backend always returns this as a correctly UTC-tagged
+              // instant (see config/db.js), so converting to the device's
+              // real local timezone here is what makes this card show the
+              // exact same time as the Transaction History screen.
+              final dt = toDeviceLocal(t.date);
+              final months = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec',
+              ];
+              final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+              final ampm = dt.hour < 12 ? 'AM' : 'PM';
+              final dateStr =
+                  '${dt.day} ${months[dt.month - 1]} ${dt.year} • ${hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} $ampm';
 
               return _buildTransactionItem(
                 icon: iconData,
@@ -920,13 +1114,23 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: _surfaceWhite,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 42, height: 42,
-            decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(12)),
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Icon(icon, size: 20, color: iconColor),
           ),
           const SizedBox(width: 12),
@@ -934,9 +1138,23 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: _titleDark)),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _titleDark,
+                  ),
+                ),
                 const SizedBox(height: 3),
-                Text(date, style: GoogleFonts.poppins(fontSize: 11.5, fontWeight: FontWeight.w400, color: _labelGrey)),
+                Text(
+                  date,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w400,
+                    color: _labelGrey,
+                  ),
+                ),
               ],
             ),
           ),
@@ -947,8 +1165,19 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(6)),
-                child: Text(status, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w700, color: statusColor, letterSpacing: 0.4)),
+                decoration: BoxDecoration(
+                  color: statusBg,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  status,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
+                    letterSpacing: 0.4,
+                  ),
+                ),
               ),
             ],
           ),
@@ -960,10 +1189,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onNavTap(int i) {
     if (i == _selectedNavIndex) return;
     switch (i) {
-      case 1: if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.plan).then((_) => _fetchKycStatus()); break;
-      case 2: Navigator.pushNamed(context, AppRoutes.history); break;
-      case 3: Navigator.pushNamed(context, AppRoutes.profile); break;
-      default: setState(() => _selectedNavIndex = i);
+      case 1:
+        if (_requireKyc())
+          Navigator.pushNamed(
+            context,
+            AppRoutes.plan,
+          ).then((_) => _fetchKycStatus());
+        break;
+      case 2:
+        Navigator.pushNamed(context, AppRoutes.history);
+        break;
+      case 3:
+        Navigator.pushNamed(context, AppRoutes.profile);
+        break;
+      default:
+        setState(() => _selectedNavIndex = i);
     }
   }
 
@@ -971,18 +1211,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBottomNav() {
     // 0=Home  1=Plan  2=History  3=Profile
     const navItems = [
-      (icon: Icons.home_rounded,        label: 'HOME'),
-      (icon: Icons.bar_chart_rounded,   label: 'PLAN'),
-      (icon: Icons.history_rounded,     label: 'HISTORY'),
-      (icon: Icons.person_rounded,      label: 'PROFILE'),
+      (icon: Icons.home_rounded, label: 'HOME'),
+      (icon: Icons.bar_chart_rounded, label: 'PLAN'),
+      (icon: Icons.history_rounded, label: 'HISTORY'),
+      (icon: Icons.person_rounded, label: 'PROFILE'),
     ];
 
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFFFFFF),
-        border: const Border(top: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+        border: const Border(
+          top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
         ],
       ),
       child: SafeArea(
@@ -992,7 +1238,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             children: List.generate(navItems.length, (i) {
               final sel = i == _selectedNavIndex;
-              final color = sel ? const Color(0xFF3D9E6A) : const Color(0xFF9CA3AF);
+              final color = sel
+                  ? const Color(0xFF3D9E6A)
+                  : const Color(0xFF9CA3AF);
               return Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -1092,7 +1340,9 @@ class _BannerDecoPainter extends CustomPainter {
         ..lineTo(size.width * 0.95, size.height)
         ..lineTo(size.width * 0.52, size.height)
         ..close(),
-      Paint()..color = Colors.white.withOpacity(0.07)..style = PaintingStyle.fill,
+      Paint()
+        ..color = Colors.white.withOpacity(0.07)
+        ..style = PaintingStyle.fill,
     );
 
     // Arrowhead
@@ -1102,7 +1352,9 @@ class _BannerDecoPainter extends CustomPainter {
         ..lineTo(size.width * 0.98, size.height * 0.16)
         ..lineTo(size.width * 0.90, size.height * 0.26)
         ..close(),
-      Paint()..color = Colors.white.withOpacity(0.22)..style = PaintingStyle.fill,
+      Paint()
+        ..color = Colors.white.withOpacity(0.22)
+        ..style = PaintingStyle.fill,
     );
   }
 
@@ -1110,9 +1362,18 @@ class _BannerDecoPainter extends CustomPainter {
     final circlePaint = Paint()
       ..color = Colors.white.withOpacity(0.10)
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(size.width * 0.82, size.height * 0.25), 38, circlePaint);
-    canvas.drawCircle(Offset(size.width * 0.92, size.height * 0.70), 20,
-        Paint()..color = Colors.white.withOpacity(0.07)..style = PaintingStyle.fill);
+    canvas.drawCircle(
+      Offset(size.width * 0.82, size.height * 0.25),
+      38,
+      circlePaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.92, size.height * 0.70),
+      20,
+      Paint()
+        ..color = Colors.white.withOpacity(0.07)
+        ..style = PaintingStyle.fill,
+    );
 
     // Rocket-like deco lines
     final linePaint = Paint()
@@ -1121,31 +1382,69 @@ class _BannerDecoPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
     for (int i = 0; i < 5; i++) {
       final x = size.width * (0.60 + i * 0.07);
-      canvas.drawLine(Offset(x, size.height * 0.5), Offset(x - 10, size.height * 0.85), linePaint);
+      canvas.drawLine(
+        Offset(x, size.height * 0.5),
+        Offset(x - 10, size.height * 0.85),
+        linePaint,
+      );
     }
   }
 
   void _paintReferral(Canvas canvas, Size size) {
-    final circlePaint = Paint()..color = Colors.white.withOpacity(0.10)..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(size.width * 0.78, size.height * 0.30), 30, circlePaint);
-    canvas.drawCircle(Offset(size.width * 0.92, size.height * 0.65), 22, circlePaint);
+    final circlePaint = Paint()
+      ..color = Colors.white.withOpacity(0.10)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(
+      Offset(size.width * 0.78, size.height * 0.30),
+      30,
+      circlePaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.92, size.height * 0.65),
+      22,
+      circlePaint,
+    );
 
     // Connection dots
-    final dotPaint = Paint()..color = Colors.white.withOpacity(0.25)..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(size.width * 0.72, size.height * 0.28), 5, dotPaint);
-    canvas.drawCircle(Offset(size.width * 0.88, size.height * 0.22), 5, dotPaint);
-    canvas.drawCircle(Offset(size.width * 0.85, size.height * 0.62), 5, dotPaint);
+    final dotPaint = Paint()
+      ..color = Colors.white.withOpacity(0.25)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(
+      Offset(size.width * 0.72, size.height * 0.28),
+      5,
+      dotPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.88, size.height * 0.22),
+      5,
+      dotPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.85, size.height * 0.62),
+      5,
+      dotPaint,
+    );
 
     final linePaint = Paint()
       ..color = Colors.white.withOpacity(0.15)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
-    canvas.drawLine(Offset(size.width * 0.72, size.height * 0.28), Offset(size.width * 0.88, size.height * 0.22), linePaint);
-    canvas.drawLine(Offset(size.width * 0.88, size.height * 0.22), Offset(size.width * 0.85, size.height * 0.62), linePaint);
+    canvas.drawLine(
+      Offset(size.width * 0.72, size.height * 0.28),
+      Offset(size.width * 0.88, size.height * 0.22),
+      linePaint,
+    );
+    canvas.drawLine(
+      Offset(size.width * 0.88, size.height * 0.22),
+      Offset(size.width * 0.85, size.height * 0.62),
+      linePaint,
+    );
   }
 
   void _paintShield(Canvas canvas, Size size) {
-    final shieldPaint = Paint()..color = Colors.white.withOpacity(0.12)..style = PaintingStyle.fill;
+    final shieldPaint = Paint()
+      ..color = Colors.white.withOpacity(0.12)
+      ..style = PaintingStyle.fill;
     final shieldPath = Path();
     final cx = size.width * 0.80;
     final cy = size.height * 0.42;
@@ -1155,7 +1454,12 @@ class _BannerDecoPainter extends CustomPainter {
     shieldPath.lineTo(cx + w / 2, cy - h / 4);
     shieldPath.lineTo(cx + w / 2, cy + h / 5);
     shieldPath.quadraticBezierTo(cx + w / 2, cy + h / 2, cx, cy + h / 2);
-    shieldPath.quadraticBezierTo(cx - w / 2, cy + h / 2, cx - w / 2, cy + h / 5);
+    shieldPath.quadraticBezierTo(
+      cx - w / 2,
+      cy + h / 2,
+      cx - w / 2,
+      cy + h / 5,
+    );
     shieldPath.lineTo(cx - w / 2, cy - h / 4);
     shieldPath.close();
     canvas.drawPath(shieldPath, shieldPaint);

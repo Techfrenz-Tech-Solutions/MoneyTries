@@ -1,5 +1,7 @@
 // ── Withdrawal Models ─────────────────────────────────────────────────────────
 
+import '../../utils/date_time_utils.dart';
+
 /// KYC-sourced bank details auto-populated in the withdrawal form
 class KycBankDetail {
   final String accountName;
@@ -116,9 +118,7 @@ class WithdrawRecord {
       transactionId: json['transaction_id']?.toString() ?? '',
       proofImage: json['proof_image']?.toString() ?? '',
       adminRemarks: json['admin_remarks']?.toString() ?? '',
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
+      createdAt: parseServerDateTime(json['created_at']),
     );
   }
 }

@@ -1,5 +1,7 @@
 // ── Investment Plan Models ────────────────────────────────────────────────────
 
+import '../../utils/date_time_utils.dart';
+
 /// Adds [months] calendar months to [start], clamping the day to the last
 /// valid day of the target month (e.g. 31 Jan + 1 month → 28/29 Feb).
 /// This is the canonical maturity-date formula used on both client and server.
@@ -157,9 +159,7 @@ class PlanInstalment {
     return PlanInstalment(
       monthNumber: int.tryParse(json['month']?.toString() ?? '0') ?? 0,
       amount: int.tryParse(json['amount']?.toString() ?? '0') ?? 0,
-      paidAt: json['paid_at'] != null
-          ? DateTime.tryParse(json['paid_at'].toString())
-          : null,
+      paidAt: parseServerDateTime(json['paid_at']),
       isPaid:
           json['is_paid'] as bool? ??
           (json['status']?.toString().toLowerCase() == 'paid'),
@@ -188,10 +188,46 @@ class RoiWithdrawal {
     return RoiWithdrawal(
       id: json['id']?.toString() ?? '',
       amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
+      createdAt: parseServerDateTime(json['created_at']),
       isLegacy: json['is_legacy'] == true,
+    );
+  }
+}
+
+// ── Daily ROI Credit Transaction ──────────────────────────────────────────────
+// One permanent transaction record per calendar day this plan's ROI was
+// credited. Sourced from the server's roi_daily_credits table, which
+// guarantees exactly one row per (plan, date) — so this list can never
+// contain two entries for the same date, even after an offline catch-up
+// backfills several missed days at once.
+
+class DailyRoiCredit {
+  final String id;
+  final String planName;
+  final double amount;
+  final DateTime? creditDate;
+  final DateTime? creditedAt;
+  final String status; // always "Success"
+
+  const DailyRoiCredit({
+    required this.id,
+    required this.planName,
+    required this.amount,
+    this.creditDate,
+    this.creditedAt,
+    this.status = 'Success',
+  });
+
+  factory DailyRoiCredit.fromJson(Map<String, dynamic> json) {
+    return DailyRoiCredit(
+      id: json['id']?.toString() ?? '',
+      planName: json['plan_name']?.toString() ?? 'Investment Plan',
+      amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
+      creditDate: json['credit_date'] != null
+          ? DateTime.tryParse(json['credit_date'].toString())
+          : null,
+      creditedAt: parseServerDateTime(json['credited_at']),
+      status: json['status']?.toString() ?? 'Success',
     );
   }
 }
@@ -232,6 +268,7 @@ class ActivePlan {
   final String? rejectionReason;
   final List<PlanInstalment> instalments;
   final List<RoiWithdrawal> roiWithdrawals;
+  final List<DailyRoiCredit> dailyRoiCredits;
 
   const ActivePlan({
     required this.id,
@@ -247,6 +284,7 @@ class ActivePlan {
     this.rejectionReason,
     this.instalments = const [],
     this.roiWithdrawals = const [],
+    this.dailyRoiCredits = const [],
   });
 
   // ── Basic computed ─────────────────────────────────────────────────────────
@@ -574,6 +612,9 @@ class ActivePlan {
       roiWithdrawals: (json['roi_withdrawals'] as List<dynamic>? ?? [])
           .map((e) => RoiWithdrawal.fromJson(e as Map<String, dynamic>))
           .toList(),
+      dailyRoiCredits: (json['daily_roi_credits'] as List<dynamic>? ?? [])
+          .map((e) => DailyRoiCredit.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -592,6 +633,7 @@ class ActivePlan {
     String? rejectionReason,
     List<PlanInstalment>? instalments,
     List<RoiWithdrawal>? roiWithdrawals,
+    List<DailyRoiCredit>? dailyRoiCredits,
   }) {
     final newStart = startDate ?? this.startDate;
     final newPlanType = planType ?? this.planType;
@@ -610,6 +652,7 @@ class ActivePlan {
       rejectionReason: rejectionReason ?? this.rejectionReason,
       instalments: instalments ?? this.instalments,
       roiWithdrawals: roiWithdrawals ?? this.roiWithdrawals,
+      dailyRoiCredits: dailyRoiCredits ?? this.dailyRoiCredits,
     );
   }
 }

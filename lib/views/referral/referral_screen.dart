@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/referral/referral_viewmodel.dart';
 import '../../models/referral/referral_model.dart';
+import '../../utils/date_time_utils.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _bg = Color(0xFFF0F4F8);
@@ -848,6 +849,7 @@ class _ReferralScreenState extends State<ReferralScreen>
 
   String _fmtDateTime(DateTime? d) {
     if (d == null) return '—';
+    final local = toDeviceLocal(d);
     const months = [
       'Jan',
       'Feb',
@@ -862,12 +864,12 @@ class _ReferralScreenState extends State<ReferralScreen>
       'Nov',
       'Dec',
     ];
-    final day = d.day.toString().padLeft(2, '0');
-    final month = months[d.month - 1];
-    final year = d.year;
-    final hour24 = d.hour;
+    final day = local.day.toString().padLeft(2, '0');
+    final month = months[local.month - 1];
+    final year = local.year;
+    final hour24 = local.hour;
     final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
-    final minute = d.minute.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
     final ampm = hour24 >= 12 ? 'PM' : 'AM';
     return '$day $month $year, $hour12:$minute $ampm';
   }

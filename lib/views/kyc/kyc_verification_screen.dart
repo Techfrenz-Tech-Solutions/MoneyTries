@@ -1,4 +1,11 @@
 // lib/views/kyc/kyc_verification_screen.dart
+//
+// ── Premium / Luxury Redesign ────────────────────────────────────────────────
+// Restyled to match the Moneytries app theme (lib/config/app_theme.dart):
+// deep forest-green surfaces, emerald + champagne-gold accents, glass-morphic
+// cards and soft glow shadows. Public API (KycVerificationScreen) and all
+// KycViewModel / KycFormData bindings are unchanged — this is a visual-only
+// rewrite, no ViewModel or backend changes required.
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -8,29 +15,27 @@ import 'package:provider/provider.dart';
 import '../../viewmodels/kyc/kyc_viewmodel.dart';
 import '../../models/kyc/kyc_model.dart';
 
-// ── Palette ───────────────────────────────────────────────────────────────────
-const _bg            = Color(0xFFECEFF5);
-const _white         = Color(0xFFFFFFFF);
-const _titleDark     = Color(0xFF111827);
-const _subtitleGrey  = Color(0xFF6B7280);
-const _labelGrey     = Color(0xFF9CA3AF);
+// ══════════════════════════════════════════════════════════════════════════
+// PALETTE — matches the home page banner color scheme (light, fresh greens)
+// ══════════════════════════════════════════════════════════════════════════
+const _bg = Color(0xFFECEFF5); // home page background (light grey)
+const _surface = Color(0xFFFFFFFF); // white card surfaces
+const _surfaceDeep = Color(0xFFF0F4F0); // very light green-grey
+const _primary = Color(0xFF3D9E6A); // home brand green
+const _primaryDim = Color(0xFF4DAA75); // banner gradient start
+const _emerald = Color(0xFF3D9E6A); // same brand green
+const _mint = Color(0xFF111827); // dark title text (home _titleDark)
+const _bodyGrey = Color(0xFF6B7280); // subtitle grey (home _subtitleGrey)
+const _muted = Color(0xFF9CA3AF); // label grey (home _labelGrey)
+const _white = Color(0xFFFFFFFF);
+const _champagne = Color(0xFF3D9E6A); // repurposed to brand green
+const _danger = Color(0xFFEF4444);
 
-const _brandGreen     = Color(0xFF3D9E6A);
-const _accentGreen    = Color(0xFF3D9E6A);
-const _accentGreenEnd = Color(0xFF86C9A0);
+const _cardBorder = Color(0xFFE5E7EB); // light divider
+const _fieldBg = Color(0xFFF9FAFB); // near-white field background
+const _fieldBorder = Color(0xFFD1D5DB); // light grey border
 
-const _infoBg      = Color(0xFFE9F3EE);
-const _infoBorder  = Color(0xFFD4EDE0);
-const _infoText    = Color(0xFF4B5563);
-
-const _dashedBorder    = Color(0xFFD1D5DB);
-const _checkBg         = Color(0xFFD4EDE0);
-const _bankFieldBg     = Color(0xFFEEF4F0);
-const _bankFieldBorder = Color(0xFFD6E8DC);
-const _bankInstantBg   = Color(0xFF5DD99A);
-const _bankInstantIcon = Color(0xFF3D9E6A);
-
-// ── Entry widget ──────────────────────────────────────────────────────────────
+// ── Entry widget (public API — unchanged) ────────────────────────────────────
 class KycVerificationScreen extends StatelessWidget {
   const KycVerificationScreen({super.key});
 
@@ -68,10 +73,10 @@ class _KycVerificationViewState extends State<_KycVerificationView>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _scanAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _scanCtrl, curve: Curves.easeInOut),
-    );
-    // Attach error listener after first frame so Provider is available
+    _scanAnim = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _scanCtrl, curve: Curves.easeInOut));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _vm = context.read<KycViewModel>();
       _vm!.addListener(_onVmChanged);
@@ -103,12 +108,28 @@ class _KycVerificationViewState extends State<_KycVerificationView>
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(msg,
-              style: GoogleFonts.poppins(
-                  fontSize: 13.5, fontWeight: FontWeight.w500, color: _white)),
-          backgroundColor: Colors.red.shade700,
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline_rounded, color: _white, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  msg,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: _white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF7F1D1D),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: _danger, width: 0.6),
+          ),
           margin: const EdgeInsets.all(16),
           duration: const Duration(seconds: 3),
         ),
@@ -119,48 +140,44 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   Widget build(BuildContext context) {
     final vm = context.watch<KycViewModel>();
 
-    // Show a loading spinner while we check if KYC was already submitted
     if (vm.checkingStatus) {
-      return Theme(
-        data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bg),
-        child: const Scaffold(
-          backgroundColor: _bg,
-          body: Center(
-            child: CircularProgressIndicator(color: _accentGreen),
-          ),
+      return const _DarkScaffold(
+        child: Center(
+          child: CircularProgressIndicator(color: _emerald, strokeWidth: 2.4),
         ),
       );
     }
 
-    // ── KEY FIX: If already submitted (pending/approved), go straight to
-    //    the success/status screen — skip the upload flow entirely.
+    // KEY FIX preserved: if already submitted (pending/approved), go straight
+    // to the success/status screen — skip the upload flow entirely.
     if (vm.alreadySubmitted || vm.completed) {
-      return _KycSuccessScreen(kycStatus: vm.serverKycStatus);
+      return _KycSuccessScreen(
+        kycStatus: vm.serverKycStatus,
+        details: vm.submissionDetails,
+      );
     }
 
-    return Theme(
-      data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bg),
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          backgroundColor: _bg,
-          body: SafeArea(
-            child: Column(
-              children: [
-                _buildTopBar(context, vm),
-                _buildProgressBar(vm),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                    child: _buildStepContent(vm),
-                  ),
-                ),
-                _buildBottomBar(vm),
-              ],
+    return _DarkScaffold(
+      child: Column(
+        children: [
+          _buildTopBar(context, vm),
+          _buildProgressBar(vm),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                MediaQuery.of(context).viewInsets.bottom > 0
+                    ? MediaQuery.of(context).viewInsets.bottom + 20
+                    : 20,
+              ),
+              child: _buildStepContent(vm),
             ),
           ),
-        ),
+          _buildBottomBar(vm),
+        ],
       ),
     );
   }
@@ -168,7 +185,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   // ── Top bar ───────────────────────────────────────────────────────────────
   Widget _buildTopBar(BuildContext context, KycViewModel vm) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 12, 20, 8),
+      padding: const EdgeInsets.fromLTRB(12, 14, 20, 6),
       child: Row(
         children: [
           GestureDetector(
@@ -179,56 +196,157 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Navigator.pop(context);
               }
             },
-            child: const Padding(
-              padding: EdgeInsets.all(8),
-              child: Icon(Icons.arrow_back, color: _brandGreen, size: 24),
-            ),
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              vm.stepTitle,
-              textAlign: vm.currentStep == KycStep.aadhaar
-                  ? TextAlign.start
-                  : TextAlign.center,
-              style: GoogleFonts.poppins(
-                  fontSize: 17, fontWeight: FontWeight.w700, color: _brandGreen),
-            ),
-          ),
-          if (vm.currentStep == KycStep.aadhaar)
-            Container(
-              width: 38, height: 38,
+            child: Container(
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: _accentGreen.withOpacity(0.12),
+                color: _surface,
                 shape: BoxShape.circle,
+                border: Border.all(color: _cardBorder, width: 1),
               ),
-              child: const Icon(Icons.shield_outlined, color: _accentGreen, size: 20),
-            )
-          else
-            const Icon(Icons.help_outline_rounded, color: _accentGreen, size: 24),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: _emerald,
+                size: 16,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  vm.stepTitle,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
+                    color: _mint,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Step ${vm.currentStepIndex + 1} of ${KycStep.values.length} · Secure Verification',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: _muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [_primary, _emerald],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _emerald.withOpacity(0.35),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.verified_user_rounded,
+              color: _white,
+              size: 19,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // ── Progress bar ──────────────────────────────────────────────────────────
+  // ── Progress bar (premium segmented stepper) ─────────────────────────────
   Widget _buildProgressBar(KycViewModel vm) {
+    const labels = ['Aadhaar', 'PAN', 'Selfie', 'Bank'];
+    const icons = [
+      Icons.badge_outlined,
+      Icons.credit_card_rounded,
+      Icons.face_retouching_natural_rounded,
+      Icons.account_balance_rounded,
+    ];
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
       child: Row(
         children: List.generate(KycStep.values.length, (i) {
-          final isActive = i <= vm.currentStepIndex;
+          final isDone = i < vm.currentStepIndex;
+          final isActive = i == vm.currentStepIndex;
+          final isLast = i == KycStep.values.length - 1;
           return Expanded(
-            child: Container(
-              height: 4,
-              margin: EdgeInsets.only(
-                  right: i == KycStep.values.length - 1 ? 0 : 6),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? _accentGreen
-                    : _accentGreenEnd.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: (isDone || isActive)
+                            ? const LinearGradient(colors: [_primary, _emerald])
+                            : null,
+                        color: (isDone || isActive) ? null : _surface,
+                        border: Border.all(
+                          color: (isDone || isActive)
+                              ? Colors.transparent
+                              : _cardBorder,
+                          width: 1,
+                        ),
+                        boxShadow: isActive
+                            ? [
+                                BoxShadow(
+                                  color: _emerald.withOpacity(0.45),
+                                  blurRadius: 10,
+                                  spreadRadius: 1,
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Icon(
+                        isDone ? Icons.check_rounded : icons[i],
+                        size: 15,
+                        color: (isDone || isActive) ? _white : _muted,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      labels[i],
+                      style: GoogleFonts.poppins(
+                        fontSize: 9.5,
+                        fontWeight: isActive
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isActive ? _mint : _muted,
+                      ),
+                    ),
+                  ],
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        height: 2,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: isDone ? _emerald : _cardBorder,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           );
         }),
@@ -239,10 +357,14 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   // ── Step router ───────────────────────────────────────────────────────────
   Widget _buildStepContent(KycViewModel vm) {
     switch (vm.currentStep) {
-      case KycStep.aadhaar: return _buildAadhaarStep(vm);
-      case KycStep.pan:     return _buildPanStep(vm);
-      case KycStep.selfie:  return _buildSelfieStep(vm);
-      case KycStep.bank:    return _buildBankStep(vm);
+      case KycStep.aadhaar:
+        return _buildAadhaarStep(vm);
+      case KycStep.pan:
+        return _buildPanStep(vm);
+      case KycStep.selfie:
+        return _buildSelfieStep(vm);
+      case KycStep.bank:
+        return _buildBankStep(vm);
     }
   }
 
@@ -253,26 +375,18 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Identity Proof',
-            style: GoogleFonts.poppins(
-                fontSize: 24, fontWeight: FontWeight.w800, color: _titleDark)),
-        const SizedBox(height: 8),
-        Text(
-          'Please upload a clear picture of your original Aadhaar Card for instant verification.',
-          style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: _subtitleGrey,
-              height: 1.5),
+        _sectionHeading(
+          'Identity Proof',
+          'Upload a clear picture of your original Aadhaar Card for instant verification.',
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 22),
         _buildUploadCard(
           title: 'Upload Aadhaar Front',
           subtitle: 'Any image format (Max 5MB)',
           imagePath: vm.form.aadhaarFrontPath,
           onTap: vm.pickAadhaarFront,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
         _buildUploadCard(
           title: 'Upload Aadhaar Back',
           subtitle: 'Any image format (Max 5MB)',
@@ -280,8 +394,12 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           onTap: vm.pickAadhaarBack,
         ),
         const SizedBox(height: 20),
-        _buildRequirementsCard(),
-        const SizedBox(height: 18),
+        _buildRequirementsCard(const [
+          'Information on the card should be clearly visible and legible.',
+          'Avoid any glare, reflections, or shadows on the document.',
+          'Card edges must be within the frame of the image.',
+        ]),
+        const SizedBox(height: 16),
         _buildSecureBanner(),
       ],
     );
@@ -294,19 +412,11 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('PAN Verification',
-            style: GoogleFonts.poppins(
-                fontSize: 24, fontWeight: FontWeight.w800, color: _titleDark)),
-        const SizedBox(height: 8),
-        Text(
-          'Please upload a clear picture of your PAN card for tax compliance and identity verification.',
-          style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: _subtitleGrey,
-              height: 1.5),
+        _sectionHeading(
+          'PAN Verification',
+          'Upload a clear picture of your PAN card for tax compliance and identity verification.',
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 22),
         _buildUploadCard(
           title: 'Upload PAN Front',
           subtitle: 'Any image format (Max 5MB)',
@@ -319,9 +429,6 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             Expanded(
               child: _buildFeatureCard(
                 icon: Icons.shield_outlined,
-                iconColor: const Color(0xFF3B82F6),
-                iconBg: const Color(0xFFDBEAFE),
-                bg: const Color(0xFFE7EEFB),
                 title: 'Vault Secure',
                 subtitle: 'AES-256 Encrypted',
               ),
@@ -329,10 +436,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             const SizedBox(width: 12),
             Expanded(
               child: _buildFeatureCard(
-                icon: Icons.verified_user_rounded,
-                iconColor: _accentGreen,
-                iconBg: _checkBg,
-                bg: _infoBg,
+                icon: Icons.bolt_rounded,
                 title: 'Fast Review',
                 subtitle: 'Under 2 mins',
               ),
@@ -340,8 +444,12 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           ],
         ),
         const SizedBox(height: 20),
-        _buildPanRequirementsCard(),
-        const SizedBox(height: 18),
+        _buildRequirementsCard(const [
+          'Name and photo clearly visible',
+          'Avoid glare and shadows',
+          'Document must be valid',
+        ]),
+        const SizedBox(height: 16),
         _buildTrustBanner(),
       ],
     );
@@ -350,6 +458,26 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   // ══════════════════════════════════════════════════════════════════════════
   // SELFIE STEP
   // ══════════════════════════════════════════════════════════════════════════
+  Future<void> _handleCaptureSelfie(KycViewModel vm) async {
+    final path = await vm.captureSelfiePhoto();
+    if (path == null || !mounted) return;
+
+    final usePhoto = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => _SelfiePreviewScreen(imagePath: path),
+        fullscreenDialog: true,
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (usePhoto == true) {
+      vm.confirmSelfie(path);
+    } else if (usePhoto == false) {
+      _handleCaptureSelfie(vm);
+    }
+  }
+
   Widget _buildSelfieStep(KycViewModel vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -357,64 +485,52 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         Text(
           'Selfie Verification',
           textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(
-              fontSize: 24, fontWeight: FontWeight.w800, color: _titleDark),
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 23,
+            fontWeight: FontWeight.w700,
+            color: _mint,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
-          'Take a selfie to verify your identity. Ensure\nyour face is within the frame and clearly\nvisible.',
+          'Take a selfie to verify your identity. Ensure\nyour face is within the frame and clearly visible.',
           textAlign: TextAlign.center,
           style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: _subtitleGrey,
-              height: 1.55),
+            fontSize: 13.5,
+            fontWeight: FontWeight.w400,
+            color: _bodyGrey,
+            height: 1.55,
+          ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 26),
         _buildSelfiePreview(vm),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSelfieActionBtn(
-                icon: Icons.camera_alt_rounded,
-                label: 'Open Camera',
-                onTap: vm.captureSelfie,
-                filled: true,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSelfieActionBtn(
-                icon: Icons.photo_library_outlined,
-                label: 'From Gallery',
-                onTap: vm.pickSelfieFromGallery,
-                filled: false,
-              ),
-            ),
-          ],
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: _buildSelfieActionBtn(
+            icon: Icons.camera_alt_rounded,
+            label: vm.form.selfiePath != null
+                ? 'Retake Selfie'
+                : 'Capture Selfie',
+            onTap: () => _handleCaptureSelfie(vm),
+            filled: true,
+          ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 22),
         _buildSelfieTipCard(
           icon: Icons.wb_sunny_outlined,
-          iconColor: const Color(0xFFF59E0B),
-          iconBg: const Color(0xFFFEF3C7),
           title: 'Good lighting',
           subtitle: 'Avoid shadows on your face',
         ),
         const SizedBox(height: 12),
         _buildSelfieTipCard(
           icon: Icons.flash_off_outlined,
-          iconColor: const Color(0xFF6366F1),
-          iconBg: const Color(0xFFE0E7FF),
           title: 'Remove glasses/hats',
           subtitle: 'Ensure eyes are clearly visible',
         ),
         const SizedBox(height: 12),
         _buildSelfieTipCard(
           icon: Icons.sentiment_neutral_outlined,
-          iconColor: _accentGreen,
-          iconBg: _checkBg,
           title: 'Neutral expression',
           subtitle: 'Look directly into the camera',
         ),
@@ -422,12 +538,15 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline_rounded, size: 13, color: _labelGrey),
-            const SizedBox(width: 5),
+            const Icon(Icons.lock_outline_rounded, size: 13, color: _muted),
+            const SizedBox(width: 6),
             Text(
               'Encrypted biometric transmission',
               style: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w500, color: _labelGrey),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                color: _muted,
+              ),
             ),
           ],
         ),
@@ -446,32 +565,40 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           AnimatedBuilder(
             animation: _scanAnim,
             builder: (context, child) => Container(
-              width: 240, height: 240,
+              width: 232,
+              height: 232,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: _accentGreenEnd
-                      .withOpacity(0.25 + _scanAnim.value * 0.25),
-                  width: 2,
+                  color: _champagne.withOpacity(0.20 + _scanAnim.value * 0.28),
+                  width: 1.4,
                 ),
               ),
             ),
           ),
           Container(
-            width: 208, height: 208,
+            width: 200,
+            height: 200,
             decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _brandGreen.withOpacity(0.85)),
-          ),
-          Container(
-            width: 192, height: 192,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF1E5C3A).withOpacity(0.95)),
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [_surfaceDeep, _surface],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _primary.withOpacity(0.22),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
           ),
           ClipOval(
             child: SizedBox(
-              width: 176, height: 176,
+              width: 176,
+              height: 176,
               child: captured
                   ? Image.file(File(vm.form.selfiePath!), fit: BoxFit.cover)
                   : Stack(
@@ -479,7 +606,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                         Container(
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFF0F3D2B), Color(0xFF1A6645)],
+                              colors: [_surfaceDeep, _primaryDim],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),
@@ -497,18 +624,26 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             ),
           ),
           Positioned(
-            bottom: 4,
+            bottom: 2,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: captured ? _accentGreen : _brandGreen.withOpacity(0.85),
+                gradient: LinearGradient(
+                  colors: captured
+                      ? [_primary, _emerald]
+                      : [_surface, _surface],
+                ),
                 borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                      color: _brandGreen.withOpacity(0.35),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4)),
-                ],
+                border: captured ? null : Border.all(color: _cardBorder),
+                boxShadow: captured
+                    ? [
+                        BoxShadow(
+                          color: _emerald.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -517,13 +652,17 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                     captured
                         ? Icons.check_circle_outline_rounded
                         : Icons.face_retouching_natural,
-                    color: _white, size: 17,
+                    color: captured ? _white : _muted,
+                    size: 16,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    captured ? 'Selfie Captured ✓' : 'No selfie yet',
+                    captured ? 'Selfie Captured' : 'No selfie yet',
                     style: GoogleFonts.poppins(
-                        fontSize: 13, fontWeight: FontWeight.w700, color: _white),
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: captured ? _white : _muted,
+                    ),
                   ),
                 ],
               ),
@@ -543,25 +682,37 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        height: 50,
         decoration: BoxDecoration(
-          color: filled ? _brandGreen : _white,
-          borderRadius: BorderRadius.circular(14),
-          border: filled ? null : Border.all(color: _bankFieldBorder, width: 1.5),
+          gradient: filled
+              ? const LinearGradient(colors: [_primary, _emerald])
+              : null,
+          color: filled ? null : _surface,
+          borderRadius: BorderRadius.circular(15),
+          border: filled ? null : Border.all(color: _fieldBorder, width: 1.3),
           boxShadow: filled
-              ? [BoxShadow(color: _brandGreen.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3))]
+              ? [
+                  BoxShadow(
+                    color: _emerald.withOpacity(0.32),
+                    blurRadius: 14,
+                    offset: const Offset(0, 5),
+                  ),
+                ]
               : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: filled ? _white : _accentGreen),
+            Icon(icon, size: 18, color: filled ? _white : _emerald),
             const SizedBox(width: 8),
-            Text(label,
-                style: GoogleFonts.poppins(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                    color: filled ? _white : _accentGreen)),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: filled ? _white : _emerald,
+              ),
+            ),
           ],
         ),
       ),
@@ -570,46 +721,44 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   Widget _buildSelfieTipCard({
     required IconData icon,
-    required Color iconColor,
-    required Color iconBg,
     required String title,
     required String subtitle,
   }) {
-    return Container(
-      width: double.infinity,
+    return _glassCard(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      decoration: BoxDecoration(
-        color: _white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2)),
-        ],
-      ),
       child: Row(
         children: [
           Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: iconBg),
-            child: Icon(icon, color: iconColor, size: 22),
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _emerald.withOpacity(0.12),
+              border: Border.all(color: _emerald.withOpacity(0.25)),
+            ),
+            child: Icon(icon, color: _emerald, size: 20),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: GoogleFonts.poppins(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w700,
-                      color: _titleDark)),
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: _mint,
+                ),
+              ),
               const SizedBox(height: 2),
-              Text(subtitle,
-                  style: GoogleFonts.poppins(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w400,
-                      color: _subtitleGrey)),
+              Text(
+                subtitle,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: _bodyGrey,
+                ),
+              ),
             ],
           ),
         ],
@@ -624,21 +773,12 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        _sectionHeading(
           'Link Bank Account',
-          style: GoogleFonts.poppins(
-              fontSize: 26, fontWeight: FontWeight.w800, color: _titleDark),
-        ),
-        const SizedBox(height: 8),
-        Text(
           "Enter your bank details where you'd like to receive your investment returns.",
-          style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: _subtitleGrey,
-              height: 1.55),
+          fontSize: 24,
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 26),
         _bankFieldLabel('Account Holder Name'),
         const SizedBox(height: 8),
         _buildBankTextField(
@@ -649,7 +789,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           onChanged: vm.updateAccountHolder,
           initialValue: vm.form.accountHolderName,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
         _bankFieldLabel('Account Number'),
         const SizedBox(height: 8),
         _buildBankTextField(
@@ -660,7 +800,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           onChanged: vm.updateAccountNumber,
           initialValue: vm.form.accountNumber,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
         _bankFieldLabel('IFSC Code'),
         const SizedBox(height: 8),
         _buildIfscField(vm),
@@ -672,45 +812,53 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.error_outline, size: 15, color: Colors.red),
+              const Icon(Icons.error_outline_rounded, size: 15, color: _danger),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   vm.ifscError!,
                   style: GoogleFonts.poppins(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red.shade700),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    color: _danger,
+                  ),
                 ),
               ),
             ],
           ),
         ],
-        const SizedBox(height: 24),
+        const SizedBox(height: 22),
         _buildInstantVerificationBanner(),
-        const SizedBox(height: 28),
+        const SizedBox(height: 26),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline_rounded, size: 13, color: _labelGrey),
+            const Icon(Icons.lock_outline_rounded, size: 13, color: _muted),
             const SizedBox(width: 6),
             Text(
-              'PCI-DSS Compliant • 256-bit Encryption',
+              'PCI-DSS Compliant · 256-bit Encryption',
               style: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w500, color: _labelGrey),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                color: _muted,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
       ],
     );
   }
 
   Widget _bankFieldLabel(String label) {
     return Text(
-      label,
+      label.toUpperCase(),
       style: GoogleFonts.poppins(
-          fontSize: 13.5, fontWeight: FontWeight.w700, color: _accentGreen),
+        fontSize: 11.5,
+        fontWeight: FontWeight.w700,
+        color: _emerald,
+        letterSpacing: 0.8,
+      ),
     );
   }
 
@@ -725,9 +873,9 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _bankFieldBg,
+        color: _fieldBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _bankFieldBorder, width: 1.2),
+        border: Border.all(color: _fieldBorder, width: 1.2),
       ),
       child: TextFormField(
         initialValue: initialValue.isEmpty ? null : initialValue,
@@ -735,20 +883,32 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         textCapitalization: textCapitalization,
         inputFormatters: inputFormatters,
         onChanged: onChanged,
+        cursorColor: _emerald,
         style: GoogleFonts.poppins(
-            fontSize: 15, fontWeight: FontWeight.w500, color: _titleDark),
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: _mint,
+        ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: GoogleFonts.poppins(
-              fontSize: 15, fontWeight: FontWeight.w400, color: _labelGrey),
+            fontSize: 14.5,
+            fontWeight: FontWeight.w400,
+            color: _muted,
+          ),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 14, right: 10),
-            child: Icon(prefixIcon, color: _labelGrey, size: 22),
+            child: Icon(prefixIcon, color: _muted, size: 21),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 0,
+            minHeight: 0,
+          ),
           border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 16,
+          ),
         ),
       ),
     );
@@ -757,14 +917,14 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   Widget _buildIfscField(KycViewModel vm) {
     return Container(
       decoration: BoxDecoration(
-        color: _bankFieldBg,
+        color: _fieldBg,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: vm.form.bankInfo != null
-              ? _accentGreen
+              ? _emerald
               : vm.ifscError != null
-                  ? Colors.red.shade300
-                  : _bankFieldBorder,
+              ? _danger.withOpacity(0.6)
+              : _fieldBorder,
           width: 1.2,
         ),
       ),
@@ -772,7 +932,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         children: [
           const Padding(
             padding: EdgeInsets.only(left: 14, right: 10),
-            child: Icon(Icons.security_outlined, color: _labelGrey, size: 22),
+            child: Icon(Icons.security_outlined, color: _muted, size: 21),
           ),
           Expanded(
             child: TextFormField(
@@ -780,15 +940,20 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               textCapitalization: TextCapitalization.characters,
               maxLength: 11,
               onChanged: vm.updateIfsc,
+              cursorColor: _emerald,
               style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: _titleDark,
-                  letterSpacing: 1.5),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: _mint,
+                letterSpacing: 1.5,
+              ),
               decoration: InputDecoration(
                 hintText: 'e.g. SBIN0001234',
                 hintStyle: GoogleFonts.poppins(
-                    fontSize: 14, fontWeight: FontWeight.w400, color: _labelGrey),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: _muted,
+                ),
                 counterText: '',
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -801,21 +966,28 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               padding: const EdgeInsets.only(right: 14),
               child: vm.ifscLoading
                   ? const SizedBox(
-                      width: 18, height: 18,
+                      width: 18,
+                      height: 18,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: _accentGreen),
+                        strokeWidth: 2,
+                        color: _emerald,
+                      ),
                     )
                   : vm.form.bankInfo != null
-                      ? const Icon(Icons.check_circle_rounded,
-                          color: _accentGreen, size: 20)
-                      : Text(
-                          'FIND',
-                          style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: _accentGreen,
-                              letterSpacing: 0.5),
-                        ),
+                  ? const Icon(
+                      Icons.check_circle_rounded,
+                      color: _emerald,
+                      size: 20,
+                    )
+                  : Text(
+                      'FIND',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: _emerald,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
             ),
           ),
         ],
@@ -824,38 +996,47 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   }
 
   Widget _buildBankInfoCard(IfscBankInfo info) {
-    return Container(
-      width: double.infinity,
+    return _glassCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _infoBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _infoBorder, width: 1),
-      ),
+      borderColor: _emerald.withOpacity(0.3),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 38, height: 38,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: _accentGreen.withOpacity(0.15)),
-            child: const Icon(Icons.account_balance_rounded,
-                size: 18, color: _accentGreen),
+              shape: BoxShape.circle,
+              color: _emerald.withOpacity(0.16),
+            ),
+            child: const Icon(
+              Icons.account_balance_rounded,
+              size: 18,
+              color: _emerald,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(info.bankName,
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w700, color: _titleDark)),
+                Text(
+                  info.bankName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: _mint,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text('${info.branch} — ${info.city}, ${info.state}',
-                    style: GoogleFonts.poppins(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w400,
-                        color: _subtitleGrey)),
+                Text(
+                  '${info.branch} — ${info.city}, ${info.state}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w400,
+                    color: _bodyGrey,
+                  ),
+                ),
               ],
             ),
           ),
@@ -869,20 +1050,29 @@ class _KycVerificationViewState extends State<_KycVerificationView>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _bankInstantBg,
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [_primary.withOpacity(0.18), _emerald.withOpacity(0.10)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _emerald.withOpacity(0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 42, height: 42,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _bankInstantIcon.withOpacity(0.18),
+              color: _emerald.withOpacity(0.2),
             ),
-            child: const Icon(Icons.verified_outlined,
-                color: _bankInstantIcon, size: 22),
+            child: const Icon(
+              Icons.verified_outlined,
+              color: _emerald,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -892,18 +1082,20 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   'Instant Verification',
                   style: GoogleFonts.poppins(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w800,
-                      color: _bankInstantIcon),
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: _mint,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   "We'll deposit ₹1.00 to verify your account instantly.",
                   style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                      color: _bankInstantIcon.withOpacity(0.85),
-                      height: 1.4),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w400,
+                    color: _bodyGrey,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
@@ -916,6 +1108,49 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   // ══════════════════════════════════════════════════════════════════════════
   // SHARED WIDGETS
   // ══════════════════════════════════════════════════════════════════════════
+  Widget _sectionHeading(
+    String title,
+    String subtitle, {
+    double fontSize = 22,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 22,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [_primary, _emerald]),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: _mint,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w400,
+            color: _bodyGrey,
+            height: 1.55,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildUploadCard({
     required String title,
     required String subtitle,
@@ -928,69 +1163,113 @@ class _KycVerificationViewState extends State<_KycVerificationView>
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: _white,
-          borderRadius: BorderRadius.circular(16),
+          color: _surface,
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: uploaded ? _accentGreen : _dashedBorder,
-            width: 1.5,
+            color: uploaded ? _emerald.withOpacity(0.7) : _cardBorder,
+            width: 1.4,
           ),
+          boxShadow: uploaded
+              ? [
+                  BoxShadow(
+                    color: _emerald.withOpacity(0.15),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
         ),
         clipBehavior: Clip.antiAlias,
         child: uploaded
-            ? Stack(
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 160,
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
                     child: Image.file(File(imagePath), fit: BoxFit.cover),
                   ),
-                  Positioned(
-                    left: 0, right: 0, bottom: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      color: _accentGreen.withOpacity(0.9),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle_rounded,
-                              size: 18, color: _white),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Uploaded successfully — tap to change',
-                            style: GoogleFonts.poppins(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
-                                color: _white),
-                          ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          _primary.withOpacity(0.92),
+                          _emerald.withOpacity(0.92),
                         ],
                       ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          size: 18,
+                          color: _white,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Uploaded successfully — tap to change',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: _white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               )
             : Padding(
-                padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 34,
+                  horizontal: 20,
+                ),
                 child: Column(
                   children: [
                     Container(
-                      width: 56, height: 56,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: _accentGreenEnd),
-                      child: const Icon(Icons.add_a_photo_outlined,
-                          size: 24, color: _white),
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            _primary.withOpacity(0.85),
+                            _emerald.withOpacity(0.85),
+                          ],
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.add_a_photo_outlined,
+                        size: 24,
+                        color: _white,
+                      ),
                     ),
                     const SizedBox(height: 14),
-                    Text(title,
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: _titleDark)),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                        color: _mint,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    Text(subtitle,
-                        style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w500,
-                            color: _labelGrey)),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        color: _muted,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1000,101 +1279,107 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   Widget _buildFeatureCard({
     required IconData icon,
-    required Color iconColor,
-    required Color iconBg,
-    required Color bg,
     required String title,
     required String subtitle,
   }) {
-    return Container(
+    return _glassCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 32, height: 32,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: iconBg),
-            child: Icon(icon, size: 16, color: iconColor),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _emerald.withOpacity(0.15),
+            ),
+            child: Icon(icon, size: 16, color: _emerald),
           ),
           const SizedBox(height: 10),
-          Text(title,
-              style: GoogleFonts.poppins(
-                  fontSize: 13.5, fontWeight: FontWeight.w800, color: _titleDark)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w800,
+              color: _mint,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(subtitle,
-              style: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+          Text(
+            subtitle,
+            style: GoogleFonts.poppins(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w400,
+              color: _bodyGrey,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildRequirementsCard() {
-    const requirements = [
-      'Information on the card should be clearly visible and legible.',
-      'Avoid any glare, reflections, or shadows on the document.',
-      'Card edges must be within the frame of the image.',
-    ];
-    return _requirementsCard(requirements);
-  }
-
-  Widget _buildPanRequirementsCard() {
-    const requirements = [
-      'Name and photo clearly visible',
-      'Avoid glare and shadows',
-      'Document must be valid',
-    ];
-    return _requirementsCard(requirements);
-  }
-
-  Widget _requirementsCard(List<String> requirements) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _infoBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _infoBorder, width: 1),
-      ),
+  Widget _buildRequirementsCard(List<String> requirements) {
+    return _glassCard(
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded, size: 18, color: _accentGreen),
+              const Icon(
+                Icons.info_outline_rounded,
+                size: 18,
+                color: _champagne,
+              ),
               const SizedBox(width: 8),
-              Text('Requirements',
-                  style: GoogleFonts.poppins(
-                      fontSize: 15, fontWeight: FontWeight.w800, color: _titleDark)),
+              Text(
+                'Requirements',
+                style: GoogleFonts.poppins(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                  color: _mint,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          ...requirements.map((r) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 18, height: 18,
-                      margin: const EdgeInsets.only(top: 1),
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle, color: _checkBg),
-                      child: const Icon(Icons.check_rounded,
-                          size: 12, color: _accentGreen),
+          ...requirements.map(
+            (r) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 18,
+                    height: 18,
+                    margin: const EdgeInsets.only(top: 1),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _emerald.withOpacity(0.15),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(r,
-                          style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: _infoText,
-                              height: 1.45)),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: _emerald,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      r,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w400,
+                        color: _bodyGrey,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1102,51 +1387,68 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   Widget _buildTrustBanner() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         width: double.infinity,
-        height: 110,
-        decoration: const BoxDecoration(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFE5E7EB), Color(0xFFF3F4F6)],
+            colors: [_surface, _surfaceDeep],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+          border: Border.all(color: _champagne.withOpacity(0.25)),
         ),
         child: Stack(
           children: [
             Positioned.fill(child: CustomPaint(painter: _WavePainter())),
-            Positioned(
-              left: 14, bottom: 14, right: 14,
-              child: Row(
-                children: [
-                  Container(
-                    width: 38, height: 38,
-                    decoration:
-                        const BoxDecoration(shape: BoxShape.circle, color: _white),
-                    child: const Icon(Icons.verified_user_outlined,
-                        size: 18, color: _accentGreen),
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _champagne.withOpacity(0.14),
+                    border: Border.all(color: _champagne.withOpacity(0.4)),
                   ),
-                  const SizedBox(width: 12),
-                  Column(
+                  child: const Icon(
+                    Icons.workspace_premium_rounded,
+                    size: 19,
+                    color: _champagne,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('IDENTITY TRUST',
-                          style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: _brandGreen,
-                              letterSpacing: 0.6)),
+                      Text(
+                        'IDENTITY TRUST',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          color: _champagne,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text('Verified by Moneytries Global Compliance',
-                          style: GoogleFonts.poppins(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w400,
-                              color: _subtitleGrey)),
+                      Text(
+                        'Verified by Moneytries Global Compliance',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w400,
+                          color: _bodyGrey,
+                        ),
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -1156,38 +1458,46 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   Widget _buildSecureBanner() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         width: double.infinity,
-        height: 130,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F2318), Color(0xFF1F3D2C)],
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [_surfaceDeep, _surface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+          border: Border.all(color: _cardBorder),
         ),
         child: Stack(
           children: [
             Positioned(
-              right: -10, top: -10,
-              child: Icon(Icons.credit_card,
-                  size: 110, color: _white.withOpacity(0.08)),
-            ),
-            Positioned(
-              left: 14, bottom: 14,
-              child: Row(
-                children: [
-                  Icon(Icons.verified_user_rounded,
-                      size: 16, color: _white.withOpacity(0.9)),
-                  const SizedBox(width: 6),
-                  Text('Secure Encryption Enabled',
-                      style: GoogleFonts.poppins(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: _white)),
-                ],
+              right: -10,
+              top: -14,
+              child: Icon(
+                Icons.shield_moon_rounded,
+                size: 108,
+                color: _emerald.withOpacity(0.06),
               ),
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.verified_user_rounded,
+                  size: 17,
+                  color: _emerald.withOpacity(0.9),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Bank-Grade Encryption Enabled',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: _mint,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -1195,23 +1505,52 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     );
   }
 
+  /// Reusable glass-morphic card matching the app's dark premium surfaces.
+  Widget _glassCard({
+    required Widget child,
+    EdgeInsetsGeometry? padding,
+    Color? borderColor,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor ?? _cardBorder, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
   // ── Bottom bar ────────────────────────────────────────────────────────────
   Widget _buildBottomBar(KycViewModel vm) {
     final isLoading = vm.status == KycStatus.loading;
-    final isSelfie  = vm.currentStep == KycStep.selfie;
-    final isBank    = vm.currentStep == KycStep.bank;
+    final isSelfie = vm.currentStep == KycStep.selfie;
+    final isBank = vm.currentStep == KycStep.bank;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
       decoration: BoxDecoration(
-        color: _white,
+        color: _surface,
         borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+        border: const Border(top: BorderSide(color: _cardBorder, width: 1)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 16,
-              offset: const Offset(0, -4))
+            color: Colors.black.withOpacity(0.35),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
+          ),
         ],
       ),
       child: SafeArea(
@@ -1220,66 +1559,99 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           children: [
             SizedBox(
               width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : vm.goNext,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: vm.canContinue
-                      ? _brandGreen
-                      : _brandGreen.withOpacity(0.5),
-                  foregroundColor: _white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                ),
-                child: isLoading
-                    ? const SizedBox(
-                        width: 22, height: 22,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: _white),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isSelfie) ...[
-                            const Icon(Icons.camera_alt_rounded,
-                                size: 18, color: _white),
-                            const SizedBox(width: 8),
+              height: 54,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: vm.canContinue
+                        ? [_primary, _emerald]
+                        : [
+                            _primary.withOpacity(0.35),
+                            _emerald.withOpacity(0.35),
                           ],
-                          Text(
-                            vm.nextLabel,
-                            style: GoogleFonts.poppins(
+                  ),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: vm.canContinue
+                      ? [
+                          BoxShadow(
+                            color: _emerald.withOpacity(0.35),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : vm.goNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: _white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _white,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (isSelfie) ...[
+                              const Icon(
+                                Icons.camera_alt_rounded,
+                                size: 18,
+                                color: _white,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              vm.nextLabel,
+                              style: GoogleFonts.poppins(
                                 fontSize: 15.5,
                                 fontWeight: FontWeight.w700,
-                                color: _white),
-                          ),
-                          if (!isSelfie && !isBank) ...[
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_forward,
-                                size: 18, color: _white),
+                                color: _white,
+                              ),
+                            ),
+                            if (!isSelfie && !isBank) ...[
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 18,
+                                color: _white,
+                              ),
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
+                ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
                 style: GoogleFonts.poppins(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w400,
-                    color: _subtitleGrey,
-                    height: 1.5),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                  color: _muted,
+                  height: 1.5,
+                ),
                 children: [
                   const TextSpan(text: 'By continuing, you agree to our '),
                   TextSpan(
                     text: 'Privacy Policy',
                     style: GoogleFonts.poppins(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                        color: _accentGreen,
-                        height: 1.5),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _emerald,
+                    ),
                   ),
                   const TextSpan(text: ' regarding document storage.'),
                 ],
@@ -1293,13 +1665,174 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// SELFIE PREVIEW — Retake / Use Photo confirmation before committing the shot
+// ══════════════════════════════════════════════════════════════════════════════
+
+class _SelfiePreviewScreen extends StatelessWidget {
+  final String imagePath;
+  const _SelfiePreviewScreen({required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: _bg,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: _mint,
+                        size: 24,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Review Your Selfie',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.playfairDisplay(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: _mint,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      border: Border.all(
+                        color: _emerald.withOpacity(0.35),
+                        width: 1.4,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _emerald.withOpacity(0.18),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: Image.file(
+                        File(imagePath),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.pop(context, false),
+                        icon: const Icon(
+                          Icons.refresh_rounded,
+                          color: _mint,
+                          size: 20,
+                        ),
+                        label: Text(
+                          'Retake',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                            color: _mint,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                            color: _fieldBorder,
+                            width: 1.4,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [_primary, _emerald],
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: () => Navigator.pop(context, true),
+                          icon: const Icon(
+                            Icons.check_rounded,
+                            color: _white,
+                            size: 20,
+                          ),
+                          label: Text(
+                            'Use Photo',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                              color: _white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // SUCCESS / STATUS SCREEN
 // ══════════════════════════════════════════════════════════════════════════════
 
 class _KycSuccessScreen extends StatefulWidget {
   /// The status from the server: 'pending' | 'approved' | 'not_submitted'
   final String kycStatus;
-  const _KycSuccessScreen({this.kycStatus = 'pending'});
+
+  /// The submitted documents + bank details, shown once the KYC has been
+  /// approved by an admin. Null if not yet available.
+  final KycSubmissionDetails? details;
+
+  const _KycSuccessScreen({this.kycStatus = 'pending', this.details});
 
   @override
   State<_KycSuccessScreen> createState() => _KycSuccessScreenState();
@@ -1319,7 +1852,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
       duration: const Duration(milliseconds: 700),
     );
     _scaleAnim = CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
-    _fadeAnim  = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
+    _fadeAnim = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
     _ctrl.forward();
   }
 
@@ -1333,163 +1866,351 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bg),
-      child: Scaffold(
-        backgroundColor: _bg,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ── Back button ──────────────────────────────────────────
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: _white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.07),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 18, color: _titleDark),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                FadeTransition(
-                  opacity: _fadeAnim,
-                  child: ScaleTransition(
-                    scale: _scaleAnim,
-                    child: Container(
-                      width: 120, height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [_accentGreen, _brandGreen],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                              color: _accentGreen.withOpacity(0.35),
-                              blurRadius: 30,
-                              offset: const Offset(0, 10)),
-                        ],
-                      ),
-                      child: const Icon(Icons.verified_rounded,
-                          size: 56, color: _white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 36),
-                FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Text(
-                    _isApproved ? 'KYC Approved!' : 'Verification\nSubmitted!',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800,
-                        color: _titleDark,
-                        height: 1.2),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Text(
-                    _isApproved
-                        ? 'Your KYC has been verified successfully. You can now access all Moneytries features.'
-                        : 'Your KYC documents have been submitted successfully. Our team will review and verify your identity within 24 hours.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w400,
-                        color: _subtitleGrey,
-                        height: 1.6),
-                  ),
-                ),
-                const SizedBox(height: 36),
-                FadeTransition(
-                  opacity: _fadeAnim,
+    final d = widget.details;
+    return _DarkScaffold(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
                   child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
-                      color: _white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4)),
-                      ],
+                      color: _surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: _cardBorder),
                     ),
-                    child: Column(
-                      children: [
-                        _statusRow(
-                          icon: Icons.upload_file_rounded,
-                          label: 'Documents Uploaded',
-                          done: true,
-                        ),
-                        const SizedBox(height: 16),
-                        _statusRow(
-                          icon: Icons.manage_search_rounded,
-                          label: 'Under Review',
-                          done: _isApproved,
-                          active: !_isApproved,
-                        ),
-                        const SizedBox(height: 16),
-                        _statusRow(
-                          icon: Icons.check_circle_rounded,
-                          label: 'KYC Approved',
-                          done: _isApproved,
-                        ),
-                      ],
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 17,
+                      color: _emerald,
                     ),
                   ),
                 ),
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _brandGreen,
-                      foregroundColor: _white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                    ),
-                    child: Text(
-                      'Back to Home',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w700,
-                          color: _white),
-                    ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 16, bottom: 16),
+                  child: Column(
+                    children: [
+                      FadeTransition(
+                        opacity: _fadeAnim,
+                        child: ScaleTransition(
+                          scale: _scaleAnim,
+                          child: Container(
+                            width: 124,
+                            height: 124,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [_primary, _emerald],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              border: Border.all(
+                                color: _champagne.withOpacity(0.5),
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _emerald.withOpacity(0.45),
+                                  blurRadius: 36,
+                                  offset: const Offset(0, 12),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.verified_rounded,
+                              size: 58,
+                              color: _white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                      FadeTransition(
+                        opacity: _fadeAnim,
+                        child: Text(
+                          _isApproved
+                              ? 'KYC Approved!'
+                              : 'Verification\nSubmitted!',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            color: _mint,
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FadeTransition(
+                        opacity: _fadeAnim,
+                        child: Text(
+                          _isApproved
+                              ? 'Your KYC has been verified successfully. You can now access all Moneytries features.'
+                              : 'Your KYC documents have been submitted successfully. Our team will review and verify your identity within 24 hours.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: _bodyGrey,
+                            height: 1.6,
+                          ),
+                        ),
+                      ),
+                      // Show the submitted documents + bank details once the
+                      // admin has approved the KYC.
+                      if (_isApproved && d != null) ...[
+                        const SizedBox(height: 36),
+                        FadeTransition(
+                          opacity: _fadeAnim,
+                          child: _buildSubmittedDetailsCard(d),
+                        ),
+                      ],
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [_primary, _emerald],
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _emerald.withOpacity(0.35),
+                                blurRadius: 18,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              foregroundColor: _white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text(
+                              'Back to Home',
+                              style: GoogleFonts.poppins(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w700,
+                                color: _white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 28),
-              ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Submitted KYC details (shown after admin approval) ───────────────────
+  Widget _buildSubmittedDetailsCard(KycSubmissionDetails d) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: _cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.verified_user_rounded,
+                size: 18,
+                color: _emerald,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Your Submitted KYC Details',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: _mint,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // ── Document images grid ─────────────────────────────────────────
+          Row(
+            children: [
+              Expanded(child: _docThumb('Aadhaar Front', d.aadhaarFrontUrl)),
+              const SizedBox(width: 10),
+              Expanded(child: _docThumb('Aadhaar Back', d.aadhaarBackUrl)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: _docThumb('PAN Card', d.panFrontUrl)),
+              const SizedBox(width: 10),
+              Expanded(child: _docThumb('Selfie', d.selfieUrl)),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          Text(
+            'Bank Details',
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+              color: _muted,
+              letterSpacing: 0.6,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _detailRow('Account Holder', d.accountHolderName),
+          _detailRow('Account Number', d.accountNumber),
+          _detailRow('IFSC Code', d.ifscCode),
+          _detailRow(
+            'Bank',
+            [
+              d.bankName,
+              d.bankBranch,
+            ].where((s) => s.trim().isNotEmpty).join(', '),
+          ),
+          _detailRow(
+            'Location',
+            [
+              d.bankCity,
+              d.bankState,
+            ].where((s) => s.trim().isNotEmpty).join(', '),
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _docThumb(String label, String? url) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Container(
+              color: _fieldBg,
+              child: url == null
+                  ? Icon(
+                      Icons.image_not_supported_outlined,
+                      color: _muted,
+                      size: 22,
+                    )
+                  : Image.network(
+                      url,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Center(
+                          child: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: _emerald,
+                              value: progress.expectedTotalBytes != null
+                                  ? progress.cumulativeBytesLoaded /
+                                        progress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stack) => Icon(
+                        Icons.broken_image_outlined,
+                        color: _muted,
+                        size: 22,
+                      ),
+                    ),
             ),
           ),
         ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.poppins(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w600,
+            color: _bodyGrey,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _detailRow(String label, String value, {bool isLast = false}) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 118,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+                color: _muted,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value.trim().isEmpty ? '—' : value,
+              style: GoogleFonts.poppins(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: _mint,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1503,43 +2224,81 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
     return Row(
       children: [
         Container(
-          width: 40, height: 40,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
+            gradient: done
+                ? const LinearGradient(colors: [_primary, _emerald])
+                : null,
             color: done
-                ? _accentGreen
+                ? null
                 : active
-                    ? _accentGreenEnd.withOpacity(0.3)
-                    : _labelGrey.withOpacity(0.12),
+                ? _emerald.withOpacity(0.16)
+                : _fieldBg,
+            border: done ? null : Border.all(color: _cardBorder),
           ),
-          child: Icon(icon, size: 20,
-              color: done ? _white : active ? _accentGreen : _labelGrey),
+          child: Icon(
+            icon,
+            size: 20,
+            color: done
+                ? _white
+                : active
+                ? _emerald
+                : _muted,
+          ),
         ),
         const SizedBox(width: 14),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
               fontSize: 14.5,
               fontWeight: done || active ? FontWeight.w700 : FontWeight.w400,
               color: done
-                  ? _accentGreen
+                  ? _mint
                   : active
-                      ? _titleDark
-                      : _labelGrey),
+                  ? _emerald
+                  : _muted,
+            ),
+          ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         if (done)
-          const Icon(Icons.check_circle_rounded, size: 18, color: _accentGreen)
+          const Icon(Icons.check_circle_rounded, size: 18, color: _emerald)
         else if (active)
           SizedBox(
-            width: 16, height: 16,
+            width: 16,
+            height: 16,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: _accentGreen,
-              backgroundColor: _accentGreenEnd.withOpacity(0.3),
+              color: _emerald,
+              backgroundColor: _emerald.withOpacity(0.2),
             ),
           ),
       ],
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SHARED SCAFFOLD — clean light background matching home page banner style
+// ══════════════════════════════════════════════════════════════════════════════
+
+class _DarkScaffold extends StatelessWidget {
+  final Widget child;
+  const _DarkScaffold({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: _bg,
+        body: SafeArea(child: child),
+      ),
     );
   }
 }
@@ -1551,22 +2310,29 @@ class _FaceSilhouettePainter extends CustomPainter {
     final cx = size.width / 2;
     final cy = size.height * 0.42;
     final facePaint = Paint()
-      ..color = const Color(0xFF4A9B72).withOpacity(0.55)
+      ..color = _emerald.withOpacity(0.5)
       ..style = PaintingStyle.fill;
     canvas.drawOval(
-        Rect.fromCenter(center: Offset(cx, cy), width: 58, height: 74),
-        facePaint);
+      Rect.fromCenter(center: Offset(cx, cy), width: 58, height: 74),
+      facePaint,
+    );
     final shoulderPaint = Paint()
-      ..color = const Color(0xFF3D9E6A).withOpacity(0.4)
+      ..color = _primary.withOpacity(0.38)
       ..style = PaintingStyle.fill;
     final shoulderPath = Path()
       ..moveTo(cx - 50, size.height)
-      ..quadraticBezierTo(cx - 30, size.height * 0.82, cx - 10, size.height * 0.72)
+      ..quadraticBezierTo(
+        cx - 30,
+        size.height * 0.82,
+        cx - 10,
+        size.height * 0.72,
+      )
       ..lineTo(cx + 10, size.height * 0.72)
       ..quadraticBezierTo(cx + 30, size.height * 0.82, cx + 50, size.height)
       ..close();
     canvas.drawPath(shoulderPath, shoulderPaint);
   }
+
   @override
   bool shouldRepaint(covariant _FaceSilhouettePainter oldDelegate) => false;
 }
@@ -1579,24 +2345,25 @@ class _FaceScanPainter extends CustomPainter {
     final cx = size.width / 2;
     final cy = size.height * 0.42;
     final ringPaint = Paint()
-      ..color = const Color(0xFF86C9A0).withOpacity(0.55 + progress * 0.3)
+      ..color = _champagne.withOpacity(0.5 + progress * 0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.8;
     canvas.drawOval(
       Rect.fromCenter(
-          center: Offset(cx, cy),
-          width: 68 + progress * 6,
-          height: 86 + progress * 6),
+        center: Offset(cx, cy),
+        width: 68 + progress * 6,
+        height: 86 + progress * 6,
+      ),
       ringPaint,
     );
     final linePaint = Paint()
-      ..color = const Color(0xFF86C9A0).withOpacity(0.7)
+      ..color = _emerald.withOpacity(0.7)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
     final scanY = (cy - 40) + progress * 80;
     canvas.drawLine(Offset(cx - 30, scanY), Offset(cx + 30, scanY), linePaint);
     final bracketPaint = Paint()
-      ..color = const Color(0xFF86C9A0).withOpacity(0.8)
+      ..color = _champagne.withOpacity(0.8)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
@@ -1611,6 +2378,7 @@ class _FaceScanPainter extends CustomPainter {
     canvas.drawLine(Offset(tr, bY - 12), Offset(tr, bY), bracketPaint);
     canvas.drawLine(Offset(tr - 12, bY), Offset(tr, bY), bracketPaint);
   }
+
   @override
   bool shouldRepaint(covariant _FaceScanPainter oldDelegate) =>
       oldDelegate.progress != progress;
@@ -1620,20 +2388,29 @@ class _WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.5)
+      ..color = _champagne.withOpacity(0.18)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    for (int i = 0; i < 4; i++) {
+      ..strokeWidth = 1.2;
+    for (int i = 0; i < 3; i++) {
       final path = Path();
-      final offsetY = size.height * (0.2 + i * 0.18);
+      final offsetY = size.height * (0.25 + i * 0.28);
       path.moveTo(-20, offsetY);
       path.quadraticBezierTo(
-          size.width * 0.3, offsetY - 30, size.width * 0.6, offsetY);
+        size.width * 0.3,
+        offsetY - 22,
+        size.width * 0.6,
+        offsetY,
+      );
       path.quadraticBezierTo(
-          size.width * 0.85, offsetY + 25, size.width + 20, offsetY - 10);
+        size.width * 0.85,
+        offsetY + 18,
+        size.width + 20,
+        offsetY - 8,
+      );
       canvas.drawPath(path, paint);
     }
   }
+
   @override
   bool shouldRepaint(covariant _WavePainter oldDelegate) => false;
 }

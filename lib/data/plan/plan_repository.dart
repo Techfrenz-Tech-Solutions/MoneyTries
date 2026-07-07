@@ -115,7 +115,9 @@ class PlanRepository {
         return ActivePlan.fromJson(data as Map<String, dynamic>);
       }
 
-      throw Exception(json['message'] ?? 'Plan enrollment failed (${response.statusCode}).');
+      throw Exception(
+        json['message'] ?? 'Plan enrollment failed (${response.statusCode}).',
+      );
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
@@ -154,7 +156,9 @@ class PlanRepository {
         return ActivePlan.fromJson(data as Map<String, dynamic>);
       }
 
-      throw Exception(json['message'] ?? 'Plan enrollment failed (${response.statusCode}).');
+      throw Exception(
+        json['message'] ?? 'Plan enrollment failed (${response.statusCode}).',
+      );
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
@@ -189,7 +193,10 @@ class PlanRepository {
         return PlanPaymentResponse.fromJson(json);
       }
 
-      throw Exception(json['message'] ?? 'Payment submission failed (${response.statusCode}).');
+      throw Exception(
+        json['message'] ??
+            'Payment submission failed (${response.statusCode}).',
+      );
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
@@ -222,7 +229,9 @@ class PlanRepository {
         return PlanPaymentResponse.fromJson(json);
       }
 
-      throw Exception(json['message'] ?? 'Wallet payment failed (${response.statusCode}).');
+      throw Exception(
+        json['message'] ?? 'Wallet payment failed (${response.statusCode}).',
+      );
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {

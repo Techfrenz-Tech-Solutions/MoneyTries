@@ -40,11 +40,12 @@ dependencies:
   http: ^1.2.1
   local_auth: ^3.0.1
   shared_preferences: ^2.5.5
-  flutter_image_compress: ^2.3.0   # converts HEIC/WEBP/BMP → JPEG before upload
+  flutter_image_compress: ^2.4.0   # converts HEIC/WEBP/BMP → JPEG before upload
   path_provider: ^2.1.4            # for getTemporaryDirectory()
   path: ^1.9.0
   url_launcher: ^6.3.1
   share_plus: ^13.2.0
+  device_info_plus: ^13.2.0
 
 dev_dependencies:
   flutter_test:

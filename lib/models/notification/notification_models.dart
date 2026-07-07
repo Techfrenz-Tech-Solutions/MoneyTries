@@ -1,5 +1,7 @@
 // ── Notification Models ───────────────────────────────────────────────────────
 
+import '../../utils/date_time_utils.dart';
+
 enum NotificationType {
   deposit,
   withdrawal,
@@ -92,9 +94,7 @@ class NotificationItem {
           : json['isRead'] != null
               ? _asBool(json['isRead'])
               : (json['read_at'] != null),
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
+      createdAt: parseServerDateTime(json['created_at']),
       type: _typeFromString(json['type']?.toString()),
     );
   }

@@ -188,7 +188,7 @@ class HistoryViewModel extends ChangeNotifier {
         date:     w.createdAt,
       );
 
-  // ── ROI (from plan instalments) ───────────────────────────────────────────
+  // ── ROI (from daily ROI credit transactions) ──────────────────────────────
   Future<void> _loadRoi() async {
     try {
       final plans = await _planRepo.fetchMyPlans();
@@ -207,20 +207,27 @@ class HistoryViewModel extends ChangeNotifier {
         // authoritative here too, so the two screens always agree.
         totalRoi += plan.tieredExpectedAccruedRoi;
 
-        // Each approved instalment = an ROI credit event
-        for (final ins in plan.instalments) {
-          if (ins.isPaid && ins.paidAt != null) {
-            roiList.add(HistoryTxn(
-              id:       'roi_${plan.id}_${ins.monthNumber}',
-              type:     TxnType.roi,
-              title:    'ROI Credited',
-              subtitle: '${plan.planType.months}M Plan • Month ${ins.monthNumber}',
-              amount:   plan.monthlyAmount * plan.dailyRoiRate * 30,
-              isCredit: true,
-              status:   'approved',
-              date:     ins.paidAt,
-            ));
-          }
+        // Each credited calendar day = its own "Daily ROI Credit"
+        // transaction. Sourced from the server's roi_daily_credits table,
+        // which guarantees exactly one row per (plan, date) — so even if
+        // the user was offline for several days, every missed day still
+        // shows up here as its own separate, non-duplicated entry.
+        for (final credit in plan.dailyRoiCredits) {
+          roiList.add(HistoryTxn(
+            id:       'roi_daily_${credit.id}',
+            type:     TxnType.roi,
+            title:    'Daily ROI Credit',
+            subtitle: credit.creditDate != null
+                ? '${plan.planType.months}M Plan • '
+                    '${credit.creditDate!.day.toString().padLeft(2, '0')}/'
+                    '${credit.creditDate!.month.toString().padLeft(2, '0')}/'
+                    '${credit.creditDate!.year}'
+                : '${plan.planType.months}M Plan',
+            amount:   credit.amount,
+            isCredit: true,
+            status:   'approved',
+            date:     credit.creditedAt ?? credit.creditDate,
+          ));
         }
 
         // Each "withdraw ROI to wallet" action is its own, separate debit

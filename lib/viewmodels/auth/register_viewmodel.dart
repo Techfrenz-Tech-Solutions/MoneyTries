@@ -143,6 +143,17 @@ class RegisterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets the email verification state based on the actual OTP screen
+  /// result (`true` only when the backend confirmed the OTP). Called
+  /// whenever the OTP screen is closed for any reason — success, back
+  /// button, dismissed, or expired — so a temporary/previous verified
+  /// flag can never leak through when the user didn't actually verify.
+  void setEmailVerified(bool verified) {
+    emailVerified = verified;
+    emailVerifyError = verified ? null : emailVerifyError;
+    notifyListeners();
+  }
+
   String? requestPhoneVerify(String rawPhone) {
     phone = rawPhone.trim();
 
@@ -162,6 +173,17 @@ class RegisterViewModel extends ChangeNotifier {
   void markPhoneVerified() {
     phoneVerified = true;
     phoneVerifyError = null;
+    notifyListeners();
+  }
+
+  /// Sets the phone verification state based on the actual OTP screen
+  /// result (`true` only when the backend confirmed the OTP). Called
+  /// whenever the OTP screen is closed for any reason — success, back
+  /// button, dismissed, or expired — so a temporary/previous verified
+  /// flag can never leak through when the user didn't actually verify.
+  void setPhoneVerified(bool verified) {
+    phoneVerified = verified;
+    phoneVerifyError = verified ? null : phoneVerifyError;
     notifyListeners();
   }
 

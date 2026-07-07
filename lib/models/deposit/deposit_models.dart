@@ -1,5 +1,7 @@
 // ── Deposit Models ────────────────────────────────────────────────────────────
 
+import '../../utils/date_time_utils.dart';
+
 /// Returned by POST /api/deposit/submit
 class ManualOrderModel {
   final String orderId;
@@ -68,12 +70,8 @@ class DepositRecord {
       proofImage: json['proof_image']?.toString() ?? '',
       orderStatus: json['order_status']?.toString() ?? 'pending',
       rejectionReason: json['rejection_reason']?.toString(),
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
-      reviewedAt: json['reviewed_at'] != null
-          ? DateTime.tryParse(json['reviewed_at'].toString())
-          : null,
+      createdAt: parseServerDateTime(json['created_at']),
+      reviewedAt: parseServerDateTime(json['reviewed_at']),
     );
   }
 }

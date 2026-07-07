@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/api_service.dart';
@@ -121,7 +122,8 @@ class LoginViewModel extends ChangeNotifier {
           // when two different accounts happen to share the same PIN digits,
           // since the PIN is always checked against this one active session,
           // never matched/searched across accounts.
-          final label = (userFirstName != null && userFirstName.trim().isNotEmpty)
+          final label =
+              (userFirstName != null && userFirstName.trim().isNotEmpty)
               ? userFirstName.trim()
               : (userEmail ?? userPhone ?? '');
           await prefs.setString('logged_in_user_label', label);
@@ -129,11 +131,7 @@ class LoginViewModel extends ChangeNotifier {
           // Register this login as an active device session and record
           // the login event so Security Settings → "Manage Devices" /
           // "Login Activity" reflect real data instead of staying empty.
-          final deviceName = Platform.isAndroid
-              ? 'Android Device'
-              : Platform.isIOS
-                  ? 'iPhone'
-                  : 'Unknown Device';
+          final deviceName = await _getDeviceName();
           unawaited(SecurityRepository().registerCurrentSession(token));
           unawaited(
             SecurityRepository().recordLoginEvent(
@@ -185,6 +183,32 @@ class LoginViewModel extends ChangeNotifier {
       return null;
     }
   }
+
+  /// Returns the real device model name (e.g. "Samsung Galaxy S24",
+  /// "iPhone 15 Pro") using device_info_plus. Falls back gracefully on error.
+  static Future<String> _getDeviceName() async {
+    try {
+      final info = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        final android = await info.androidInfo;
+        final brand = android.brand.trim();
+        final model = android.model.trim();
+        // Avoid duplication when brand is already part of the model string
+        // (e.g. "samsung SM-S926B" → "Samsung SM-S926B")
+        if (model.toLowerCase().startsWith(brand.toLowerCase())) {
+          return _capitalize(model);
+        }
+        return '${_capitalize(brand)} $model';
+      } else if (Platform.isIOS) {
+        final ios = await info.iosInfo;
+        return ios.name.trim().isNotEmpty ? ios.name : ios.utsname.machine;
+      }
+    } catch (_) {}
+    return 'Unknown Device';
+  }
+
+  static String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
   Future<void> sendForgotPasswordOtp(String identifier) async {
     await Future.delayed(const Duration(milliseconds: 800));

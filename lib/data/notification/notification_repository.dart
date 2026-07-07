@@ -80,4 +80,18 @@ class NotificationRepository {
           'Mark all read failed (${response.statusCode}): ${response.body}');
     }
   }
+
+  // ── Delete single notification ───────────────────────────────────────────
+  /// DELETE /api/notifications/:id
+  Future<void> deleteNotification(String notificationId) async {
+    final uri = Uri.parse('$_kBaseUrl/api/notifications/$notificationId');
+    final response = await _client
+        .delete(uri, headers: await _headers())
+        .timeout(const Duration(seconds: 10));
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception(
+          'Delete notification failed (${response.statusCode}): ${response.body}');
+    }
+  }
 }

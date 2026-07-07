@@ -96,13 +96,18 @@ class _RegisterContentState extends State<_RegisterContent> {
       return;
     }
 
-    Navigator.push(
+    final verified = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => EmailOtpScreen(email: rawEmail)),
-    ).then((_) {
-      // EmailOtpScreen pops back after success — mark as verified
-      if (mounted) context.read<RegisterViewModel>().markEmailVerified();
-    });
+    );
+
+    if (!mounted) return;
+
+    // EmailOtpScreen only pops with `true` when the backend actually
+    // confirmed the OTP. Any other outcome — back button, dismissed,
+    // expired, failed verification — must leave/reset the field as
+    // Not Verified so account creation stays blocked.
+    context.read<RegisterViewModel>().setEmailVerified(verified == true);
   }
 
   // ── Phone verify ──────────────────────────────────────────────────────────
@@ -126,13 +131,18 @@ class _RegisterContentState extends State<_RegisterContent> {
       return;
     }
 
-    Navigator.push(
+    final verified = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => OtpScreen(phoneNumber: phoneNo)),
-    ).then((_) {
-      // OtpScreen pops back after success — mark as verified
-      if (mounted) context.read<RegisterViewModel>().markPhoneVerified();
-    });
+    );
+
+    if (!mounted) return;
+
+    // OtpScreen only pops with `true` when the backend actually confirmed
+    // the OTP. Any other outcome — back button, dismissed, expired, failed
+    // verification — must leave/reset the field as Not Verified so account
+    // creation stays blocked.
+    context.read<RegisterViewModel>().setPhoneVerified(verified == true);
   }
 
   // ── Sign up ───────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/security/security_model.dart';
@@ -17,9 +18,9 @@ class SecurityRepository {
   }
 
   Map<String, String> _authHeader(String token) => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+  };
 
   // ── Change PIN (password) ──────────────────────────────────────────────────
   /// Returns null on success, error message on failure.
@@ -240,8 +241,12 @@ class SecurityRepository {
       final token = await _getToken();
       if (token == null) return;
 
-      final deviceName = Platform.isAndroid ? 'Android Device' : Platform.isIOS ? 'iPhone' : 'Unknown Device';
-      final deviceType = Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'other';
+      final deviceName = await _resolveDeviceName();
+      final deviceType = Platform.isAndroid
+          ? 'android'
+          : Platform.isIOS
+          ? 'ios'
+          : 'other';
 
       await http
           .post(
@@ -259,6 +264,31 @@ class SecurityRepository {
       // Fire-and-forget; non-critical
     }
   }
+
+  /// Resolves the real device model name via device_info_plus.
+  static Future<String> _resolveDeviceName() async {
+    try {
+      final info = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        final android = await info.androidInfo;
+        final brand = android.brand.trim();
+        final model = android.model.trim();
+        // Avoid duplication when brand prefix is already in model string
+        // e.g. "samsung SM-S926B" → "Samsung SM-S926B"
+        if (model.toLowerCase().startsWith(brand.toLowerCase())) {
+          return _capitalize(model);
+        }
+        return '${_capitalize(brand)} $model';
+      } else if (Platform.isIOS) {
+        final ios = await info.iosInfo;
+        return ios.name.trim().isNotEmpty ? ios.name : ios.utsname.machine;
+      }
+    } catch (_) {}
+    return 'Unknown Device';
+  }
+
+  static String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
   // ── Login History ──────────────────────────────────────────────────────────
   Future<List<LoginEvent>> getLoginHistory() async {

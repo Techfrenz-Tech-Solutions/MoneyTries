@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/history/history_viewmodel.dart';
+import '../../utils/date_time_utils.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _bgColor        = Color(0xFFECEFF5);
@@ -93,11 +94,11 @@ class _HistoryScreenState extends State<HistoryScreen>
     }
     if (_fromDate != null) {
       final start = DateTime(_fromDate!.year, _fromDate!.month, _fromDate!.day);
-      list = list.where((t) => t.date != null && !t.date!.isBefore(start)).toList();
+      list = list.where((t) => t.date != null && !localDateOnly(t.date!).isBefore(start)).toList();
     }
     if (_toDate != null) {
       final end = DateTime(_toDate!.year, _toDate!.month, _toDate!.day, 23, 59, 59);
-      list = list.where((t) => t.date != null && !t.date!.isAfter(end)).toList();
+      list = list.where((t) => t.date != null && !toDeviceLocal(t.date!).isAfter(end)).toList();
     }
 
     list = List.of(list);
@@ -315,10 +316,10 @@ class _HistoryScreenState extends State<HistoryScreen>
     if (dt == null) return 'EARLIER';
     final now   = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final d     = DateTime(dt.year, dt.month, dt.day);
+    final d     = localDateOnly(dt);
     if (d == today)                              return 'TODAY';
     if (d == today.subtract(const Duration(days: 1))) return 'YESTERDAY';
-    return DateFormat('d MMM yyyy').format(dt).toUpperCase();
+    return DateFormat('d MMM yyyy').format(toDeviceLocal(dt)).toUpperCase();
   }
 
   // ── Section error state — the fetch itself failed (expired session, no
@@ -443,7 +444,7 @@ class _HistoryScreenState extends State<HistoryScreen>
     // relying on the section header alone loses the date entirely whenever
     // the list isn't grouped by date (e.g. sorted by amount instead).
     final dateTimeStr = t.date != null
-        ? DateFormat('d MMM yyyy, hh:mm a').format(t.date!)
+        ? DateFormat('d MMM yyyy, hh:mm a').format(toDeviceLocal(t.date!))
         : '';
     final amtColor   = t.isCredit ? _successGreen : _withdrawRed;
 

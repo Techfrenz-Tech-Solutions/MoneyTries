@@ -1,6 +1,5 @@
 // lib/views/profile/security_settings_view.dart
 
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,18 +8,18 @@ import '../../models/security/security_model.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
-const _bgColor      = Color(0xFFECEFF5);
-const _white        = Color(0xFFFFFFFF);
-const _titleDark    = Color(0xFF111827);
+const _bgColor = Color(0xFFECEFF5);
+const _white = Color(0xFFFFFFFF);
+const _titleDark = Color(0xFF111827);
 const _subtitleGrey = Color(0xFF6B7280);
-const _labelGrey    = Color(0xFF9CA3AF);
-const _brandGreen   = Color(0xFF166534);
-const _accentGreen  = Color(0xFF3D9E6A);
-const _iconBg       = Color(0xFFD0EDDC);
-const _errorRed     = Color(0xFFEF4444);
-const _dotEmpty     = Color(0xFFD1D5DB);
-const _dotFilled    = Color(0xFF166534);
-const _keyBg        = Color(0xFFFFFFFF);
+const _labelGrey = Color(0xFF9CA3AF);
+const _brandGreen = Color(0xFF166534);
+const _accentGreen = Color(0xFF3D9E6A);
+const _iconBg = Color(0xFFD0EDDC);
+const _errorRed = Color(0xFFEF4444);
+const _dotEmpty = Color(0xFFD1D5DB);
+const _dotFilled = Color(0xFF166534);
+const _keyBg = Color(0xFFFFFFFF);
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 class SecuritySettingsView extends StatelessWidget {
@@ -43,13 +42,19 @@ class _SecuritySettingsBody extends StatelessWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(msg,
-              style: GoogleFonts.poppins(
-                  fontSize: 13.5, fontWeight: FontWeight.w500, color: _white)),
+          content: Text(
+            msg,
+            style: GoogleFonts.poppins(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w500,
+              color: _white,
+            ),
+          ),
           backgroundColor: isError ? _errorRed : _accentGreen,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
           duration: const Duration(seconds: 3),
         ),
@@ -71,7 +76,9 @@ class _SecuritySettingsBody extends StatelessWidget {
 
     return Theme(
       data: ThemeData(
-          brightness: Brightness.light, scaffoldBackgroundColor: _bgColor),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: _bgColor,
+      ),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
@@ -80,16 +87,20 @@ class _SecuritySettingsBody extends StatelessWidget {
             backgroundColor: _bgColor,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: _titleDark, size: 20),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: _titleDark,
+                size: 20,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
               'Security Settings',
               style: GoogleFonts.poppins(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: _titleDark),
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: _titleDark,
+              ),
             ),
             centerTitle: true,
           ),
@@ -141,14 +152,6 @@ class _SecuritySettingsBody extends StatelessWidget {
                   subtitle: 'View and revoke active login sessions',
                   onTap: () => _openManageDevicesSheet(context),
                 ),
-                const SizedBox(height: 12),
-                _actionTile(
-                  context: context,
-                  icon: Icons.history_rounded,
-                  title: 'Login Activity',
-                  subtitle: 'See recent sign-in history',
-                  onTap: () => _openLoginActivitySheet(context),
-                ),
                 const SizedBox(height: 32),
               ],
             ),
@@ -163,7 +166,10 @@ class _SecuritySettingsBody extends StatelessWidget {
     return Text(
       text,
       style: GoogleFonts.poppins(
-          fontSize: 14, fontWeight: FontWeight.w600, color: _subtitleGrey),
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: _subtitleGrey,
+      ),
     );
   }
 
@@ -184,9 +190,10 @@ class _SecuritySettingsBody extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 3)),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: Row(
@@ -195,7 +202,9 @@ class _SecuritySettingsBody extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                  color: _iconBg, borderRadius: BorderRadius.circular(12)),
+                color: _iconBg,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(icon, color: _accentGreen, size: 22),
             ),
             const SizedBox(width: 14),
@@ -203,22 +212,31 @@ class _SecuritySettingsBody extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: _titleDark)),
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: _titleDark,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: GoogleFonts.poppins(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w400,
-                          color: _subtitleGrey)),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w400,
+                      color: _subtitleGrey,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                color: _subtitleGrey, size: 22),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: _subtitleGrey,
+              size: 22,
+            ),
           ],
         ),
       ),
@@ -234,39 +252,50 @@ class _SecuritySettingsBody extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 44, height: 44,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-                color: _iconBg, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.fingerprint_rounded,
-                color: _accentGreen, size: 22),
+              color: _iconBg,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.fingerprint_rounded,
+              color: _accentGreen,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Biometric Login',
-                    style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: _titleDark)),
+                Text(
+                  'Biometric Login',
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: _titleDark,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   vm.biometricsAvailable
                       ? 'Use fingerprint or Face ID to sign in'
                       : 'Not available on this device',
                   style: GoogleFonts.poppins(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w400,
-                      color: _subtitleGrey),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w400,
+                    color: _subtitleGrey,
+                  ),
                 ),
               ],
             ),
@@ -294,36 +323,49 @@ class _SecuritySettingsBody extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 44, height: 44,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-                color: _iconBg, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.verified_user_outlined,
-                color: _accentGreen, size: 22),
+              color: _iconBg,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.verified_user_outlined,
+              color: _accentGreen,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('2FA via SMS',
-                    style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: _titleDark)),
+                Text(
+                  '2FA via SMS',
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: _titleDark,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text('Receive OTP on your registered mobile',
-                    style: GoogleFonts.poppins(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w400,
-                        color: _subtitleGrey)),
+                Text(
+                  'Receive OTP on your registered mobile',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w400,
+                    color: _subtitleGrey,
+                  ),
+                ),
               ],
             ),
           ),
@@ -382,10 +424,8 @@ class _SecuritySettingsBody extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: vm,
-        child: const _TwoFaSheet(),
-      ),
+      builder: (_) =>
+          ChangeNotifierProvider.value(value: vm, child: const _TwoFaSheet()),
     );
   }
 
@@ -396,29 +436,45 @@ class _SecuritySettingsBody extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Disable 2FA',
-            style: GoogleFonts.poppins(
-                fontSize: 17, fontWeight: FontWeight.w700, color: _titleDark)),
+        title: Text(
+          'Disable 2FA',
+          style: GoogleFonts.poppins(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: _titleDark,
+          ),
+        ),
         content: Text(
           'Disabling two-factor authentication will make your account less secure. Are you sure?',
           style: GoogleFonts.poppins(
-              fontSize: 14, fontWeight: FontWeight.w400, color: _subtitleGrey),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: _subtitleGrey,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600, color: _subtitleGrey)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                color: _subtitleGrey,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               vm.disable2fa();
             },
-            child: Text('Disable',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700, color: _errorRed)),
+            child: Text(
+              'Disable',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                color: _errorRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -435,20 +491,6 @@ class _SecuritySettingsBody extends StatelessWidget {
       builder: (_) => ChangeNotifierProvider.value(
         value: vm,
         child: const _ManageDevicesSheet(),
-      ),
-    );
-  }
-
-  // ── Login Activity sheet ──────────────────────────────────────────────────
-  void _openLoginActivitySheet(BuildContext context) {
-    final vm = context.read<SecurityViewModel>()..loadLoginHistory();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: vm,
-        child: const _LoginActivitySheet(),
       ),
     );
   }
@@ -497,7 +539,8 @@ class _ChangePinSheet extends StatelessWidget {
           const SizedBox(height: 20),
           // Lock icon
           Container(
-            width: 64, height: 64,
+            width: 64,
+            height: 64,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: _iconBg,
@@ -506,8 +549,8 @@ class _ChangePinSheet extends StatelessWidget {
               vm.changePinStep == 0
                   ? Icons.lock_open_rounded
                   : vm.changePinStep == 1
-                      ? Icons.lock_outline_rounded
-                      : Icons.lock_rounded,
+                  ? Icons.lock_outline_rounded
+                  : Icons.lock_rounded,
               size: 30,
               color: _brandGreen,
             ),
@@ -516,7 +559,10 @@ class _ChangePinSheet extends StatelessWidget {
           Text(
             vm.changePinTitle,
             style: GoogleFonts.poppins(
-                fontSize: 20, fontWeight: FontWeight.w800, color: _titleDark),
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: _titleDark,
+            ),
           ),
           const SizedBox(height: 8),
           Padding(
@@ -525,25 +571,28 @@ class _ChangePinSheet extends StatelessWidget {
               vm.changePinSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w400,
-                  color: _subtitleGrey,
-                  height: 1.5),
+                fontSize: 13.5,
+                fontWeight: FontWeight.w400,
+                color: _subtitleGrey,
+                height: 1.5,
+              ),
             ),
           ),
           const SizedBox(height: 28),
           // PIN dots
           _PinDots(
-              length: SecurityViewModel.pinLength,
-              filled: vm.activePinEntry.length),
+            length: SecurityViewModel.pinLength,
+            filled: vm.activePinEntry.length,
+          ),
           if (vm.pinError != null) ...[
             const SizedBox(height: 10),
             Text(
               vm.pinError!,
               style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: _errorRed),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: _errorRed,
+              ),
             ),
           ],
           const Spacer(),
@@ -607,7 +656,8 @@ class _WithdrawalPinSheet extends StatelessWidget {
           const SizedBox(height: 20),
           // Lock icon
           Container(
-            width: 64, height: 64,
+            width: 64,
+            height: 64,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: _iconBg,
@@ -622,7 +672,10 @@ class _WithdrawalPinSheet extends StatelessWidget {
           Text(
             vm.withdrawalPinTitle,
             style: GoogleFonts.poppins(
-                fontSize: 20, fontWeight: FontWeight.w800, color: _titleDark),
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: _titleDark,
+            ),
           ),
           const SizedBox(height: 8),
           Padding(
@@ -631,25 +684,28 @@ class _WithdrawalPinSheet extends StatelessWidget {
               vm.withdrawalPinSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w400,
-                  color: _subtitleGrey,
-                  height: 1.5),
+                fontSize: 13.5,
+                fontWeight: FontWeight.w400,
+                color: _subtitleGrey,
+                height: 1.5,
+              ),
             ),
           ),
           const SizedBox(height: 28),
           // PIN dots
           _PinDots(
-              length: SecurityViewModel.pinLength,
-              filled: vm.activeWithdrawalPinEntry.length),
+            length: SecurityViewModel.pinLength,
+            filled: vm.activeWithdrawalPinEntry.length,
+          ),
           if (vm.withdrawalPinError != null) ...[
             const SizedBox(height: 10),
             Text(
               vm.withdrawalPinError!,
               style: GoogleFonts.poppins(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: _errorRed),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: _errorRed,
+              ),
             ),
           ],
           const Spacer(),
@@ -660,10 +716,9 @@ class _WithdrawalPinSheet extends StatelessWidget {
             onConfirm: vm.action == SecurityAction.loading
                 ? null
                 : () => vm.withdrawalPinConfirm(),
-            confirmLabel:
-                vm.withdrawalPinStep == vm.withdrawalPinTotalSteps - 1
-                    ? 'Confirm'
-                    : 'Next',
+            confirmLabel: vm.withdrawalPinStep == vm.withdrawalPinTotalSteps - 1
+                ? 'Confirm'
+                : 'Next',
             isLoading: vm.action == SecurityAction.loading,
           ),
           const SizedBox(height: 20),
@@ -683,8 +738,10 @@ class _TwoFaSheet extends StatefulWidget {
 }
 
 class _TwoFaSheetState extends State<_TwoFaSheet> {
-  final List<TextEditingController> _ctrls =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _ctrls = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _foci = List.generate(6, (_) => FocusNode());
 
   @override
@@ -712,15 +769,22 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
           _SheetHandle(),
           const SizedBox(height: 20),
           Container(
-            width: 60, height: 60,
-            decoration: const BoxDecoration(shape: BoxShape.circle, color: _iconBg),
+            width: 60,
+            height: 60,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: _iconBg,
+            ),
             child: const Icon(Icons.sms_outlined, size: 28, color: _brandGreen),
           ),
           const SizedBox(height: 16),
           Text(
             'Verify your number',
             style: GoogleFonts.poppins(
-                fontSize: 20, fontWeight: FontWeight.w800, color: _titleDark),
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: _titleDark,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -729,10 +793,11 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 : 'We\'ll send an OTP to your registered\nmobile number to enable 2FA.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w400,
-                color: _subtitleGrey,
-                height: 1.5),
+              fontSize: 13.5,
+              fontWeight: FontWeight.w400,
+              color: _subtitleGrey,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 28),
 
@@ -751,18 +816,26 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                     foregroundColor: _white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                   child: vm.action == SecurityAction.loading
                       ? const SizedBox(
-                          width: 22, height: 22,
+                          width: 22,
+                          height: 22,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: _white))
-                      : Text('Send OTP',
+                            strokeWidth: 2,
+                            color: _white,
+                          ),
+                        )
+                      : Text(
+                          'Send OTP',
                           style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: _white)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: _white,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -784,9 +857,10 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                       maxLength: 1,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: _titleDark),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: _titleDark,
+                      ),
                       decoration: InputDecoration(
                         counterText: '',
                         filled: true,
@@ -794,12 +868,16 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
-                              color: Color(0xFFD1D5DB), width: 1.5),
+                            color: Color(0xFFD1D5DB),
+                            width: 1.5,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
-                              color: _accentGreen, width: 2),
+                            color: _accentGreen,
+                            width: 2,
+                          ),
                         ),
                       ),
                       onChanged: (v) {
@@ -823,24 +901,28 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 Text(
                   "Didn't receive OTP? ",
                   style: GoogleFonts.poppins(
-                      fontSize: 13, color: _subtitleGrey),
+                    fontSize: 13,
+                    color: _subtitleGrey,
+                  ),
                 ),
                 vm.otpCountdown > 0
                     ? Text(
                         'Resend in ${vm.otpCountdown}s',
                         style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: _accentGreen),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _accentGreen,
+                        ),
                       )
                     : GestureDetector(
                         onTap: () => vm.send2faOtp(),
                         child: Text(
                           'Resend OTP',
                           style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: _brandGreen),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: _brandGreen,
+                          ),
                         ),
                       ),
               ],
@@ -852,8 +934,8 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: (_otp.length < 6 ||
-                          vm.action == SecurityAction.loading)
+                  onPressed:
+                      (_otp.length < 6 || vm.action == SecurityAction.loading)
                       ? null
                       : () => _handleVerify(vm),
                   style: ElevatedButton.styleFrom(
@@ -862,18 +944,26 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                     foregroundColor: _white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                   child: vm.action == SecurityAction.loading
                       ? const SizedBox(
-                          width: 22, height: 22,
+                          width: 22,
+                          height: 22,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: _white))
-                      : Text('Verify & Enable',
+                            strokeWidth: 2,
+                            color: _white,
+                          ),
+                        )
+                      : Text(
+                          'Verify & Enable',
                           style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: _white)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: _white,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -910,11 +1000,14 @@ class _ManageDevicesSheet extends StatelessWidget {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Active Sessions',
-                style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: _titleDark)),
+            child: Text(
+              'Active Sessions',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: _titleDark,
+              ),
+            ),
           ),
           const SizedBox(height: 4),
           Padding(
@@ -923,148 +1016,156 @@ class _ManageDevicesSheet extends StatelessWidget {
               vm.isLoadingSessions
                   ? 'Loading sessions...'
                   : '${vm.sessions.length} device${vm.sessions.length == 1 ? '' : 's'} currently signed in',
-              style: GoogleFonts.poppins(
-                  fontSize: 13.5, color: _subtitleGrey),
+              style: GoogleFonts.poppins(fontSize: 13.5, color: _subtitleGrey),
             ),
           ),
           const SizedBox(height: 20),
           Expanded(
             child: vm.isLoadingSessions
                 ? const Center(
-                    child: CircularProgressIndicator(color: _accentGreen))
+                    child: CircularProgressIndicator(color: _accentGreen),
+                  )
                 : vm.sessions.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.devices_other_rounded,
-                                size: 48, color: _labelGrey),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No active sessions found',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: _labelGrey,
-                                  fontWeight: FontWeight.w500),
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.devices_other_rounded,
+                          size: 48,
+                          color: _labelGrey,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No active sessions found',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: _labelGrey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: vm.sessions.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (_, i) {
+                      final s = vm.sessions[i];
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: _white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: s.isCurrent
+                              ? Border.all(color: _accentGreen, width: 1.5)
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: vm.sessions.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (_, i) {
-                          final s = vm.sessions[i];
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: _white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: s.isCurrent
-                                  ? Border.all(
-                                      color: _accentGreen, width: 1.5)
-                                  : null,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2)),
-                              ],
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: s.isCurrent
+                                    ? _iconBg
+                                    : const Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                _deviceIcon(s.deviceType),
+                                color: s.isCurrent ? _accentGreen : _labelGrey,
+                                size: 22,
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 44, height: 44,
-                                  decoration: BoxDecoration(
-                                    color: s.isCurrent
-                                        ? _iconBg
-                                        : const Color(0xFFF3F4F6),
-                                    borderRadius:
-                                        BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(_deviceIcon(s.deviceType),
-                                      color: s.isCurrent
-                                          ? _accentGreen
-                                          : _labelGrey,
-                                      size: 22),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              s.deviceName,
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 14.5,
-                                                  fontWeight:
-                                                      FontWeight.w700,
-                                                  color: _titleDark),
+                                      Flexible(
+                                        child: Text(
+                                          s.deviceName,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14.5,
+                                            fontWeight: FontWeight.w700,
+                                            color: _titleDark,
+                                          ),
+                                        ),
+                                      ),
+                                      if (s.isCurrent) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _iconBg,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
                                             ),
                                           ),
-                                          if (s.isCurrent) ...[
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: _iconBg,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Text('This device',
-                                                  style: GoogleFonts.poppins(
-                                                      fontSize: 10.5,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: _accentGreen)),
+                                          child: Text(
+                                            'This device',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 10.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: _accentGreen,
                                             ),
-                                          ],
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        '${s.location} • ${s.lastActive}',
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 12,
-                                            color: _subtitleGrey),
-                                      ),
+                                          ),
+                                        ),
+                                      ],
                                     ],
                                   ),
-                                ),
-                                if (!s.isCurrent)
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _confirmRevoke(context, vm, s),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            _errorRed.withOpacity(0.08),
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                      ),
-                                      child: Text('Sign out',
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 12.5,
-                                              fontWeight: FontWeight.w700,
-                                              color: _errorRed)),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${s.location} • ${s.lastActive}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      color: _subtitleGrey,
                                     ),
                                   ),
-                              ],
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                            if (!s.isCurrent)
+                              GestureDetector(
+                                onTap: () => _confirmRevoke(context, vm, s),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _errorRed.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    'Sign out',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: _errorRed,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
           ),
           const SizedBox(height: 20),
         ],
@@ -1073,202 +1174,54 @@ class _ManageDevicesSheet extends StatelessWidget {
   }
 
   void _confirmRevoke(
-      BuildContext context, SecurityViewModel vm, DeviceSession session) {
+    BuildContext context,
+    SecurityViewModel vm,
+    DeviceSession session,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Sign out device?',
-            style: GoogleFonts.poppins(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: _titleDark)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Sign out device?',
+          style: GoogleFonts.poppins(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: _titleDark,
+          ),
+        ),
         content: Text(
           'Are you sure you want to sign out "${session.deviceName}"?',
           style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: _subtitleGrey),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: _subtitleGrey,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600, color: _subtitleGrey)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                color: _subtitleGrey,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               vm.revokeSession(session.id);
             },
-            child: Text('Sign Out',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700, color: _errorRed)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-// LOGIN ACTIVITY SHEET
-// ══════════════════════════════════════════════════════════════════════════════
-class _LoginActivitySheet extends StatelessWidget {
-  const _LoginActivitySheet();
-
-  @override
-  Widget build(BuildContext context) {
-    final vm = context.watch<SecurityViewModel>();
-    final events = vm.loginHistory;
-
-    return _SheetWrapper(
-      height: 0.82,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SheetHandle(),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Login Activity',
-                style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: _titleDark)),
-          ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Recent sign-in history for your account',
+              'Sign Out',
               style: GoogleFonts.poppins(
-                  fontSize: 13.5, color: _subtitleGrey),
+                fontWeight: FontWeight.w700,
+                color: _errorRed,
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: vm.isLoadingHistory
-                ? const Center(
-                    child: CircularProgressIndicator(color: _accentGreen))
-                : events.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.history_toggle_off_rounded,
-                                size: 48, color: _labelGrey),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No login history yet',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: _labelGrey,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            const SizedBox(height: 6),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40),
-                              child: Text(
-                                'Your sign-in activity will appear here after your next login.',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12.5,
-                                    color: _labelGrey),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: events.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (_, i) {
-                          final e = events[i];
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: _white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2)),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 42, height: 42,
-                                  decoration: BoxDecoration(
-                                    color: e.success
-                                        ? const Color(0xFFE9F3EE)
-                                        : const Color(0xFFFEE2E2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    e.success
-                                        ? Icons.check_circle_outline_rounded
-                                        : Icons.warning_amber_rounded,
-                                    color:
-                                        e.success ? _accentGreen : _errorRed,
-                                    size: 22,
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        e.deviceName,
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                            color: _titleDark),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        e.location,
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 12.5, color: _subtitleGrey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      e.timestamp.split(',').first,
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: _labelGrey),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      e.success ? 'Success' : 'Failed',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: e.success
-                                              ? _accentGreen
-                                              : _errorRed),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     );
@@ -1290,7 +1243,9 @@ class _SheetWrapper extends StatelessWidget {
       decoration: const BoxDecoration(
         color: _bgColor,
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
       ),
       child: child,
     );
@@ -1369,27 +1324,33 @@ class _NumPad extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
-          ...keys.map((row) => Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: row.map((d) => _KeyBtn(d, onKey)).toList(),
-                ),
-              )),
+          ...keys.map(
+            (row) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: row.map((d) => _KeyBtn(d, onKey)).toList(),
+              ),
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 72, height: 72),
               _KeyBtn(0, onKey),
               SizedBox(
-                width: 72, height: 72,
+                width: 72,
+                height: 72,
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: onDelete,
                     borderRadius: BorderRadius.circular(36),
-                    child: const Icon(Icons.backspace_outlined,
-                        size: 24, color: _titleDark),
+                    child: const Icon(
+                      Icons.backspace_outlined,
+                      size: 24,
+                      color: _titleDark,
+                    ),
                   ),
                 ),
               ),
@@ -1407,18 +1368,26 @@ class _NumPad extends StatelessWidget {
                 foregroundColor: _white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               child: isLoading
                   ? const SizedBox(
-                      width: 22, height: 22,
+                      width: 22,
+                      height: 22,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: _white))
-                  : Text(confirmLabel,
+                        strokeWidth: 2,
+                        color: _white,
+                      ),
+                    )
+                  : Text(
+                      confirmLabel,
                       style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: _white)),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _white,
+                      ),
+                    ),
             ),
           ),
         ],
@@ -1435,7 +1404,8 @@ class _KeyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 72, height: 72,
+      width: 72,
+      height: 72,
       child: Material(
         color: _keyBg,
         shape: const CircleBorder(),
@@ -1448,9 +1418,10 @@ class _KeyBtn extends StatelessWidget {
             child: Text(
               '$digit',
               style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: _titleDark),
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: _titleDark,
+              ),
             ),
           ),
         ),

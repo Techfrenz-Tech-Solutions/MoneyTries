@@ -4,19 +4,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../models/notification/notification_models.dart';
 import '../../viewmodels/notification/notification_viewmodel.dart';
+import '../../utils/date_time_utils.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
-const _bg           = Color(0xFFECEFF5);
-const _white        = Color(0xFFFFFFFF);
-const _titleDark    = Color(0xFF111827);
+const _bg = Color(0xFFECEFF5);
+const _white = Color(0xFFFFFFFF);
+const _titleDark = Color(0xFF111827);
 const _subtitleGrey = Color(0xFF6B7280);
-const _labelGrey    = Color(0xFF9CA3AF);
-const _brandGreen   = Color(0xFF3D9E6A);
-const _accentGreen  = Color(0xFF3D9E6A);
-const _divider      = Color(0xFFE5E7EB);
-const _unreadBg     = Color(0xFFF0FDF4);
-const _unreadDot    = Color(0xFF3D9E6A);
-const _errorRed     = Color(0xFFDC2626);
+const _labelGrey = Color(0xFF9CA3AF);
+const _brandGreen = Color(0xFF3D9E6A);
+const _accentGreen = Color(0xFF3D9E6A);
+const _divider = Color(0xFFE5E7EB);
+const _unreadBg = Color(0xFFF0FDF4);
+const _unreadDot = Color(0xFF3D9E6A);
+const _errorRed = Color(0xFFDC2626);
 
 // ── Entry point (wrapped with Provider) ───────────────────────────────────────
 class NotificationScreen extends StatelessWidget {
@@ -66,7 +67,10 @@ class _NotificationContentState extends State<_NotificationContent> {
     return Consumer<NotificationViewModel>(
       builder: (context, vm, _) {
         return Theme(
-          data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bg),
+          data: ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: _bg,
+          ),
           child: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.dark,
             child: Scaffold(
@@ -107,14 +111,18 @@ class _NotificationContentState extends State<_NotificationContent> {
                 Text(
                   'Notifications',
                   style: GoogleFonts.inter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: _brandGreen),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: _brandGreen,
+                  ),
                 ),
                 if (vm.unreadCount > 0) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: _accentGreen,
                       borderRadius: BorderRadius.circular(20),
@@ -122,9 +130,10 @@ class _NotificationContentState extends State<_NotificationContent> {
                     child: Text(
                       '${vm.unreadCount}',
                       style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: _white),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: _white,
+                      ),
                     ),
                   ),
                 ],
@@ -146,25 +155,32 @@ class _NotificationContentState extends State<_NotificationContent> {
                       duration: const Duration(seconds: 2),
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   );
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: _accentGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                      color: _accentGreen.withOpacity(0.3), width: 1),
+                    color: _accentGreen.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   'Mark all read',
                   style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: _brandGreen),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _brandGreen,
+                  ),
                 ),
               ),
             ),
@@ -177,11 +193,11 @@ class _NotificationContentState extends State<_NotificationContent> {
   Widget _buildBody(NotificationViewModel vm) {
     if (vm.state == NotificationLoadState.loading) {
       return const Center(
-          child: CircularProgressIndicator(color: _accentGreen));
+        child: CircularProgressIndicator(color: _accentGreen),
+      );
     }
 
-    if (vm.state == NotificationLoadState.error &&
-        vm.notifications.isEmpty) {
+    if (vm.state == NotificationLoadState.error && vm.notifications.isEmpty) {
       return _buildErrorState(vm);
     }
 
@@ -198,9 +214,11 @@ class _NotificationContentState extends State<_NotificationContent> {
       child: ListView.builder(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics()),
+          parent: BouncingScrollPhysics(),
+        ),
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        itemCount: _countItems(grouped) +
+        itemCount:
+            _countItems(grouped) +
             (vm.state == NotificationLoadState.loadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           return _buildItem(context, vm, grouped, index);
@@ -209,15 +227,20 @@ class _NotificationContentState extends State<_NotificationContent> {
     );
   }
 
-  Widget _buildItem(BuildContext context, NotificationViewModel vm,
-      List<_NotifGroup> groups, int index) {
+  Widget _buildItem(
+    BuildContext context,
+    NotificationViewModel vm,
+    List<_NotifGroup> groups,
+    int index,
+  ) {
     // Loading more indicator at the end
     final total = _countItems(groups);
     if (index == total) {
       return const Padding(
         padding: EdgeInsets.all(16),
         child: Center(
-            child: CircularProgressIndicator(color: _accentGreen, strokeWidth: 2)),
+          child: CircularProgressIndicator(color: _accentGreen, strokeWidth: 2),
+        ),
       );
     }
 
@@ -231,15 +254,154 @@ class _NotificationContentState extends State<_NotificationContent> {
       cursor++;
       for (final item in group.items) {
         if (cursor == index) {
-          return _NotifTile(
-            item: item,
-            onTap: () => vm.markAsRead(item.id),
-          );
+          return _buildSwipeableTile(context, vm, item);
         }
         cursor++;
       }
     }
     return const SizedBox.shrink();
+  }
+
+  // ── Swipe-to-delete wrapper ───────────────────────────────────────────────
+  Widget _buildSwipeableTile(
+    BuildContext context,
+    NotificationViewModel vm,
+    NotificationItem item,
+  ) {
+    return Dismissible(
+      // Keyed by notification id so Flutter tracks each tile independently —
+      // dismissing one never touches any other tile's state or animation.
+      key: ValueKey('notif_${item.id}'),
+      direction: DismissDirection.horizontal,
+      background: _buildSwipeBackground(alignment: Alignment.centerLeft),
+      secondaryBackground: _buildSwipeBackground(alignment: Alignment.centerRight),
+      confirmDismiss: (_) => _confirmDelete(context),
+      onDismissed: (_) => _handleDelete(context, vm, item),
+      child: _NotifTile(item: item, onTap: () => vm.markAsRead(item.id)),
+    );
+  }
+
+  // Red delete backdrop with a trash icon, revealed as the tile is dragged.
+  Widget _buildSwipeBackground({required Alignment alignment}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      alignment: alignment,
+      decoration: BoxDecoration(
+        color: _errorRed,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Icon(
+        Icons.delete_outline_rounded,
+        color: _white,
+        size: 26,
+      ),
+    );
+  }
+
+  // Material-style confirmation dialog shown once the swipe threshold is
+  // crossed — the tile only actually dismisses if the user taps "Delete".
+  Future<bool> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: _white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Delete notification?',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: _titleDark,
+          ),
+        ),
+        content: Text(
+          'This notification will be permanently removed.',
+          style: GoogleFonts.inter(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w400,
+            color: _subtitleGrey,
+            height: 1.4,
+          ),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: _subtitleGrey,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: _errorRed,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
+  }
+
+  // Removes the notification (optimistically) and shows an "Undo" snackbar.
+  // If the undo window lapses, the viewmodel finalizes the delete against
+  // the backend; if it fails there, the notification is restored and an
+  // error snackbar is shown. Scoped entirely to this one notification's id.
+  void _handleDelete(
+    BuildContext context,
+    NotificationViewModel vm,
+    NotificationItem item,
+  ) {
+    final removed = vm.beginDelete(
+      item.id,
+      onError: (message) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not delete notification: $message',
+              style: GoogleFonts.inter(fontSize: 13),
+            ),
+            backgroundColor: _errorRed,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      },
+    );
+
+    if (!removed || !context.mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'Notification deleted',
+            style: GoogleFonts.inter(fontSize: 13, color: _white),
+          ),
+          backgroundColor: _titleDark,
+          duration: NotificationViewModel.undoWindow,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          action: SnackBarAction(
+            label: 'UNDO',
+            textColor: _accentGreen,
+            onPressed: () => vm.undoDelete(item.id),
+          ),
+        ),
+      );
   }
 
   int _countItems(List<_NotifGroup> groups) {
@@ -257,10 +419,11 @@ class _NotificationContentState extends State<_NotificationContent> {
       child: Text(
         label.toUpperCase(),
         style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: _labelGrey,
-            letterSpacing: 0.9),
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: _labelGrey,
+          letterSpacing: 0.9,
+        ),
       ),
     );
   }
@@ -277,26 +440,34 @@ class _NotificationContentState extends State<_NotificationContent> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                  color: _accentGreen.withOpacity(0.08),
-                  shape: BoxShape.circle),
-              child: const Icon(Icons.notifications_off_outlined,
-                  size: 38, color: _accentGreen),
+                color: _accentGreen.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.notifications_off_outlined,
+                size: 38,
+                color: _accentGreen,
+              ),
             ),
             const SizedBox(height: 18),
-            Text('No notifications yet',
-                style: GoogleFonts.inter(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: _titleDark)),
+            Text(
+              'No notifications yet',
+              style: GoogleFonts.inter(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: _titleDark,
+              ),
+            ),
             const SizedBox(height: 6),
             Text(
               "You're all caught up!\nWe'll notify you about deposits,\nwithdrawals, and more.",
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w400,
-                  color: _subtitleGrey,
-                  height: 1.5),
+                fontSize: 13.5,
+                fontWeight: FontWeight.w400,
+                color: _subtitleGrey,
+                height: 1.5,
+              ),
             ),
           ],
         ),
@@ -316,41 +487,57 @@ class _NotificationContentState extends State<_NotificationContent> {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                  color: _errorRed.withOpacity(0.08), shape: BoxShape.circle),
-              child:
-                  const Icon(Icons.error_outline_rounded, size: 34, color: _errorRed),
+                color: _errorRed.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 34,
+                color: _errorRed,
+              ),
             ),
             const SizedBox(height: 16),
-            Text('Could not load notifications',
-                style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: _titleDark)),
+            Text(
+              'Could not load notifications',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: _titleDark,
+              ),
+            ),
             const SizedBox(height: 6),
             Text(
               vm.errorMessage ?? 'Something went wrong.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: _subtitleGrey,
-                  height: 1.5),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: _subtitleGrey,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: vm.refresh,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: Text('Retry',
-                  style:
-                      GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+              label: Text(
+                'Retry',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _brandGreen,
                 foregroundColor: _white,
                 elevation: 0,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24)),
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
             ),
           ],
@@ -361,6 +548,9 @@ class _NotificationContentState extends State<_NotificationContent> {
 
   // ── Group by date ─────────────────────────────────────────────────────────
   List<_NotifGroup> _groupByDate(List<NotificationItem> items) {
+    // Group by the device's actual local calendar day — not a hard-coded
+    // IST offset — so "Today" / "Yesterday" are correct for every user,
+    // regardless of which timezone their device is set to.
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
@@ -368,8 +558,7 @@ class _NotificationContentState extends State<_NotificationContent> {
     final Map<String, List<NotificationItem>> map = {};
     for (final item in items) {
       final date = item.createdAt != null
-          ? DateTime(item.createdAt!.year, item.createdAt!.month,
-              item.createdAt!.day)
+          ? localDateOnly(item.createdAt!)
           : today;
       String label;
       if (date == today) {
@@ -377,8 +566,7 @@ class _NotificationContentState extends State<_NotificationContent> {
       } else if (date == yesterday) {
         label = 'Yesterday';
       } else {
-        label =
-            '${_monthName(date.month)} ${date.day}, ${date.year}';
+        label = '${_monthName(date.month)} ${date.day}, ${date.year}';
       }
       map.putIfAbsent(label, () => []).add(item);
     }
@@ -389,8 +577,19 @@ class _NotificationContentState extends State<_NotificationContent> {
 
   String _monthName(int m) {
     const names = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return names[m];
   }
@@ -425,9 +624,10 @@ class _NotifTile extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2))
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Row(
@@ -470,7 +670,9 @@ class _NotifTile extends StatelessWidget {
                             height: 8,
                             margin: const EdgeInsets.only(top: 4, left: 8),
                             decoration: const BoxDecoration(
-                                color: _unreadDot, shape: BoxShape.circle),
+                              color: _unreadDot,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                       ],
                     ),
@@ -478,18 +680,20 @@ class _NotifTile extends StatelessWidget {
                     Text(
                       item.message,
                       style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          color: _subtitleGrey,
-                          height: 1.4),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: _subtitleGrey,
+                        height: 1.4,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       _formatTime(item.createdAt),
                       style: GoogleFonts.inter(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w400,
-                          color: _labelGrey),
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w400,
+                        color: _labelGrey,
+                      ),
                     ),
                   ],
                 ),
@@ -551,7 +755,10 @@ class _NotifTile extends StatelessWidget {
 
   String _formatTime(DateTime? dt) {
     if (dt == null) return '';
-    final local = dt.toLocal();
+    // Convert to the device's real local timezone — the server always
+    // sends UTC, so this is the single place that turns it into the time
+    // the user actually sees on their clock.
+    final local = toDeviceLocal(dt);
     final hour24 = local.hour;
     final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
     final period = hour24 < 12 ? 'AM' : 'PM';
@@ -561,8 +768,19 @@ class _NotifTile extends StatelessWidget {
 
   String _tileMonthName(int m) {
     const names = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return names[m];
   }
@@ -579,6 +797,9 @@ class _TypeInfo {
   final IconData icon;
   final Color iconBg;
   final Color iconColor;
-  const _TypeInfo(
-      {required this.icon, required this.iconBg, required this.iconColor});
+  const _TypeInfo({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+  });
 }

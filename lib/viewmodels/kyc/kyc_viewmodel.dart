@@ -46,11 +46,21 @@ class KycViewModel extends ChangeNotifier {
   String _serverKycStatus = 'not_submitted';
   String get serverKycStatus => _serverKycStatus;
 
+  /// Full submission record (documents + bank details) returned by
+  /// GET /api/kyc/status once a submission exists. Null until fetched
+  /// or if the user has never submitted KYC.
+  KycSubmissionDetails? _submissionDetails;
+  KycSubmissionDetails? get submissionDetails => _submissionDetails;
+
   /// True while the initial status check is in flight.
   bool _checkingStatus = true;
   bool get checkingStatus => _checkingStatus;
 
   static const String _baseUrl = 'http://192.168.0.17:3000';
+
+  /// Public accessor so views can build absolute URLs (e.g. for images)
+  /// from the relative paths stored on [KycSubmissionDetails].
+  static String get baseUrl => _baseUrl;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -92,7 +102,7 @@ class KycViewModel extends ChangeNotifier {
       }
     }
 
-    final status = await _fetchServerKycStatus(token);
+    final status = await _fetchAndStoreKycDetails(token);
     if (status != null) {
       _serverKycStatus = status;
       // If pending or approved — skip upload flow, go straight to success screen
@@ -112,6 +122,7 @@ class KycViewModel extends ChangeNotifier {
   /// Resets KYC state to a clean "not submitted" baseline.
   void _resetToNotSubmitted() {
     _serverKycStatus  = 'not_submitted';
+    _submissionDetails = null;
     _alreadySubmitted = false;
     _completed        = false;
     _checkingStatus   = false;
@@ -145,11 +156,12 @@ class KycViewModel extends ChangeNotifier {
     }
   }
 
-  /// Fetches the authoritative KYC status string from the server
-  /// ('not_submitted' | 'pending' | 'approved' | 'rejected'), or null on
-  /// network/parse failure. Does not mutate [checkingStatus] so it's safe
-  /// to call from within other in-flight operations (e.g. after a 409).
-  Future<String?> _fetchServerKycStatus(String token) async {
+  /// Fetches the full KYC status response (status + uploaded document URLs
+  /// + bank details) from GET /api/kyc/status, storing it in
+  /// [_submissionDetails] so the success/status screen can render the
+  /// submitted Aadhaar, PAN, selfie images and bank details once available.
+  /// Returns the status string, or null on network/parse failure.
+  Future<String?> _fetchAndStoreKycDetails(String token) async {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/api/kyc/status'),
@@ -159,12 +171,23 @@ class KycViewModel extends ChangeNotifier {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final data = body['data'] as Map<String, dynamic>?;
-        return (data?['status'] as String?) ?? 'not_submitted';
+        final status = (data?['status'] as String?) ?? 'not_submitted';
+
+        // Only build submission details when a real submission exists
+        // (the "no submission" response only contains {status: 'not_submitted'}).
+        if (data != null && status != 'not_submitted') {
+          _submissionDetails = KycSubmissionDetails.fromJson(
+            data,
+            baseUrl: _baseUrl,
+          );
+        } else {
+          _submissionDetails = null;
+        }
+        return status;
       }
 
-      // 401/403 means the token is invalid or belongs to another user —
-      // treat as not_submitted so the screen doesn't stay stuck.
       if (response.statusCode == 401 || response.statusCode == 403) {
+        _submissionDetails = null;
         return 'not_submitted';
       }
     } catch (_) {
@@ -257,14 +280,23 @@ class KycViewModel extends ChangeNotifier {
     if (path != null) { _form.panFrontPath = path; _errorMessage = null; notifyListeners(); }
   }
 
-  Future<void> captureSelfie() async {
-    final path = await _pickAndConvertImage(source: ImageSource.camera);
-    if (path != null) { _form.selfiePath = path; _errorMessage = null; notifyListeners(); }
+  /// Opens the device camera to capture a live selfie and returns the local
+  /// file path of the captured photo (or `null` if the user cancelled).
+  /// This does NOT commit the photo as the KYC selfie — the UI must show a
+  /// Retake / Use Photo preview and call [confirmSelfie] only once the user
+  /// accepts the shot. Gallery/image-picker selection is intentionally not
+  /// available for this step — only a live camera capture is accepted.
+  Future<String?> captureSelfiePhoto() async {
+    return _pickAndConvertImage(source: ImageSource.camera);
   }
 
-  Future<void> pickSelfieFromGallery() async {
-    final path = await _pickAndConvertImage(source: ImageSource.gallery);
-    if (path != null) { _form.selfiePath = path; _errorMessage = null; notifyListeners(); }
+  /// Commits a photo previously captured via [captureSelfiePhoto] (and
+  /// accepted by the user in the Retake / Use Photo preview) as the final
+  /// selfie to submit with the KYC application.
+  void confirmSelfie(String path) {
+    _form.selfiePath = path;
+    _errorMessage = null;
+    notifyListeners();
   }
 
   /// Picks an image from gallery or camera, then converts it to JPEG if the
@@ -435,11 +467,15 @@ class KycViewModel extends ChangeNotifier {
         _serverKycStatus = 'pending';
         _alreadySubmitted = true;
         _completed = true;
+        // Best-effort: pull the freshly stored submission (with document
+        // URLs) so the success screen can render it immediately. Failure
+        // here is non-fatal — the screen still works without it.
+        await _fetchAndStoreKycDetails(token);
       } else if (streamed.statusCode == 409) {
         // Conflict — don't blindly assume success. Re-check the authoritative
         // status from the server so the UI always reflects what's actually
         // stored, instead of masking a real failure as "submitted".
-        final realStatus = await _fetchServerKycStatus(token);
+        final realStatus = await _fetchAndStoreKycDetails(token);
 
         if (realStatus == 'pending' || realStatus == 'approved') {
           _status = KycStatus.success;
