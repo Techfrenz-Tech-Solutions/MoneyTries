@@ -55,34 +55,6 @@ class PlanRepository {
     }
   }
 
-  // ── Fetch wallet balance ──────────────────────────────────────────────────
-  Future<double> fetchWalletBalance() async {
-    try {
-      final uri = Uri.parse('$_kBaseUrl/api/withdrawal/balances');
-      final token = await _getToken();
-      final response = await _client
-          .get(uri, headers: {'Authorization': 'Bearer $token'})
-          .timeout(const Duration(seconds: 10));
-
-      Map<String, dynamic> json = {};
-      try {
-        json = jsonDecode(response.body) as Map<String, dynamic>;
-      } catch (_) {}
-
-      if (response.statusCode == 200) {
-        final data = json['data'] ?? json;
-        return double.tryParse(
-              (data as Map<String, dynamic>)['wallet_balance']?.toString() ??
-                  '0',
-            ) ??
-            0.0;
-      }
-      return 0.0;
-    } catch (_) {
-      return 0.0;
-    }
-  }
-
   // ── Enroll (first month payment + plan creation) via UPI ──────────────────
   Future<ActivePlan> enrollPlan({
     required PlanType planType,
@@ -115,50 +87,7 @@ class PlanRepository {
         return ActivePlan.fromJson(data as Map<String, dynamic>);
       }
 
-      throw Exception(
-        json['message'] ?? 'Plan enrollment failed (${response.statusCode}).',
-      );
-    } on SocketException {
-      throw Exception('No internet connection. Please try again.');
-    } on Exception {
-      rethrow;
-    } catch (e) {
-      throw Exception('Plan enrollment failed. Please try again.');
-    }
-  }
-
-  // ── Enroll via Wallet (instant — no admin approval needed) ────────────────
-  Future<ActivePlan> enrollPlanWithWallet({
-    required PlanType planType,
-    required int monthlyAmount,
-  }) async {
-    try {
-      final uri = Uri.parse('$_kBaseUrl/api/plans/enroll-wallet');
-      final response = await _client
-          .post(
-            uri,
-            headers: await _headers(),
-            body: jsonEncode({
-              'plan_type': planType.months,
-              'monthly_amount': monthlyAmount,
-              'payment_method': 'wallet',
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      Map<String, dynamic> json = {};
-      try {
-        json = jsonDecode(response.body) as Map<String, dynamic>;
-      } catch (_) {}
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = json['data'] ?? json;
-        return ActivePlan.fromJson(data as Map<String, dynamic>);
-      }
-
-      throw Exception(
-        json['message'] ?? 'Plan enrollment failed (${response.statusCode}).',
-      );
+      throw Exception(json['message'] ?? 'Plan enrollment failed (${response.statusCode}).');
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
@@ -193,51 +122,13 @@ class PlanRepository {
         return PlanPaymentResponse.fromJson(json);
       }
 
-      throw Exception(
-        json['message'] ??
-            'Payment submission failed (${response.statusCode}).',
-      );
+      throw Exception(json['message'] ?? 'Payment submission failed (${response.statusCode}).');
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
       rethrow;
     } catch (e) {
       throw Exception('Payment submission failed. Please try again.');
-    }
-  }
-
-  // ── Pay monthly instalment via Wallet (instant) ───────────────────────────
-  Future<PlanPaymentResponse> payMonthlyInstalmentWithWallet({
-    required String planId,
-  }) async {
-    try {
-      final uri = Uri.parse('$_kBaseUrl/api/plans/$planId/pay-wallet');
-      final response = await _client
-          .post(
-            uri,
-            headers: await _headers(),
-            body: jsonEncode({'payment_method': 'wallet'}),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      Map<String, dynamic> json = {};
-      try {
-        json = jsonDecode(response.body) as Map<String, dynamic>;
-      } catch (_) {}
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return PlanPaymentResponse.fromJson(json);
-      }
-
-      throw Exception(
-        json['message'] ?? 'Wallet payment failed (${response.statusCode}).',
-      );
-    } on SocketException {
-      throw Exception('No internet connection. Please try again.');
-    } on Exception {
-      rethrow;
-    } catch (e) {
-      throw Exception('Wallet payment failed. Please try again.');
     }
   }
 

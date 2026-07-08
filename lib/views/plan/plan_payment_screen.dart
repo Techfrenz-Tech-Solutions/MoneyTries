@@ -33,7 +33,9 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
   bool _uploading = false;
   bool _initialized = false;
 
-  // 'upi' phase is the inline UPI form; wallet goes directly
+  // 'upi' phase is the inline UPI form. UPI / bank transfer (with admin
+  // approval) is the only supported payment method for investment plan
+  // instalments — wallet-based plan payments have been removed.
   bool _upiPhase = false;
 
   late ActivePlan _plan;
@@ -58,10 +60,6 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
             status: PlanStatus.active,
           );
       _initialized = true;
-      // Load wallet balance
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<PlanViewModel>().loadWalletBalance();
-      });
     }
   }
 
@@ -130,30 +128,6 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
     }
   }
 
-  // ── Submit via Wallet ──────────────────────────────────────────────────────
-  Future<void> _submitWallet() async {
-    setState(() => _uploading = true);
-    final vm = context.read<PlanViewModel>();
-    await vm.payMonthlyInstalmentWithWallet(planId: _plan.id);
-    if (!mounted) return;
-    setState(() => _uploading = false);
-    if (vm.payState == PlanVmState.success) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Month ${_plan.monthsPaid + 1} payment successful!',
-            style: GoogleFonts.poppins(fontSize: 13),
-          ),
-          backgroundColor: const Color(0xFF3D9E6A),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } else {
-      _toast(vm.payError ?? 'Payment failed. Please try again.');
-    }
-  }
-
   void _toast(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -169,200 +143,11 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
     );
   }
 
-  // ── Payment Method Sheet ───────────────────────────────────────────────────
-  void _showPaymentMethodSheet() {
-    final vm = context.read<PlanViewModel>();
-    final walletBal = vm.walletBalance;
-    final hasEnoughWallet = walletBal >= _plan.monthlyAmount;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final bp = MediaQuery.of(ctx).padding.bottom;
-        return Container(
-          decoration: const BoxDecoration(
-            color: _white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: EdgeInsets.fromLTRB(24, 20, 24, 16 + bp),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Choose Payment Method',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: _dark,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'How would you like to pay ₹${_inr(_plan.monthlyAmount)}?',
-                style: GoogleFonts.poppins(fontSize: 13, color: _grey),
-              ),
-              const SizedBox(height: 20),
-
-              // UPI Option
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  setState(() => _upiPhase = true);
-                },
-                child: _methodTile(
-                  icon: Icons.qr_code_rounded,
-                  title: 'UPI / Bank Transfer',
-                  subtitle: 'Pay via UPI or bank — requires admin approval',
-                  color: const Color(0xFF3D9E6A),
-                  enabled: true,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Wallet Option
-              GestureDetector(
-                onTap: hasEnoughWallet
-                    ? () {
-                        Navigator.pop(ctx);
-                        _submitWallet();
-                      }
-                    : null,
-                child: _methodTile(
-                  icon: Icons.account_balance_wallet_rounded,
-                  title: 'Wallet Balance',
-                  subtitle: hasEnoughWallet
-                      ? 'Available: ₹${_inr(walletBal.toInt())} — Instant, no approval needed'
-                      : 'Insufficient balance (₹${_inr(walletBal.toInt())} available)',
-                  color: hasEnoughWallet
-                      ? const Color(0xFF3D9E6A)
-                      : const Color(0xFF9CA3AF),
-                  enabled: hasEnoughWallet,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _methodTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required bool enabled,
-  }) {
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.5,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: enabled
-                ? color.withValues(alpha: 0.35)
-                : const Color(0xFFE5E7EB),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: enabled ? _dark : _grey,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: enabled ? color : _greyLight,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: enabled ? color : _greyLight,
-              size: 22,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final topPad = MediaQuery.of(context).padding.top;
     final botPad = MediaQuery.of(context).padding.bottom;
     final nextMonth = _plan.monthsPaid + 1;
-
-    // If uploading wallet payment show full-screen loader
-    if (_uploading && !_upiPhase) {
-      return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          backgroundColor: _bg,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(
-                  color: Color(0xFF3D9E6A),
-                  strokeWidth: 3,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Processing wallet payment…',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: _grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
@@ -519,90 +304,6 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Wallet balance info card
-                Consumer<PlanViewModel>(
-                  builder: (_, vm, __) {
-                    if (vm.walletBalanceState == PlanVmState.loading) {
-                      return const SizedBox.shrink();
-                    }
-                    final walletBal = vm.walletBalance;
-                    final hasEnough = walletBal >= _plan.monthlyAmount;
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: hasEnough
-                            ? const Color(0xFFF0FDF4)
-                            : const Color(0xFFFFF7ED),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: hasEnough
-                              ? const Color(0xFF86EFAC)
-                              : const Color(0xFFFED7AA),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.account_balance_wallet_rounded,
-                            size: 20,
-                            color: hasEnough
-                                ? const Color(0xFF3D9E6A)
-                                : const Color(0xFF92400E),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Wallet Balance',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    color: hasEnough
-                                        ? const Color(0xFF3D9E6A)
-                                        : const Color(0xFF92400E),
-                                  ),
-                                ),
-                                Text(
-                                  '₹${_inr(walletBal.toInt())}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: hasEnough
-                                        ? const Color(0xFF3D9E6A)
-                                        : const Color(0xFF92400E),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (hasEnough)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF3D9E6A),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Sufficient',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: _white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
                 const SizedBox(height: 32),
               ],
             ),
@@ -612,7 +313,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
           color: _bg,
           padding: EdgeInsets.fromLTRB(20, 12, 20, botPad > 0 ? botPad : 20),
           child: GestureDetector(
-            onTap: _showPaymentMethodSheet,
+            onTap: () => setState(() => _upiPhase = true),
             child: Container(
               width: double.infinity,
               height: 56,

@@ -49,18 +49,31 @@ class _SplashScreenState extends State<SplashScreen>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
-    )..forward();
+    );
 
-    // Resolve where to navigate in the background.
-    _resolveNextRoute().then((route) {
-      _resolvedRoute = route;
-      _maybeNavigate();
-    });
+    // Wait until the first frame is fully painted before starting the
+    // animation and the minimum-time timer. This ensures the animation and
+    // the 3-second window begin only after the Flutter splash is actually
+    // visible on screen — not while the native/system splash is still
+    // showing during engine cold-start (which causes the timer to burn down
+    // before the user ever sees this screen, especially on first launch).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _controller.forward();
 
-    // Enforce a fixed minimum splash duration, independent of anything else.
-    Future.delayed(const Duration(seconds: 3), () {
-      _minTimeElapsed = true;
-      _maybeNavigate();
+      // Resolve where to navigate in the background.
+      _resolveNextRoute().then((route) {
+        if (!mounted) return;
+        _resolvedRoute = route;
+        _maybeNavigate();
+      });
+
+      // Enforce a fixed minimum splash duration, independent of anything else.
+      Future.delayed(const Duration(seconds: 3), () {
+        if (!mounted) return;
+        _minTimeElapsed = true;
+        _maybeNavigate();
+      });
     });
   }
 
@@ -195,10 +208,10 @@ class _SplashScreenState extends State<SplashScreen>
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
                               const Icon(
-                            Icons.trending_up_rounded,
-                            size: 56,
-                            color: _brandGreenLight,
-                          ),
+                                Icons.trending_up_rounded,
+                                size: 56,
+                                color: _brandGreenLight,
+                              ),
                         ),
                       ),
                     ),

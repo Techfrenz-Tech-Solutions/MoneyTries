@@ -34,8 +34,11 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
   String _amountText = '';
   static const _maxDigits = 8;
 
-  // Payment phase: null = amount entry, 'upi' = UPI phase, 'wallet' = wallet processing
-  String? _paymentMethod; // 'upi' or 'wallet'
+  // Payment phase: null = amount entry, 'upi' = UPI phase.
+  // UPI / bank transfer (with admin approval) is the only supported payment
+  // method for starting an investment plan — wallet-based plan payments
+  // have been removed.
+  String? _paymentMethod; // always 'upi' once payment phase starts
   bool _paymentPhase = false;
 
   final _utrCtrl = TextEditingController();
@@ -52,10 +55,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       duration: const Duration(milliseconds: 530),
     )..repeat(reverse: true);
 
-    // Load wallet balance when screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PlanViewModel>().loadWalletBalance();
-
       // Redesigned flow: the amount is now chosen earlier, on the Plan
       // Comparison screen, and passed through Terms into this screen's
       // route arguments. Prefill it here so the user doesn't have to
@@ -161,28 +161,6 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       );
     } else {
       _toast(vm.enrollError ?? 'Submission failed. Please try again.');
-    }
-  }
-
-  // ── Submit via Wallet ──────────────────────────────────────────────────────
-  Future<void> _submitWalletPayment() async {
-    setState(() => _uploading = true);
-    final vm = context.read<PlanViewModel>();
-    await vm.enrollPlanWithWallet(
-      planType: _planType,
-      monthlyAmount: _amount,
-    );
-    if (!mounted) return;
-    setState(() => _uploading = false);
-    if (vm.enrollState == PlanVmState.success) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.activePlan,
-        (r) => r.settings.name == AppRoutes.plan || r.isFirst,
-        arguments: {'plan': vm.enrolledPlan},
-      );
-    } else {
-      _toast(vm.enrollError ?? 'Payment failed. Please try again.');
     }
   }
 
@@ -496,7 +474,10 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               GestureDetector(
                 onTap: () {
                   Navigator.pop(ctx);
-                  _showPaymentMethodSheet(amount);
+                  setState(() {
+                    _paymentMethod = 'upi';
+                    _paymentPhase = true;
+                  });
                 },
                 child: Container(
                   width: double.infinity,
@@ -521,167 +502,6 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
           ),
         );
       },
-    );
-  }
-
-  // ── Payment Method Sheet ───────────────────────────────────────────────────
-  void _showPaymentMethodSheet(int amount) {
-    final vm = context.read<PlanViewModel>();
-    final walletBal = vm.walletBalance;
-    final hasEnoughWallet = walletBal >= amount;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final bp = MediaQuery.of(ctx).padding.bottom;
-        return Container(
-          decoration: const BoxDecoration(
-            color: _white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: EdgeInsets.fromLTRB(24, 20, 24, 16 + bp),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Choose Payment Method',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: _dark,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'How would you like to pay ₹${_inr(amount)}?',
-                style: GoogleFonts.poppins(fontSize: 13, color: _grey),
-              ),
-              const SizedBox(height: 20),
-
-              // UPI Option
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  setState(() {
-                    _paymentMethod = 'upi';
-                    _paymentPhase = true;
-                  });
-                },
-                child: _paymentMethodTile(
-                  icon: Icons.qr_code_rounded,
-                  title: 'UPI / Bank Transfer',
-                  subtitle: 'Pay via UPI or bank — requires admin approval',
-                  color: const Color(0xFF3D9E6A),
-                  enabled: true,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Wallet Option
-              GestureDetector(
-                onTap: hasEnoughWallet
-                    ? () {
-                        Navigator.pop(ctx);
-                        _submitWalletPayment();
-                      }
-                    : null,
-                child: _paymentMethodTile(
-                  icon: Icons.account_balance_wallet_rounded,
-                  title: 'Wallet Balance',
-                  subtitle: hasEnoughWallet
-                      ? 'Available: ₹${_inr(walletBal.toInt())} — Instant, no approval needed'
-                      : 'Insufficient balance (₹${_inr(walletBal.toInt())} available)',
-                  color: hasEnoughWallet
-                      ? const Color(0xFF3D9E6A)
-                      : const Color(0xFF9CA3AF),
-                  enabled: hasEnoughWallet,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _paymentMethodTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required bool enabled,
-  }) {
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.5,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: enabled ? color.withValues(alpha: 0.35) : const Color(0xFFE5E7EB),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: enabled ? _dark : _grey,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: enabled ? color : _greyL,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: enabled ? color : _greyL,
-              size: 22,
-            ),
-          ],
-        ),
-      ),
     );
   }
 

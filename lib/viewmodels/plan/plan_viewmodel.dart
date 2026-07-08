@@ -38,10 +38,6 @@ class PlanViewModel extends ChangeNotifier {
   // ── Profile plan amount ────────────────────────────────────────────────────
   double planAmount = 0;
 
-  // ── Wallet balance ─────────────────────────────────────────────────────────
-  double walletBalance = 0;
-  PlanVmState walletBalanceState = PlanVmState.idle;
-
   // ── Load plans ─────────────────────────────────────────────────────────────
   Future<void> loadPlans() async {
     listState = PlanVmState.loading;
@@ -79,20 +75,6 @@ class PlanViewModel extends ChangeNotifier {
       }
     }
     planAmount = total;
-  }
-
-  // ── Load wallet balance ────────────────────────────────────────────────────
-  Future<void> loadWalletBalance() async {
-    walletBalanceState = PlanVmState.loading;
-    notifyListeners();
-    try {
-      walletBalance = await _repo.fetchWalletBalance();
-      walletBalanceState = PlanVmState.success;
-    } catch (_) {
-      walletBalance = 0;
-      walletBalanceState = PlanVmState.error;
-    }
-    notifyListeners();
   }
 
   // ── Queries ────────────────────────────────────────────────────────────────
@@ -152,31 +134,6 @@ class PlanViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Enroll via Wallet (instant — no admin approval) ───────────────────────
-  Future<void> enrollPlanWithWallet({
-    required PlanType planType,
-    required int monthlyAmount,
-  }) async {
-    enrollState = PlanVmState.loading;
-    enrollError = null;
-    enrolledPlan = null;
-    notifyListeners();
-
-    try {
-      enrolledPlan = await _repo.enrollPlanWithWallet(
-        planType: planType,
-        monthlyAmount: monthlyAmount,
-      );
-      plans.add(enrolledPlan!);
-      _recomputePlanAmountLocally();
-      enrollState = PlanVmState.success;
-    } catch (e) {
-      enrollError = e.toString().replaceFirst('Exception: ', '');
-      enrollState = PlanVmState.error;
-    }
-    notifyListeners();
-  }
-
   // ── Monthly instalment via UPI ─────────────────────────────────────────────
   Future<void> payMonthlyInstalment({
     required String planId,
@@ -193,26 +150,6 @@ class PlanViewModel extends ChangeNotifier {
         planId: planId,
         utrId: utrId,
         proofImageUrl: proofImageUrl,
-      );
-      payState = PlanVmState.success;
-      await loadPlans();
-    } catch (e) {
-      payError = e.toString().replaceFirst('Exception: ', '');
-      payState = PlanVmState.error;
-    }
-    notifyListeners();
-  }
-
-  // ── Monthly instalment via Wallet (instant — no admin approval) ────────────
-  Future<void> payMonthlyInstalmentWithWallet({required String planId}) async {
-    payState = PlanVmState.loading;
-    payError = null;
-    paymentResult = null;
-    notifyListeners();
-
-    try {
-      paymentResult = await _repo.payMonthlyInstalmentWithWallet(
-        planId: planId,
       );
       payState = PlanVmState.success;
       await loadPlans();

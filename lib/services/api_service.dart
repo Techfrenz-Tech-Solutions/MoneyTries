@@ -218,4 +218,48 @@ class ApiService {
 
     return jsonDecode(response.body);
   }
+
+  // ── Login-time Two-Factor Authentication ────────────────────────────────
+  // These are only reachable with the short-lived `pending_token` returned
+  // by [login] when the account has 2FA enabled. They complete the second
+  // factor of the login itself and are distinct from the Security Settings
+  // 2FA enable/disable endpoints (which run on a full session token).
+
+  /// Verifies the [otp] entered on the "Enter OTP to Verify Your Login"
+  /// screen. On success the response has the exact same shape as a normal
+  /// [login] success — `data.token` + `data.user` — so the caller can reuse
+  /// the same post-login handling (save session, decide PIN/home route).
+  static Future<Map<String, dynamic>> verifyLoginOtp({
+    required String pendingToken,
+    required String otp,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/2fa/verify-otp'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $pendingToken',
+      },
+      body: jsonEncode({
+        'otp': otp,
+      }),
+    );
+
+    return jsonDecode(response.body);
+  }
+
+  /// Re-sends the login OTP for the account tied to [pendingToken],
+  /// invalidating whatever OTP was issued previously.
+  static Future<Map<String, dynamic>> resendLoginOtp({
+    required String pendingToken,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/2fa/resend-otp'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $pendingToken',
+      },
+    );
+
+    return jsonDecode(response.body);
+  }
 }

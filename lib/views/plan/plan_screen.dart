@@ -390,7 +390,7 @@ class _PlanScreenState extends State<PlanScreen> {
         children: const [
           (
             icon: Icons.payments_outlined,
-            text: 'Pay your monthly instalment via UPI or Wallet balance.',
+            text: 'Pay your monthly instalment via UPI or bank transfer.',
           ),
           (
             icon: Icons.fact_check_outlined,

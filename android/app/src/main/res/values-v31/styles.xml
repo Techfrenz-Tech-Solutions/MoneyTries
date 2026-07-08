@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ (API 31+) draws its own system splash screen before
-         Flutter's windowBackground drawable is even considered. Without this
-         override, Android falls back to showing the app's launcher icon on a
-         plain background, which is what produced the generic default look.
-         This pins it to the MoneyTries brand background + logo instead. -->
+    <!-- Android 12+ (API 31+) enforces a system-level splash screen before
+         the Flutter engine draws its first frame. We keep the brand background
+         colour so there is no flash, but set the animation duration to 0 so
+         the system splash exits immediately when Flutter is ready — handing
+         off to the animated Flutter SplashScreen with no visible gap.
+         The icon is still set so the launcher icon isn't shown as a fallback. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@color/launch_background</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_logo</item>
-        <item name="android:windowBackground">@drawable/launch_background</item>
+        <!-- Exit the system splash as fast as possible so the Flutter
+             animated splash screen is always the one the user sees. -->
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+        <item name="android:windowBackground">@color/launch_background</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@color/launch_background</item>

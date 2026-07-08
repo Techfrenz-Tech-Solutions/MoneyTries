@@ -15,6 +15,7 @@ import '../../services/api_service.dart';
 import '../../services/biometric_auth_service.dart';
 import '../../viewmodels/auth/login_viewmodel.dart';
 import 'forgot_password_screen.dart';
+import 'login_two_factor_screen.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _titleColor = Color(0xFF1A1A2E);
@@ -103,6 +104,19 @@ class _LoginContentState extends State<_LoginContent> {
       Navigator.pushReplacementNamed(context, AppRoutes.appPin);
     } else if (destination == 'home') {
       Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else if (destination == 'verify_2fa') {
+      // Password was correct, but this account has 2FA enabled — hand off
+      // to the OTP verification screen using the SAME LoginViewModel
+      // instance so it can complete the login once the OTP is verified.
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            value: vm,
+            child: const LoginTwoFactorScreen(),
+          ),
+        ),
+      );
     }
   }
 
