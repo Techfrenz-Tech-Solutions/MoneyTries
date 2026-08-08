@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme applied to the Android Window while the Flutter engine starts.
+         The windowBackground matches the top colour of the Flutter SplashScreen
+         so there is zero visual difference between the native window and the
+         Flutter canvas — no flash, no colour jump. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <!-- Theme applied once the Flutter engine has started (behind the Flutter UI). -->
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/launch_background</item>
+    </style>
+</resources>

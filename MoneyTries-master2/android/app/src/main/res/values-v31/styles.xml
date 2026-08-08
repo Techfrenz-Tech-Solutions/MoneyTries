@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ (API 31+) system SplashScreen API.
+         Background colour matches the Flutter SplashScreen exactly so the
+         system splash is visually indistinguishable from the Flutter canvas.
+         No animated icon is set — the Flutter SplashScreen is the only branded
+         splash the user sees. Duration is 0 so the system splash exits the
+         instant Flutter is ready to draw. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/launch_background</item>
+        <!-- Exit the system splash immediately so Flutter takes over with no delay. -->
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+        <item name="android:windowBackground">@color/launch_background</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/launch_background</item>
+    </style>
+</resources>

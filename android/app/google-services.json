@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "525820226689",
+    "project_id": "moneytries-b2161",
+    "storage_bucket": "moneytries-b2161.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525820226689:android:8e5ae048d2bfa080217180",
+        "android_client_info": {
+          "package_name": "com.example.greenvault"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrhOtaAfQn6AwQTff1JMVPZx2WfacXJp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

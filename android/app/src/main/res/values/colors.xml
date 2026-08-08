@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the top gradient colour of the Flutter SplashScreen so the
+         native window background is visually identical to the Flutter canvas.
+         This eliminates any flash or colour mismatch between the Android
+         window background and the animated Flutter splash screen. -->
+    <color name="launch_background">#FFF3FBF6</color>
+
+    <!-- Brand green from the Moneytries logo, used to tint the status-bar
+         notification icon (Android draws the small icon in solid white and
+         applies this color as an overlay/background chip). -->
+    <color name="notification_color">#108156</color>
+</resources>
