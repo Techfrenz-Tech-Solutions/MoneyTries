@@ -1,6 +1,7 @@
 ﻿// lib/views/profile/linked_bank_accounts_view.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/bank/bank_account_model.dart';
@@ -59,7 +60,7 @@ class _LinkedBankAccountsContent extends StatelessWidget {
             title: Text(
               'Linked Bank Accounts',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -89,7 +90,7 @@ class _LinkedBankAccountsContent extends StatelessWidget {
                           Text(
                             'Your Accounts (${vm.accounts.length})',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
                               color: _subtitleGrey,
@@ -170,7 +171,7 @@ class _InfoBanner extends StatelessWidget {
               'Your bank accounts are securely linked for withdrawals and auto-deposits. '
               'Only the Primary account receives payouts.',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w400,
                 color: _brandGreen,
@@ -239,7 +240,7 @@ class _AccountTile extends StatelessWidget {
                     Text(
                       account.bankName,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
                         color: _titleDark,
@@ -259,7 +260,7 @@ class _AccountTile extends StatelessWidget {
                         child: Text(
                           'Primary',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w600,
                             color: _brandGreen,
@@ -273,7 +274,7 @@ class _AccountTile extends StatelessWidget {
                 Text(
                   '${account.accountType}  ·  •••• ${account.accountNumber}',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -283,7 +284,7 @@ class _AccountTile extends StatelessWidget {
                 Text(
                   'IFSC: ${account.ifscCode}',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -342,7 +343,7 @@ class _AccountTile extends StatelessWidget {
                       Text(
                         'Set as Primary',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 14.sp,
                           color: _titleDark,
                         ),
@@ -363,7 +364,7 @@ class _AccountTile extends StatelessWidget {
                     Text(
                       'Remove Account',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.sp,
                         color: _errorRed,
                       ),
@@ -389,7 +390,7 @@ class _AccountTile extends StatelessWidget {
         title: Text(
           'Remove Account?',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 17.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -399,7 +400,7 @@ class _AccountTile extends StatelessWidget {
           'Are you sure you want to remove ${acc.bankName} (•••• ${acc.accountNumber})? '
           'This action cannot be undone.',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.5.sp,
             color: _subtitleGrey,
             height: 1.5,
@@ -411,7 +412,7 @@ class _AccountTile extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
               ),
@@ -422,7 +423,7 @@ class _AccountTile extends StatelessWidget {
             child: Text(
               'Remove',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
               ),
@@ -439,7 +440,7 @@ class _AccountTile extends StatelessWidget {
         content: Text(
           msg,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.5.sp,
             color: _white,
           ),
@@ -495,7 +496,7 @@ class _EmptyState extends StatelessWidget {
           Text(
             'No Bank Accounts Linked',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -506,7 +507,7 @@ class _EmptyState extends StatelessWidget {
             'Add a bank account to enable\nwithdrawals and auto-deposits.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               color: _subtitleGrey,
               height: 1.5,
@@ -545,7 +546,7 @@ class _AddAccountButton extends StatelessWidget {
             Text(
               'Add New Bank Account',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w600,
                 color: _brandGreen,
@@ -608,7 +609,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
           content: Text(
             'Bank account added successfully!',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               color: _white,
             ),
@@ -655,7 +656,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
             Text(
               'Add Bank Account',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -665,7 +666,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
             Text(
               'Your details are encrypted and secure.',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 color: _subtitleGrey,
               ),
@@ -773,7 +774,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
                             child: Text(
                               type,
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                                 color: selected ? _brandGreen : _subtitleGrey,
@@ -827,7 +828,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
                               : Text(
                                   'Add Account',
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFF1F6B45),
@@ -852,7 +853,7 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
       child: Text(
         text,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 13.5.sp,
           fontWeight: FontWeight.w600,
           color: _titleDark,
@@ -878,14 +879,14 @@ class _AddAccountSheetState extends State<_AddAccountSheet> {
       textCapitalization: textCapitalization,
       validator: validator,
       style: TextStyle(
-        fontFamily: 'Times New Roman',
+        fontFamily: GoogleFonts.inter().fontFamily,
         fontSize: 14.sp,
         color: _titleDark,
       ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 14.sp,
           color: _subtitleGrey,
         ),

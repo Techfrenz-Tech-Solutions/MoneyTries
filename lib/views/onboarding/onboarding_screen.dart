@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,7 +109,7 @@ class _OnboardingView extends StatelessWidget {
                           'MoneyTries',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w800,
                             color: _appBarTitle,
@@ -121,7 +122,7 @@ class _OnboardingView extends StatelessWidget {
                         child: Text(
                           'Skip',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: _skipText,
@@ -201,7 +202,7 @@ class _OnboardingView extends StatelessWidget {
                                   Text(
                                     'Exclusive Rewards',
                                     style: TextStyle(
-                                      fontFamily: 'Times New Roman',
+                                      fontFamily: GoogleFonts.inter().fontFamily,
                                       fontSize: 11.sp,
                                       fontWeight: FontWeight.w600,
                                       color: _rBadgeText,
@@ -261,7 +262,7 @@ class _OnboardingView extends StatelessWidget {
                         textAlign: TextAlign.center,
                         text: TextSpan(
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 13.sp,
                             color: _bodyColor,
                           ),
@@ -302,7 +303,7 @@ class _OnboardingView extends StatelessWidget {
                       'STEP ${vm.currentPage + 1} OF ${vm.totalPages}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.2,
@@ -390,7 +391,7 @@ class _AnimatedTextBlockState extends State<_AnimatedTextBlock>
                 Text(
                   widget.title,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: widget.isReferral ? 26.sp : 24.sp,
                     fontWeight: FontWeight.w800,
                     color: _titleColor,
@@ -406,7 +407,7 @@ class _AnimatedTextBlockState extends State<_AnimatedTextBlock>
                 Text(
                   widget.description,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                     color: _bodyColor,
@@ -473,7 +474,7 @@ class _CTAButton extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _buttonTextColor,

@@ -7,6 +7,7 @@
 // screen — nothing underneath is rebuilt or popped).
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/responsive.dart';
 
@@ -318,7 +319,7 @@ class _LegalDocumentSheet extends StatelessWidget {
                           Text(
                             doc.title,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 19.sp,
                               fontWeight: FontWeight.w700,
                               color: _legalTitle,
@@ -328,7 +329,7 @@ class _LegalDocumentSheet extends StatelessWidget {
                           Text(
                             doc.lastUpdated,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               color: _legalBrown,
                               fontWeight: FontWeight.w500,
@@ -373,7 +374,7 @@ class _LegalDocumentSheet extends StatelessWidget {
                         child: Text(
                           doc.intro,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp,
                             height: 1.6,
                             color: _legalBody,
@@ -413,7 +414,7 @@ class _LegalDocumentSheet extends StatelessWidget {
                     child: Text(
                       'Back to Sign Up',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,
                       ),
@@ -468,7 +469,7 @@ class _LegalSectionCard extends StatelessWidget {
                 child: Text(
                   section.heading,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: _legalTitle,
@@ -481,7 +482,7 @@ class _LegalSectionCard extends StatelessWidget {
           Text(
             section.body,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               height: 1.6,
               color: _legalBody,

@@ -1,5 +1,6 @@
 ﻿import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -156,7 +157,7 @@ class _PlanScreenState extends State<PlanScreen> {
               child: Text(
                 dlgTitle,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF111827),
@@ -168,7 +169,7 @@ class _PlanScreenState extends State<PlanScreen> {
         content: Text(
           dlgMessage,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: const Color(0xFF6B7280),
             height: 1.5,
@@ -181,7 +182,7 @@ class _PlanScreenState extends State<PlanScreen> {
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp,
                   color: const Color(0xFF9CA3AF),
                 ),
@@ -192,7 +193,7 @@ class _PlanScreenState extends State<PlanScreen> {
             child: Text(
               actionLabel,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w700,
                 color: _brandGreen,
@@ -306,7 +307,7 @@ class _PlanScreenState extends State<PlanScreen> {
         Text(
           'Investment Plans',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 28.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -318,7 +319,7 @@ class _PlanScreenState extends State<PlanScreen> {
         Text(
           'Choose a plan and grow your wealth with\ndaily ROI credited directly to your wallet.',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -346,7 +347,7 @@ class _PlanScreenState extends State<PlanScreen> {
             child: Text(
               'Could not load plan status. Plan info is still available below.',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.sp,
                 color: _accentBrownDeep,
                 height: 1.4,
@@ -359,7 +360,7 @@ class _PlanScreenState extends State<PlanScreen> {
             child: Text(
               'Retry',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w700,
                 color: _accentBrownDeep,
@@ -471,7 +472,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -521,7 +522,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Text(
                 'Daily ROI by tenure',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -546,7 +547,7 @@ class _PlanScreenState extends State<PlanScreen> {
                           Text(
                             t.rate,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 19.sp,
                               fontWeight: FontWeight.w800,
                               color: _brandGreen,
@@ -556,7 +557,7 @@ class _PlanScreenState extends State<PlanScreen> {
                           Text(
                             t.label,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 11.5.sp,
                               fontWeight: FontWeight.w600,
                               color: _titleDark,
@@ -565,7 +566,7 @@ class _PlanScreenState extends State<PlanScreen> {
                           Text(
                             t.sub,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 9.5.sp,
                               color: _subtitleGrey,
                             ),
@@ -613,7 +614,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Text(
                 'Plan rules',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -644,7 +645,7 @@ class _PlanScreenState extends State<PlanScreen> {
                     child: Text(
                       r,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 13.sp,
                         color: const Color(0xFF374151),
                         height: 1.5,
@@ -690,7 +691,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
                   color: _brandGreen,
@@ -745,7 +746,7 @@ class _PlanScreenState extends State<PlanScreen> {
           if (!mounted) return;
           _toast(
             vm.roiState == PlanVmState.success
-                ? 'ROI claim of ₹${amount.toStringAsFixed(2)} initiated!'
+                ? 'ROI claim of ₹ ${amount.toStringAsFixed(2)} initiated!'
                 : vm.roiError ?? 'ROI claim failed. Please try again.',
           );
         },
@@ -759,7 +760,7 @@ class _PlanScreenState extends State<PlanScreen> {
       SnackBar(
         content: Text(
           msg,
-          style: TextStyle(fontFamily: 'Times New Roman', fontSize: 13.sp),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
         ),
         backgroundColor: _brandGreen,
         behavior: SnackBarBehavior.floating,
@@ -784,7 +785,7 @@ class _PlanScreenState extends State<PlanScreen> {
             child: Text(
               'You\'ve enrolled in all available plans (3, 6 & 12 month).',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: _brandGreen,
@@ -872,7 +873,7 @@ class _PlanScreenState extends State<PlanScreen> {
                                 Text(
                                   'VAULT · ${plan.planType.displayName.toUpperCase()}',
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 10.5.sp,
                                     fontWeight: FontWeight.w600,
                                     color: _accentBrown.withValues(alpha: 0.85),
@@ -883,9 +884,9 @@ class _PlanScreenState extends State<PlanScreen> {
                             ),
                             SizedBox(height: 14.h),
                             Text(
-                              '₹${_inr(plan.totalPrincipal)}',
+                              '₹ ${_inr(plan.totalPrincipal)}',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 34.sp,
                                 fontWeight: FontWeight.w800,
                                 color: _vaultTextDark,
@@ -897,7 +898,7 @@ class _PlanScreenState extends State<PlanScreen> {
                             Text(
                               'Sealed principal · ${plan.planType.rateLabel} daily',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w500,
                                 color: _vaultTextDark.withValues(alpha: 0.62),
@@ -931,7 +932,7 @@ class _PlanScreenState extends State<PlanScreen> {
                             Text(
                               plan.status.displayLabel,
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 9.sp,
                                 fontWeight: FontWeight.w700,
                                 color: statusAccent,
@@ -965,12 +966,12 @@ class _PlanScreenState extends State<PlanScreen> {
                         children: [
                           _ledgerRow(
                             'Accrued ROI',
-                            '₹${plan.accruedRoi.toStringAsFixed(0)}',
+                            '₹ ${plan.accruedRoi.toStringAsFixed(0)}',
                           ),
                           _ledgerDivider(),
                           _ledgerRow(
                             'Claimable now',
-                            '₹${plan.pendingRoi.toStringAsFixed(0)}',
+                            '₹ ${plan.pendingRoi.toStringAsFixed(0)}',
                             accent: _accentBrown,
                             emphasis: true,
                           ),
@@ -1013,7 +1014,7 @@ class _PlanScreenState extends State<PlanScreen> {
                                 Text(
                                   'VIEW DETAILS',
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 12.5.sp,
                                     fontWeight: FontWeight.w700,
                                     color: _vaultTextDark,
@@ -1053,7 +1054,7 @@ class _PlanScreenState extends State<PlanScreen> {
                               child: Text(
                                 'CLAIM ROI',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 12.5.sp,
                                   fontWeight: FontWeight.w700,
                                   color: _vaultTextDark,
@@ -1092,7 +1093,7 @@ class _PlanScreenState extends State<PlanScreen> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
               color: _subtitleGrey,
@@ -1101,7 +1102,7 @@ class _PlanScreenState extends State<PlanScreen> {
           Text(
             value,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: emphasis ? 15.sp : 13.5.sp,
               fontWeight: FontWeight.w800,
               color: accent,
@@ -1196,7 +1197,7 @@ class _PlanScreenState extends State<PlanScreen> {
         child: Text(
           text,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.5.sp,
             fontWeight: FontWeight.w400,
             color: const Color(0xFF374151),
@@ -1281,7 +1282,7 @@ class _MaturityDial extends StatelessWidget {
               Text(
                 matured ? 'Ready' : '${plan.daysUntilMaturity}',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: matured ? 15.sp : 22.sp,
                   fontWeight: FontWeight.w800,
                   color: _titleDark,
@@ -1294,7 +1295,7 @@ class _MaturityDial extends StatelessWidget {
                 Text(
                   'days left',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 9.5.sp,
                     fontWeight: FontWeight.w600,
                     color: _subtitleGrey,
@@ -1410,7 +1411,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
     if (val > widget.maxAmount) {
       setState(
         () => _error =
-            'Amount cannot exceed ₹${widget.maxAmount.toStringAsFixed(2)}',
+            'Amount cannot exceed ₹ ${widget.maxAmount.toStringAsFixed(2)}',
       );
       return;
     }
@@ -1449,7 +1450,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
             Text(
               'Claim Your ROI',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -1459,7 +1460,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
             Text(
               'Enter the amount to claim. It will be credited to your Wallet Balance.',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 color: _subtitleGrey,
                 height: 1.5,
@@ -1478,15 +1479,15 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                   Text(
                     'Claimable Now',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.sp,
                       color: _vaultTextDark,
                     ),
                   ),
                   Text(
-                    '₹${widget.maxAmount.toStringAsFixed(2)}',
+                    '₹ ${widget.maxAmount.toStringAsFixed(2)}',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w800,
                       color: _vaultTextDark,
@@ -1512,7 +1513,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                 ),
                 onChanged: _onChanged,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -1520,14 +1521,14 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                 decoration: InputDecoration(
                   hintText: '0.00',
                   hintStyle: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
                   ),
                   prefixText: '₹ ',
                   prefixStyle: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
                     color: _titleDark,
@@ -1558,7 +1559,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                       child: Text(
                         'MAX',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
                           color: _brandGreenDeep,
@@ -1582,7 +1583,7 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                   Text(
                     _error!,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.5.sp,
                       color: _accentBrown,
                     ),
@@ -1609,10 +1610,10 @@ class _RoiClaimSheetState extends State<_RoiClaimSheet> {
                   ),
                   child: Text(
                     _isValid
-                        ? 'Claim ₹${_enteredAmount.toStringAsFixed(2)}'
+                        ? 'Claim ₹ ${_enteredAmount.toStringAsFixed(2)}'
                         : 'Claim Now',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w700,
                       color: _white,

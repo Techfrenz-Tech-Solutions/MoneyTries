@@ -1,5 +1,6 @@
 ﻿// lib/views/history/history_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -189,17 +190,17 @@ class _HistoryScreenState extends State<HistoryScreen>
                   Icon(Icons.wifi_off_rounded, size: 56.sp, color: _labelGrey.withOpacity(0.5)),
                   SizedBox(height: 16.h),
                   Text('Could not load history',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 16.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
                   SizedBox(height: 8.h),
                   Text(vm.error!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, color: _labelGrey)),
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, color: _labelGrey)),
                   SizedBox(height: 20.h),
                   ElevatedButton.icon(
                     onPressed: vm.loadAll,
                     icon: Icon(Icons.refresh_rounded, size: 18.sp),
-                    label: Text('Retry', style: TextStyle(fontFamily: 'Times New Roman',fontWeight: FontWeight.w600)),
+                    label: Text('Retry', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontWeight: FontWeight.w600)),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: _brandGreen,
                         foregroundColor: _white,
@@ -269,7 +270,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(_sortOrder.label.toUpperCase(),
-                        style: TextStyle(fontFamily: 'Times New Roman',
+                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 11.5.sp, fontWeight: FontWeight.w600,
                             color: _sectionLabel, letterSpacing: 1.2)),
                     SizedBox(height: 10.h),
@@ -296,7 +297,7 @@ class _HistoryScreenState extends State<HistoryScreen>
           Expanded(
             child: Text(
               'Showing $shown of $total',
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp, fontWeight: FontWeight.w500, color: _subtitleGrey),
             ),
           ),
@@ -306,7 +307,7 @@ class _HistoryScreenState extends State<HistoryScreen>
               _resetFilters();
             },
             child: Text('Clear all',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
           ),
         ],
@@ -338,17 +339,17 @@ class _HistoryScreenState extends State<HistoryScreen>
             Icon(Icons.wifi_off_rounded, size: 56.sp, color: _labelGrey.withOpacity(0.5)),
             SizedBox(height: 16.h),
             Text('Could not load history',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 16.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
             SizedBox(height: 8.h),
             Text(message,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, color: _labelGrey)),
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, color: _labelGrey)),
             SizedBox(height: 20.h),
             ElevatedButton.icon(
               onPressed: vm.loadAll,
               icon: Icon(Icons.refresh_rounded, size: 18.sp),
-              label: Text('Retry', style: TextStyle(fontFamily: 'Times New Roman',fontWeight: FontWeight.w600)),
+              label: Text('Retry', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                   backgroundColor: _brandGreen,
                   foregroundColor: _white,
@@ -372,12 +373,12 @@ class _HistoryScreenState extends State<HistoryScreen>
               Icon(Icons.filter_alt_off_rounded, size: 64.sp, color: _labelGrey.withOpacity(0.5)),
               SizedBox(height: 16.h),
               Text('No matching transactions',
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 17.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
               SizedBox(height: 6.h),
               Text('Try adjusting your search or filters',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.sp, fontWeight: FontWeight.w400, color: _labelGrey)),
               SizedBox(height: 18.h),
               TextButton.icon(
@@ -387,7 +388,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                 },
                 icon: Icon(Icons.close_rounded, size: 16.sp, color: _brandGreen),
                 label: Text('Clear filters',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 13.sp, fontWeight: FontWeight.w600, color: _brandGreen)),
               ),
             ],
@@ -408,11 +409,11 @@ class _HistoryScreenState extends State<HistoryScreen>
           Icon(Icons.receipt_long_outlined, size: 72.sp, color: _labelGrey.withOpacity(0.5)),
           SizedBox(height: 16.h),
           Text(label,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 17.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
           SizedBox(height: 6.h),
           Text('Your transaction history will appear here',
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp, fontWeight: FontWeight.w400, color: _labelGrey)),
         ],
       ),
@@ -427,7 +428,7 @@ class _HistoryScreenState extends State<HistoryScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.5.sp, fontWeight: FontWeight.w600,
                   color: _sectionLabel, letterSpacing: 1.2)),
           SizedBox(height: 10.h),
@@ -488,13 +489,13 @@ class _HistoryScreenState extends State<HistoryScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(t.title,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp, fontWeight: FontWeight.w600,
                         color: _titleDark, height: 1.3)),
                 SizedBox(height: 3.h),
                 Text(
                     '${t.subtitle}${dateTimeStr.isNotEmpty ? " • $dateTimeStr" : ""}',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 12.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
               ],
             ),
@@ -519,8 +520,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                   ),
                   SizedBox(width: 4.w),
                   Text(
-                    '₹${_fmt(t.amount)}',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    '₹ ${_fmt(t.amount)}',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp, fontWeight: FontWeight.w700,
                         color: amtColor, letterSpacing: -0.2),
                   ),
@@ -533,7 +534,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                     color: statusInfo.$1,
                     borderRadius: BorderRadius.circular(6.r)),
                 child: Text(statusInfo.$3,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 10.sp, fontWeight: FontWeight.w700,
                         color: statusInfo.$2, letterSpacing: 0.5)),
               ),
@@ -593,7 +594,7 @@ class _HistoryScreenState extends State<HistoryScreen>
         label = 'TOTAL ROI ACCRUED';
         value = vm.totalRoiAccrued;
         sub   = vm.roiWithdrawalCount > 0
-            ? '₹${_fmt(vm.totalRoiWithdrawn)} withdrawn · ${vm.roiWithdrawalCount} transaction${vm.roiWithdrawalCount == 1 ? '' : 's'}'
+            ? '₹ ${_fmt(vm.totalRoiWithdrawn)} withdrawn · ${vm.roiWithdrawalCount} transaction${vm.roiWithdrawalCount == 1 ? '' : 's'}'
             : 'Across all active plans';
         break;
       case TxnType.referral:
@@ -638,13 +639,13 @@ class _HistoryScreenState extends State<HistoryScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 10.5.sp, fontWeight: FontWeight.w700,
                         color: const Color(0xFF1F6B45),
                         letterSpacing: 1.1)),
                 SizedBox(height: 8.h),
-                Text('₹${_fmt(value)}',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                Text('₹ ${_fmt(value)}',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 32.sp, fontWeight: FontWeight.w800,
                         color: const Color(0xFF2B2620), letterSpacing: -0.5, height: 1.1)),
                 SizedBox(height: 14.h),
@@ -660,7 +661,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                       Icon(Icons.info_outline_rounded, size: 14.sp, color: const Color(0xFF1F6B45)),
                       SizedBox(width: 5.w),
                       Text(sub,
-                          style: TextStyle(fontFamily: 'Times New Roman',
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp, fontWeight: FontWeight.w500,
                               color: const Color(0xFF1F6B45))),
                     ],
@@ -693,7 +694,7 @@ class _HistoryScreenState extends State<HistoryScreen>
           ),
           SizedBox(width: 14.w),
           Text('Transaction History',
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 18.sp, fontWeight: FontWeight.w700,
                   color: _titleDark, letterSpacing: -0.3)),
           const Spacer(),
@@ -733,10 +734,10 @@ class _HistoryScreenState extends State<HistoryScreen>
                   Expanded(
                     child: TextField(
                       controller: _searchController,
-                      style: TextStyle(fontFamily: 'Times New Roman',fontSize: 14.sp, color: _titleDark),
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.sp, color: _titleDark),
                       decoration: InputDecoration(
                         hintText: 'Search transactions...',
-                        hintStyle: TextStyle(fontFamily: 'Times New Roman',
+                        hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp, color: _labelGrey),
                         border: InputBorder.none,
                         isDense: true,
@@ -786,7 +787,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                         decoration: const BoxDecoration(
                             color: _withdrawRed, shape: BoxShape.circle),
                         child: Text('$_activeFilterCount',
-                            style: TextStyle(fontFamily: 'Times New Roman',
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 9.5.sp, fontWeight: FontWeight.w700, color: _white)),
                       ),
                     ),
@@ -834,9 +835,9 @@ class _HistoryScreenState extends State<HistoryScreen>
       indicatorWeight: 2.5,
       indicatorSize: TabBarIndicatorSize.label,
       dividerColor: Colors.transparent,
-      labelStyle: TextStyle(fontFamily: 'Times New Roman',
+      labelStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 14.sp, fontWeight: FontWeight.w600),
-      unselectedLabelStyle: TextStyle(fontFamily: 'Times New Roman',
+      unselectedLabelStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 14.sp, fontWeight: FontWeight.w400),
       labelColor: _brandGreen,
       unselectedLabelColor: _subtitleGrey,
@@ -965,7 +966,7 @@ class _FilterSheetState extends State<_FilterSheet> {
             Row(
               children: [
                 Text('Filters',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 17.sp, fontWeight: FontWeight.w700, color: _titleDark)),
                 const Spacer(),
                 GestureDetector(
@@ -976,7 +977,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     _sort = _SortOrder.newest;
                   }),
                   child: Text('Reset',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.sp, fontWeight: FontWeight.w600, color: _withdrawRed)),
                 ),
               ],
@@ -985,7 +986,7 @@ class _FilterSheetState extends State<_FilterSheet> {
 
             // ── Status ──────────────────────────────────────────────────
             Text('STATUS',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp, fontWeight: FontWeight.w600,
                     color: _sectionLabel, letterSpacing: 1.0)),
             SizedBox(height: 10.h),
@@ -1004,7 +1005,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                           color: selected ? _brandGreen : _dividerColor),
                     ),
                     child: Text(opt.$2,
-                        style: TextStyle(fontFamily: 'Times New Roman',
+                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 13.sp, fontWeight: FontWeight.w600,
                             color: selected ? _white : _subtitleGrey)),
                   ),
@@ -1015,7 +1016,7 @@ class _FilterSheetState extends State<_FilterSheet> {
 
             // ── Date range ──────────────────────────────────────────────
             Text('DATE RANGE',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp, fontWeight: FontWeight.w600,
                     color: _sectionLabel, letterSpacing: 1.0)),
             SizedBox(height: 10.h),
@@ -1037,7 +1038,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                       (_from != null && _to != null)
                           ? '${DateFormat('d MMM yyyy').format(_from!)} — ${DateFormat('d MMM yyyy').format(_to!)}'
                           : 'Select date range',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.5.sp, fontWeight: FontWeight.w500,
                           color: (_from != null) ? _titleDark : _labelGrey),
                     ),
@@ -1055,7 +1056,7 @@ class _FilterSheetState extends State<_FilterSheet> {
 
             // ── Sort ────────────────────────────────────────────────────
             Text('SORT BY',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp, fontWeight: FontWeight.w600,
                     color: _sectionLabel, letterSpacing: 1.0)),
             SizedBox(height: 10.h),
@@ -1080,7 +1081,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                       ),
                       SizedBox(width: 10.w),
                       Text(s.label,
-                          style: TextStyle(fontFamily: 'Times New Roman',
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 13.5.sp, fontWeight: FontWeight.w500,
                               color: _titleDark)),
                     ],
@@ -1106,7 +1107,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
                 ),
                 child: Text('Apply Filters',
-                    style: TextStyle(fontFamily: 'Times New Roman',fontSize: 15.sp, fontWeight: FontWeight.w700)),
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.sp, fontWeight: FontWeight.w700)),
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -174,7 +175,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
         content: Text(
           msg,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: const Color(0xFF111827),
           ),
@@ -232,7 +233,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                         child: Text(
                           'Moneytries',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: _dark,
@@ -255,7 +256,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                       child: Text(
                         'Configure Plan',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
                           color: _green,
@@ -269,7 +270,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                       _planTitle,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 22.sp,
                         fontWeight: FontWeight.w800,
                         color: _dark,
@@ -281,7 +282,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                     child: Text(
                       '$_rate Daily ROI · $_months Months',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 13.sp,
                         color: _grey,
                       ),
@@ -351,7 +352,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                           Text(
                             'Confirm & Proceed to Pay',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                               color: _green,
@@ -395,7 +396,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               Text(
                 'Investment Amount (One-Time)',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   color: _greyL,
                   letterSpacing: 0.3,
@@ -408,7 +409,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                   Text(
                     '₹',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w600,
                       color: _grey,
@@ -418,7 +419,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                   Text(
                     _amountText.isEmpty ? '0' : _inr(_amount),
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 40.sp,
                       fontWeight: FontWeight.w800,
                       color: _dark,
@@ -445,7 +446,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                         : 'Paid once — principal is locked until maturity',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   fontWeight: (_underMin || _overMax) ? FontWeight.w600 : FontWeight.normal,
                   color: (_underMin || _overMax) ? const Color(0xFFDC2626) : _greyL,
@@ -490,7 +491,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               Text(
                 'Confirm Investment Plan',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -500,7 +501,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               Text(
                 'This is a one-time payment — the amount is fixed.',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp,
                   color: _grey,
                 ),
@@ -508,7 +509,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               SizedBox(height: 20.h),
               _confirmRow('Selected Plan', _planTitle),
               SizedBox(height: 12.h),
-              _confirmRow('Investment Amount', '₹${_inr(amount)}'),
+              _confirmRow('Investment Amount', '₹ ${_inr(amount)}'),
               SizedBox(height: 12.h),
               _confirmRow('Daily ROI', _rate),
               SizedBox(height: 12.h),
@@ -546,7 +547,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                     child: Text(
                       'Proceed to Pay',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                         color: _green,
@@ -583,7 +584,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                 child: Text(
                   'Complete Payment',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: _dark,
@@ -623,16 +624,16 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                           Text(
                             'One-Time Investment',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               color: _green.withValues(alpha: 0.75),
                             ),
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            '₹${_inr(_amount)}',
+                            '₹ ${_inr(_amount)}',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 28.sp,
                               fontWeight: FontWeight.w800,
                               color: _dark,
@@ -646,7 +647,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                           Text(
                             _planTitle,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
                               color: _green,
@@ -655,7 +656,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                           Text(
                             '$_rate Daily ROI',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               color: _green.withValues(alpha: 0.75),
                             ),
@@ -671,7 +672,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                 Text(
                   'Transaction Reference (UTR)',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: _grey,
@@ -693,7 +694,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                   child: TextField(
                     controller: _utrCtrl,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: _dark,
@@ -701,7 +702,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                     decoration: InputDecoration(
                       hintText: 'Enter UTR / Transaction ID',
                       hintStyle: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.sp,
                         color: _greyL,
                       ),
@@ -722,7 +723,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                 Text(
                   'Payment Screenshot',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: _grey,
@@ -785,7 +786,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                               Text(
                                 'Tap to upload screenshot',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 13.sp,
                                   color: _grey,
                                 ),
@@ -859,7 +860,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                         Text(
                           'Confirm & Submit',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
                             color: _green,
@@ -886,7 +887,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       Text(
         label,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 13.sp,
           color: _grey,
         ),
@@ -894,7 +895,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       Text(
         value,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: _dark,
@@ -913,7 +914,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
         : Text(
             key,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 26.sp,
               fontWeight: FontWeight.w400,
               color: _dark,
@@ -956,7 +957,7 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
       SnackBar(
         content: Text(
           'Copied!',
-          style: TextStyle(fontFamily: 'Times New Roman', fontSize: 13.sp),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
         ),
         backgroundColor: const Color(0xFF4CAF7D),
         behavior: SnackBarBehavior.floating,
@@ -1020,7 +1021,7 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,
           color: sel ? Colors.white : const Color(0xFF6B7280),
@@ -1060,7 +1061,7 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.sp,
               color: const Color(0xFF9CA3AF),
             ),
@@ -1068,7 +1069,7 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
           Text(
             value,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 14.sp,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF0D1F14),
@@ -1091,7 +1092,7 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
               Text(
                 'Copy',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF4CAF7D),
@@ -1117,15 +1118,15 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
         Text(
           'Amount to Pay',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: const Color(0xFF4CAF7D),
           ),
         ),
         Text(
-          '₹${widget.inr(widget.amount)}',
+          '₹ ${widget.inr(widget.amount)}',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 16.sp,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF4CAF7D),

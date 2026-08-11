@@ -1,6 +1,7 @@
 ﻿import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -145,7 +146,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
           Text(
             'Plan Details',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 19.sp,
               fontWeight: FontWeight.w800,
               color: _dark,
@@ -172,7 +173,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                     Text(
                       '$active Active',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.5.sp,
                         fontWeight: FontWeight.w700,
                         color: _greenText,
@@ -190,7 +191,17 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
 
   // ── Plan List ─────────────────────────────────────────────────────────────
   Widget _buildPlanList(PlanViewModel vm) {
-    final sorted = [...vm.plans]
+    // Only Approved and Pending (Under Review) plans are shown here —
+    // Rejected plans are excluded from this list.
+    final visiblePlans = vm.plans
+        .where(
+          (p) =>
+              p.status == PlanStatus.approved ||
+              p.status == PlanStatus.underReview,
+        )
+        .toList();
+
+    final sorted = [...visiblePlans]
       ..sort((a, b) {
         int order(PlanStatus s) {
           switch (s) {
@@ -231,7 +242,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                 child: Text(
                   'Your Plans',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w800,
                     color: _dark,
@@ -313,7 +324,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                     Text(
                       'Portfolio Overview',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 15.5.sp,
                         fontWeight: FontWeight.w800,
                         color: _dark,
@@ -323,7 +334,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                     Text(
                       'Across all investment plans',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.sp,
                         color: _greyLight,
                       ),
@@ -360,7 +371,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                       Text(
                         'TOTAL PRINCIPAL',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 10.sp,
                           fontWeight: FontWeight.w700,
                           color: _brownText,
@@ -371,7 +382,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                       _AnimatedRupeeCounter(
                         value: vm.planAmount,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 28.sp,
                           fontWeight: FontWeight.w800,
                           color: _dark,
@@ -409,7 +420,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                       Text(
                         active > 0 ? 'Locked' : 'Available',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
                           color: active > 0 ? _brownText : _greenText,
@@ -569,7 +580,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
               child: Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w800,
                   color: _dark,
@@ -581,7 +592,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
         content: Text(
           message,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: _grey,
             height: 1.5,
@@ -594,7 +605,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp,
                   color: _greyLight,
                 ),
@@ -605,7 +616,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
             child: Text(
               actionLabel,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w700,
                 color: _greenText,
@@ -647,7 +658,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
             Text(
               'No Plans Yet',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w800,
                 color: _dark,
@@ -658,7 +669,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
               'Start your first investment plan\nand grow your wealth steadily.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 14.sp,
                 color: _grey,
                 height: 1.6,
@@ -690,7 +701,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                     Text(
                       'Start Your First Plan',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w700,
                         color: _green,
@@ -731,7 +742,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
             Text(
               'Failed to load plans',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w800,
                 color: _dark,
@@ -742,7 +753,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
               vm.listError ?? 'Something went wrong.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 color: _grey,
                 height: 1.5,
@@ -769,7 +780,7 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
                 child: Text(
                   'Retry',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: _green,
@@ -827,7 +838,7 @@ class _MiniStatCard extends StatelessWidget {
                 _AnimatedIntCounter(
                   value: value,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w800,
                     color: _dark,
@@ -837,7 +848,7 @@ class _MiniStatCard extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 10.sp,
                     color: _greyLight,
                   ),
@@ -946,7 +957,7 @@ class _PlanCardState extends State<_PlanCard> {
               Text(
                 p.planType.displayName,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 15.5.sp,
                   fontWeight: FontWeight.w800,
                   color: _dark,
@@ -956,7 +967,7 @@ class _PlanCardState extends State<_PlanCard> {
               Text(
                 '${p.planType.dailyRoiPercent.toStringAsFixed(2)}% daily ROI  •  ${p.planType.months} months',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.5.sp,
                   color: _grey,
                 ),
@@ -988,7 +999,7 @@ class _PlanCardState extends State<_PlanCard> {
               Text(
                 p.status.displayLabel,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w700,
                   color: meta.textColor,
@@ -1034,7 +1045,7 @@ class _PlanCardState extends State<_PlanCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 10.5.sp,
                         color: _grey,
                         fontWeight: FontWeight.w500,
@@ -1056,7 +1067,7 @@ class _PlanCardState extends State<_PlanCard> {
                   _StatTableRow(
                     icon: Icons.payments_rounded,
                     label: 'Invested',
-                    value: '₹${_fmtAmount(p.monthlyAmount.toDouble())}',
+                    value: '₹ ${_fmtAmount(p.monthlyAmount.toDouble())}',
                     accent: _brownText,
                     accentBg: _brownSurface,
                   ),
@@ -1067,7 +1078,7 @@ class _PlanCardState extends State<_PlanCard> {
                   _StatTableRow(
                     icon: Icons.account_balance_wallet_rounded,
                     label: 'Principal',
-                    value: '₹${_fmtAmount(p.totalPrincipal.toDouble())}',
+                    value: '₹ ${_fmtAmount(p.totalPrincipal.toDouble())}',
                     accent: _greenText,
                     accentBg: _greenSurface,
                   ),
@@ -1131,7 +1142,7 @@ class _PlanCardState extends State<_PlanCard> {
                 Text(
                   'Total Accrued ROI',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 10.5.sp,
                     fontWeight: FontWeight.w600,
                     color: _brownText,
@@ -1140,7 +1151,7 @@ class _PlanCardState extends State<_PlanCard> {
                 _AnimatedRupeeCounter(
                   value: accrued,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w800,
                     color: _dark,
@@ -1157,7 +1168,7 @@ class _PlanCardState extends State<_PlanCard> {
               Text(
                 'Withdrawn',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 10.5.sp,
                   color: _grey,
                 ),
@@ -1165,7 +1176,7 @@ class _PlanCardState extends State<_PlanCard> {
               _AnimatedRupeeCounter(
                 value: withdrawn,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -1196,7 +1207,7 @@ class _PlanCardState extends State<_PlanCard> {
                 Text(
                   _expanded ? 'Hide Payment Schedule' : 'View Payment Schedule',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w700,
                     color: _greenText,
@@ -1231,7 +1242,7 @@ class _PlanCardState extends State<_PlanCard> {
           Text(
             'Payment Schedule',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 14.sp,
               fontWeight: FontWeight.w800,
               color: _dark,
@@ -1257,16 +1268,16 @@ class _PlanCardState extends State<_PlanCard> {
                 Text(
                   'Investment Amount',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                     color: _greenText,
                   ),
                 ),
                 Text(
-                  '₹${_fmtAmount(p.totalCommitment.toDouble())}',
+                  '₹ ${_fmtAmount(p.totalCommitment.toDouble())}',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.w800,
                     color: _greenText,
@@ -1351,7 +1362,7 @@ class _StatTableRow extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 12.sp,
               color: _grey,
               fontWeight: FontWeight.w500,
@@ -1361,7 +1372,7 @@ class _StatTableRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             fontWeight: FontWeight.w800,
             color: _dark,
@@ -1446,9 +1457,9 @@ class _TimelineRow extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '₹${_fmtAmount(inst.amount.toDouble())}',
+                          '₹ ${_fmtAmount(inst.amount.toDouble())}',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w700,
                             color: _dark,
@@ -1462,7 +1473,7 @@ class _TimelineRow extends StatelessWidget {
                               ? 'Due Now'
                               : 'Upcoming',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 11.sp,
                             color: isNext ? _brownText : _greyLight,
                             fontWeight: isNext
@@ -1489,7 +1500,7 @@ class _TimelineRow extends StatelessWidget {
                     child: Text(
                       isPaid ? 'Paid' : (isNext ? 'Due' : 'Pending'),
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w700,
                         color: isPaid
@@ -1596,7 +1607,7 @@ class _AnimatedRupeeCounter extends StatelessWidget {
       tween: Tween(begin: 0, end: value),
       duration: const Duration(milliseconds: 900),
       curve: Curves.easeOutCubic,
-      builder: (context, v, child) => Text('₹${_fmtAmount(v)}', style: style),
+      builder: (context, v, child) => Text('₹ ${_fmtAmount(v)}', style: style),
     );
   }
 }
@@ -1646,7 +1657,7 @@ class _RingProgress extends StatelessWidget {
               child: Text(
                 '${(v * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w800,
                   color: _dark,

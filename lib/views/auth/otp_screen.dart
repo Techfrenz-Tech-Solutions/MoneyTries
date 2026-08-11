@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../routes/app_routes.dart';
 import '../../services/api_service.dart';
@@ -265,7 +266,7 @@ class _OtpScreenState extends State<OtpScreen>
                                     'Verify Your Number',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontFamily: 'Times New Roman',
+                                      fontFamily: GoogleFonts.inter().fontFamily,
                                       fontSize: 25.sp,
                                       fontWeight: FontWeight.w800,
                                       color: _titleColor,
@@ -282,7 +283,7 @@ class _OtpScreenState extends State<OtpScreen>
                                     textAlign: TextAlign.center,
                                     text: TextSpan(
                                       style: TextStyle(
-                                        fontFamily: 'Times New Roman',
+                                        fontFamily: GoogleFonts.inter().fontFamily,
                                         fontSize: 14.sp,
                                         color: _bodyColor,
                                         height: 1.55,
@@ -294,7 +295,7 @@ class _OtpScreenState extends State<OtpScreen>
                                         TextSpan(
                                           text: widget.phoneNumber,
                                           style: TextStyle(
-                                            fontFamily: 'Times New Roman',
+                                            fontFamily: GoogleFonts.inter().fontFamily,
                                             fontSize: 14.5.sp,
                                             fontWeight: FontWeight.w700,
                                             color: _boldPhone,
@@ -398,8 +399,7 @@ class _OtpScreenState extends State<OtpScreen>
                                                 child: Text(
                                                   _otpError!,
                                                   style: TextStyle(
-                                                    fontFamily:
-                                                        'Times New Roman',
+                                                    fontFamily: GoogleFonts.inter().fontFamily,
                                                     fontSize: 12.sp,
                                                     color: _errorRed,
                                                     fontWeight: FontWeight.w500,
@@ -445,7 +445,7 @@ class _OtpScreenState extends State<OtpScreen>
                                                   ? 'Code expired'
                                                   : 'Resend in ',
                                               style: TextStyle(
-                                                fontFamily: 'Times New Roman',
+                                                fontFamily: GoogleFonts.inter().fontFamily,
                                                 fontSize: 12.5.sp,
                                                 color: _timerGrey,
                                                 fontWeight: FontWeight.w500,
@@ -455,7 +455,7 @@ class _OtpScreenState extends State<OtpScreen>
                                               Text(
                                                 _timerText,
                                                 style: TextStyle(
-                                                  fontFamily: 'Times New Roman',
+                                                  fontFamily: GoogleFonts.inter().fontFamily,
                                                   fontSize: 12.5.sp,
                                                   fontWeight: FontWeight.w700,
                                                   color: _primaryGreen,
@@ -484,7 +484,7 @@ class _OtpScreenState extends State<OtpScreen>
                                             : Text(
                                                 'Resend via SMS',
                                                 style: TextStyle(
-                                                  fontFamily: 'Times New Roman',
+                                                  fontFamily: GoogleFonts.inter().fontFamily,
                                                   fontSize: 13.5.sp,
                                                   fontWeight: FontWeight.w700,
                                                   color: canResend
@@ -700,7 +700,7 @@ class _GradientButton extends StatelessWidget {
                         Text(
                           label,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -739,7 +739,7 @@ class _TrustFooter extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.5.sp,
               color: _securityGrey,
               height: 1.4,
@@ -812,7 +812,7 @@ class _OtpBox extends StatelessWidget {
             maxLength: 1,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 20.sp,
               fontWeight: FontWeight.w700,
               color: _otpText,

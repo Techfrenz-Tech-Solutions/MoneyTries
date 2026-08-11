@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../services/api_service.dart';
 import '../../utils/responsive.dart';
@@ -264,7 +265,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                               child: Text(
                                 'Verify Email',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
                                   color: _titleColor,
@@ -304,7 +305,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                 Text(
                                   'Verify Your Email',
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 25.sp,
                                     fontWeight: FontWeight.w800,
                                     color: _titleColor,
@@ -319,7 +320,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                 Text(
                                   "We've sent a 6-digit verification code to",
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w400,
                                     color: _bodyColor,
@@ -331,7 +332,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                 Text(
                                   _maskedEmail,
                                   style: TextStyle(
-                                    fontFamily: 'Times New Roman',
+                                    fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 14.5.sp,
                                     fontWeight: FontWeight.w700,
                                     color: _emailBold,
@@ -405,8 +406,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                                 child: Text(
                                                   _otpError!,
                                                   style: TextStyle(
-                                                    fontFamily:
-                                                        'Times New Roman',
+                                                    fontFamily: GoogleFonts.inter().fontFamily,
                                                     fontSize: 12.sp,
                                                     color: _errorRed,
                                                     fontWeight: FontWeight.w500,
@@ -424,7 +424,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                       Text(
                                         "Didn't receive the code?",
                                         style: TextStyle(
-                                          fontFamily: 'Times New Roman',
+                                          fontFamily: GoogleFonts.inter().fontFamily,
                                           fontSize: 13.sp,
                                           color: _timerGrey,
                                           fontWeight: FontWeight.w500,
@@ -451,8 +451,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                                   : Text(
                                                       'Resend Code',
                                                       style: TextStyle(
-                                                        fontFamily:
-                                                            'Times New Roman',
+                                                        fontFamily: GoogleFonts.inter().fontFamily,
                                                         fontSize: 13.5.sp,
                                                         fontWeight:
                                                             FontWeight.w700,
@@ -485,8 +484,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
                                                   Text(
                                                     'Resend in $_timerLabel',
                                                     style: TextStyle(
-                                                      fontFamily:
-                                                          'Times New Roman',
+                                                      fontFamily: GoogleFonts.inter().fontFamily,
                                                       fontSize: 12.5.sp,
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -566,7 +564,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
           maxLength: 2,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 21.sp,
             fontWeight: FontWeight.w700,
             color: _otpText,
@@ -576,7 +574,7 @@ class _EmailOtpScreenState extends State<EmailOtpScreen>
             counterText: '',
             hintText: '–',
             hintStyle: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 18.sp,
               color: const Color(0xFF9CA3AF),
               fontWeight: FontWeight.w500,
@@ -765,7 +763,7 @@ class _GradientButton extends StatelessWidget {
                   : Text(
                       label,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -804,7 +802,7 @@ class _TrustFooter extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.5.sp,
               color: _securityGrey,
               height: 1.5,

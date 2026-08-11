@@ -1,6 +1,7 @@
 ﻿import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -283,7 +284,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
           ),
           SizedBox(width: 4.w),
           Text('Deposit Funds',
-              style: TextStyle(fontFamily: 'Times New Roman',fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
           const Spacer(),
           AnimatedTapScale(
             scaleDown: 0.9,
@@ -323,7 +324,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
     return Column(
       children: [
         Text('ENTER AMOUNT',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
         SizedBox(height: 14.h),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -337,7 +338,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(right: 6.w, top: 6.h),
-                      child: Text('₹', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 28.sp, fontWeight: FontWeight.w600, color: _titleDark)),
+                      child: Text('₹', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 28.sp, fontWeight: FontWeight.w600, color: _titleDark)),
                     ),
                     Flexible(
                       child: TextField(
@@ -346,7 +347,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
                         cursorColor: _accentGreen,
-                        style: TextStyle(fontFamily: 'Times New Roman',fontSize: 40.sp, fontWeight: FontWeight.w800, color: _titleDark),
+                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 40.sp, fontWeight: FontWeight.w800, color: _titleDark),
                         decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                       ),
                     ),
@@ -364,14 +365,14 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
           Text(
             AppConstants.minDepositAmountMessage,
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Times New Roman', fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
           ),
         ] else if (vm.amount > AppConstants.maxTransactionAmount) ...[
           SizedBox(height: 10.h),
           Text(
             AppConstants.maxTransactionAmountMessage,
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Times New Roman', fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
           ),
         ],
       ],
@@ -383,7 +384,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('QUICK SELECT',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
         SizedBox(height: 12.h),
         Row(
           children: _quickAmounts.map((q) {
@@ -404,9 +405,9 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                     ),
                     child: Column(
                       children: [
-                        Text(q.label, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.5.sp, fontWeight: FontWeight.w500, color: _subtitleGrey)),
+                        Text(q.label, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w500, color: _subtitleGrey)),
                         SizedBox(height: 4.h),
-                        Text('₹${_fmt(q.amount)}', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 15.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+                        Text('₹ ${_fmt(q.amount)}', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.sp, fontWeight: FontWeight.w800, color: _titleDark)),
                       ],
                     ),
                   ),
@@ -424,7 +425,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('PAYMENT METHOD',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
         SizedBox(height: 12.h),
         Row(
           children: [
@@ -463,7 +464,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Send payment to this UPI ID:',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText)),
         SizedBox(height: 10.h),
         _CopyRow(label: 'UPI ID', value: DepositViewModel.upiId,
             onCopy: () => _copyToClipboard(DepositViewModel.upiId, 'UPI ID')),
@@ -476,7 +477,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Transfer via IMPS / NEFT to:',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText)),
         SizedBox(height: 10.h),
         _CopyRow(label: 'Account Name', value: DepositViewModel.bankAccountName,
             onCopy: () => _copyToClipboard(DepositViewModel.bankAccountName, 'Account Name')),
@@ -497,7 +498,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('UTR / TRANSACTION ID',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
         SizedBox(height: 10.h),
         Container(
           decoration: BoxDecoration(
@@ -511,10 +512,10 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
             keyboardType: TextInputType.text,
             textCapitalization: TextCapitalization.characters,
             cursorColor: _accentGreen,
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 15.sp, fontWeight: FontWeight.w600, color: _titleDark),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.sp, fontWeight: FontWeight.w600, color: _titleDark),
             decoration: InputDecoration(
               hintText: 'Enter UTR / Ref. No.',
-              hintStyle: TextStyle(fontFamily: 'Times New Roman',fontSize: 14.sp, fontWeight: FontWeight.w400, color: _labelGrey),
+              hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.sp, fontWeight: FontWeight.w400, color: _labelGrey),
               prefixIcon: Icon(Icons.tag_rounded, color: _accentGreen, size: 20.sp),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -530,7 +531,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('PAYMENT SCREENSHOT',
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 1.0)),
         SizedBox(height: 10.h),
         if (vm.screenshot == null)
           GestureDetector(
@@ -553,10 +554,10 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                   ),
                   SizedBox(height: 8.h),
                   Text('Tap to upload screenshot',
-                      style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, fontWeight: FontWeight.w600, color: _accentGreen)),
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w600, color: _accentGreen)),
                   SizedBox(height: 2.h),
                   Text('JPG or PNG from your gallery',
-                      style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.5.sp, fontWeight: FontWeight.w400, color: _labelGrey)),
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.5.sp, fontWeight: FontWeight.w400, color: _labelGrey)),
                 ],
               ),
             ),
@@ -586,7 +587,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20.r)),
-                    child: Text('Change', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.sp, fontWeight: FontWeight.w600, color: _white)),
+                    child: Text('Change', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _white)),
                   ),
                 ),
               ),
@@ -609,15 +610,15 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Gateway Charges', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 14.sp, fontWeight: FontWeight.w500, color: _subtitleGrey)),
-            Text('₹0', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 14.sp, fontWeight: FontWeight.w700, color: _accentGreen)),
+            Text('Gateway Charges', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.sp, fontWeight: FontWeight.w500, color: _subtitleGrey)),
+            Text('₹0', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.sp, fontWeight: FontWeight.w700, color: _accentGreen)),
           ]),
           SizedBox(height: 14.h),
           Divider(color: Color(0xFFE8E4DE), height: 1.h),
           SizedBox(height: 14.h),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Total to Pay', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 16.sp, fontWeight: FontWeight.w800, color: _titleDark)),
-            Text('₹${_fmt(vm.amount)}', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 18.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+            Text('Total to Pay', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 16.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+            Text('₹ ${_fmt(vm.amount)}', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w800, color: _titleDark)),
           ]),
           SizedBox(height: 16.h),
           Container(
@@ -629,7 +630,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
               Expanded(
                 child: Text(
                   'Complete the payment, then enter your UTR/Ref. ID and upload the screenshot before submitting.',
-                  style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
                 ),
               ),
             ]),
@@ -652,7 +653,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
       child: Row(children: [
         Icon(Icons.error_outline_rounded, color: _errorRed, size: 20.sp),
         SizedBox(width: 10.w),
-        Expanded(child: Text(message, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.sp, fontWeight: FontWeight.w500, color: _errorRed))),
+        Expanded(child: Text(message, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _errorRed))),
       ]),
     );
   }
@@ -688,7 +689,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
           loading: isLoading,
           onPressed: enabled ? () => _submit(vm) : null,
           textStyle: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 15.5.sp,
             fontWeight: FontWeight.w700,
             color: _white,
@@ -769,7 +770,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                       ),
                       SizedBox(width: 4.w),
                       Text('Deposit Funds',
-                          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
                     ],
                   ),
                 ),
@@ -792,12 +793,12 @@ class _PendingDepositBlocker extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         Text('Deposit Under Review',
-                            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
                         SizedBox(height: 8.h),
                         Text(
                           'Your deposit request is being reviewed\nby our team. Please wait for approval.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.55),
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.55),
                         ),
                         SizedBox(height: 28.h),
 
@@ -817,7 +818,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('DEPOSIT DETAILS',
-                                      style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
+                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                     decoration: BoxDecoration(
@@ -832,7 +833,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                                             decoration: const BoxDecoration(color: _amber, shape: BoxShape.circle)),
                                         SizedBox(width: 5.w),
                                         Text('Under Review',
-                                            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.5.sp, fontWeight: FontWeight.w700, color: _amber)),
+                                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.5.sp, fontWeight: FontWeight.w700, color: _amber)),
                                       ],
                                     ),
                                   ),
@@ -841,7 +842,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                               SizedBox(height: 16.h),
                               _DetailRow(label: 'Order ID', value: '#${record.id}', valueColor: _brandGreen, bold: true),
                               _detailDivider(),
-                              _DetailRow(label: 'Amount', value: '₹${_fmtAmount(record.amount)}', bold: true, valueColor: _titleDark),
+                              _DetailRow(label: 'Amount', value: '₹ ${_fmtAmount(record.amount)}', bold: true, valueColor: _titleDark),
                               _detailDivider(),
                               _DetailRow(label: 'UTR / Ref. ID', value: record.utrId),
                               _detailDivider(),
@@ -866,7 +867,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 'You can only have one active deposit request at a time. Once this request is approved or rejected by our admin team, you will be able to submit a new one.',
-                                style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: const Color(0xFF92400E), height: 1.5),
+                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: const Color(0xFF92400E), height: 1.5),
                               ),
                             ),
                           ]),
@@ -886,7 +887,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('APPROVAL PROGRESS',
-                                  style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
+                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
                               SizedBox(height: 16.h),
                               _TimelineStep(
                                 icon: Icons.check_circle_rounded,
@@ -941,7 +942,7 @@ class _PendingDepositBlocker extends StatelessWidget {
                             : Icon(Icons.refresh_rounded, size: 20.sp, color: _white),
                         label: Text(
                           isRefreshing ? 'Checking…' : 'Refresh Status',
-                          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _brandGreen,
@@ -1022,7 +1023,7 @@ class _UnderReviewReceipt extends StatelessWidget {
                     SizedBox(width: 40.w),
                     Expanded(
                       child: Text('Deposit Receipt', textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen)),
                     ),
                     SizedBox(width: 40.w),
                   ]),
@@ -1075,13 +1076,13 @@ class _UnderReviewReceipt extends StatelessWidget {
                           index: 0,
                           baseDelay: const Duration(milliseconds: 250),
                           child: Text('Request Submitted!',
-                              style: TextStyle(fontFamily: 'Times New Roman',fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+                              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
                         ),
                         SizedBox(height: 6.h),
                         Text(
                           'Your deposit is now under admin review.\nFunds will be credited once approved.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.5),
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.5),
                         ),
                         SizedBox(height: 28.h),
 
@@ -1098,7 +1099,7 @@ class _UnderReviewReceipt extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('TRANSACTION DETAILS',
-                                  style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
+                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
                               SizedBox(height: 16.h),
                               _InvoiceRow(label: 'Order ID', value: '#$orderId', valueColor: _brandGreen, bold: true),
                               _invoiceDivider(),
@@ -1106,7 +1107,7 @@ class _UnderReviewReceipt extends StatelessWidget {
                               _invoiceDivider(),
                               _InvoiceRow(label: 'Payment Method', value: method),
                               _invoiceDivider(),
-                              _InvoiceRow(label: 'Amount', value: '₹${_fmtAmount(amount)}', bold: true, valueColor: _titleDark),
+                              _InvoiceRow(label: 'Amount', value: '₹ ${_fmtAmount(amount)}', bold: true, valueColor: _titleDark),
                               _invoiceDivider(),
                               _InvoiceRow(label: 'Submitted On', value: _fmtDate(submittedAt)),
                               _invoiceDivider(),
@@ -1131,7 +1132,7 @@ class _UnderReviewReceipt extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 'Admin will review your payment and approve or reject it. You will not be able to submit another deposit until this one is resolved. Save your Order ID for reference.',
-                                style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: const Color(0xFF92400E), height: 1.45),
+                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: const Color(0xFF92400E), height: 1.45),
                               ),
                             ),
                           ]),
@@ -1158,7 +1159,7 @@ class _UnderReviewReceipt extends StatelessWidget {
                           backgroundColor: _brandGreen, foregroundColor: _white, elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
                         ),
-                        child: Text('Done', style: TextStyle(fontFamily: 'Times New Roman',fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white)),
+                        child: Text('Done', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white)),
                       ),
                     ),
                   ),
@@ -1218,13 +1219,13 @@ class _TimelineStep extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.5.sp,
                       fontWeight: isDone || isActive ? FontWeight.w700 : FontWeight.w500,
                       color: isDone || isActive ? _titleDark : _labelGrey)),
               SizedBox(height: 2.h),
               Text(sublabel,
-                  style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
             ],
           ),
         ),
@@ -1266,11 +1267,11 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+      Text(label, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
       SizedBox(width: 16.w),
       Flexible(
         child: Text(value, textAlign: TextAlign.right,
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp,
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp,
                 fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
                 color: valueColor ?? _titleDark)),
       ),
@@ -1288,11 +1289,11 @@ class _InvoiceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+      Text(label, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
       SizedBox(width: 16.w),
       Flexible(
         child: Text(value, textAlign: TextAlign.right,
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp,
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp,
                 fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
                 color: valueColor ?? _titleDark)),
       ),
@@ -1326,7 +1327,7 @@ class _MethodChip extends StatelessWidget {
             Icon(icon, color: selected ? _accentGreen : _labelGrey, size: 24.sp),
             SizedBox(height: 6.h),
             Text(label, textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: 'Times New Roman',fontSize: 12.5.sp, fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                     color: selected ? _brandGreen : _subtitleGrey)),
           ]),
         ),
@@ -1346,9 +1347,9 @@ class _CopyRow extends StatelessWidget {
     return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 11.sp, fontWeight: FontWeight.w500, color: _labelGrey)),
+          Text(label, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w500, color: _labelGrey)),
           SizedBox(height: 2.h),
-          Text(value, style: TextStyle(fontFamily: 'Times New Roman',fontSize: 14.sp, fontWeight: FontWeight.w700, color: _titleDark)),
+          Text(value, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.sp, fontWeight: FontWeight.w700, color: _titleDark)),
         ]),
       ),
       if (onCopy != null)

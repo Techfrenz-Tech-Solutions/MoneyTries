@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../routes/app_routes.dart';
@@ -382,7 +383,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                       SizedBox(width: 8.w),
                       Text(
                         'Moneytries',
-                        style: TextStyle(fontFamily: 'Times New Roman',
+                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w800,
                           color: _brandGreen,
@@ -420,7 +421,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                 // ── Title ─────────────────────────────────────────────────
                 Text(
                   'Enter your PIN',
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 22.sp,
                     fontWeight: FontWeight.w800,
                     color: _titleColor,
@@ -433,7 +434,7 @@ class _AppPinScreenState extends State<AppPinScreen>
 
                 Text(
                   'Use your 4-digit Moneytries PIN',
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.5.sp,
                     color: _subtitleColor,
                     height: 1.4,
@@ -444,7 +445,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                   SizedBox(height: 4.h),
                   Text(
                     _accountLabel,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.5.sp,
                       fontWeight: FontWeight.w700,
                       color: _brandGreen,
@@ -491,7 +492,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                   SizedBox(height: 4.h),
                   Text(
                     'Tap to use biometrics',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.5.sp,
                       fontWeight: FontWeight.w500,
                       color: _subtitleColor,
@@ -541,7 +542,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                   duration: const Duration(milliseconds: 200),
                   child: Text(
                     _error ?? '',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       color: _errorRed,
                       fontWeight: FontWeight.w500,
@@ -577,7 +578,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                                 onTap: () => _onKey(0),
                                 child: Text(
                                   '0',
-                                  style: TextStyle(fontFamily: 'Times New Roman',
+                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 26.sp,
                                     fontWeight: FontWeight.w600,
                                     color: _keyText,
@@ -616,7 +617,7 @@ class _AppPinScreenState extends State<AppPinScreen>
                               ),
                               child: Text(
                                 'Login with Password',
-                                style: TextStyle(fontFamily: 'Times New Roman',
+                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -654,7 +655,7 @@ class _KeyRow extends StatelessWidget {
                   onTap: () => onKey(k),
                   child: Text(
                     '$k',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w600,
                       color: _keyText,

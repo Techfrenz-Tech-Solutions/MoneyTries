@@ -1,4 +1,4 @@
-// lib/widgets/animations/animated_primary_button.dart
+﻿// lib/widgets/animations/animated_primary_button.dart
 //
 // A pill/rounded action button with press-scale feedback and a smooth
 // morph into a loading spinner when `loading` is true — mirrors the
@@ -6,6 +6,7 @@
 // communicates in-flight state instead of a separate spinner overlay.
 // Visual only: pass your existing onPressed/label/style through.
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../services/audio/interaction_feedback.dart';
 
 class AnimatedPrimaryButton extends StatefulWidget {
@@ -109,7 +110,7 @@ class _AnimatedPrimaryButtonState extends State<AnimatedPrimaryButton> {
                             widget.label,
                             style: widget.textStyle ??
                                 TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: widget.textColor,

@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -118,7 +119,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
         SnackBar(
           content: Text(
             'Payment submitted — pending review.',
-            style: TextStyle(fontFamily: 'Times New Roman', fontSize: 13.sp),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
           ),
           backgroundColor: const Color(0xFF4CAF7D),
           behavior: SnackBarBehavior.floating,
@@ -135,7 +136,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
         content: Text(
           msg,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: const Color(0xFF111827),
           ),
@@ -183,7 +184,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                     child: Text(
                       _upiPhase ? 'Complete Payment — UPI' : 'Complete Payment',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
                         color: _dark,
@@ -241,16 +242,16 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                               Text(
                                 'Investment Payment',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 12.sp,
                                   color: _green.withValues(alpha: 0.75),
                                 ),
                               ),
                               SizedBox(height: 4.h),
                               Text(
-                                '₹${_inr(_plan.monthlyAmount)}',
+                                '₹ ${_inr(_plan.monthlyAmount)}',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 28.sp,
                                   fontWeight: FontWeight.w800,
                                   color: _dark,
@@ -264,7 +265,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                               Text(
                                 _plan.planType.displayName,
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w600,
                                   color: _green,
@@ -273,7 +274,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                               Text(
                                 '${_plan.monthsPaid}/${_plan.totalMonths} months paid',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 12.sp,
                                   color: _green.withValues(alpha: 0.75),
                                 ),
@@ -299,9 +300,9 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                             SizedBox(width: 8.w),
                             Expanded(
                               child: Text(
-                                'Monthly amount is fixed — ₹${_inr(_plan.monthlyAmount)} for all months',
+                                'Monthly amount is fixed — ₹ ${_inr(_plan.monthlyAmount)} for all months',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 11.sp,
                                   color: _green.withValues(alpha: 0.85),
                                 ),
@@ -352,7 +353,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                   Text(
                     'Pay Now',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w700,
                       color: _green,
@@ -404,16 +405,16 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                           Text(
                             'Investment Payment',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               color: _green.withValues(alpha: 0.75),
                             ),
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            '₹${_inr(_plan.monthlyAmount)}',
+                            '₹ ${_inr(_plan.monthlyAmount)}',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 28.sp,
                               fontWeight: FontWeight.w800,
                               color: _dark,
@@ -427,7 +428,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                           Text(
                             _plan.planType.displayName,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
                               color: _green,
@@ -436,7 +437,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                           Text(
                             '${_plan.monthsPaid}/${_plan.totalMonths} months paid',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               color: _green.withValues(alpha: 0.75),
                             ),
@@ -452,7 +453,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                 Text(
                   'Transaction Reference (UTR)',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: _grey,
@@ -474,7 +475,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                   child: TextField(
                     controller: _utrCtrl,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: _dark,
@@ -482,7 +483,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                     decoration: InputDecoration(
                       hintText: 'Enter UTR / Transaction ID',
                       hintStyle: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.sp,
                         color: _greyLight,
                       ),
@@ -503,7 +504,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                 Text(
                   'Payment Screenshot',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: _grey,
@@ -566,7 +567,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                               Text(
                                 'Tap to upload screenshot',
                                 style: TextStyle(
-                                  fontFamily: 'Times New Roman',
+                                  fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 13.sp,
                                   color: _grey,
                                 ),
@@ -646,7 +647,7 @@ class _PlanPaymentScreenState extends State<PlanPaymentScreen> {
                         Text(
                           'Submit Payment',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
                             color: _green,
@@ -691,7 +692,7 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
       SnackBar(
         content: Text(
           'Copied!',
-          style: TextStyle(fontFamily: 'Times New Roman', fontSize: 13.sp),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
         ),
         backgroundColor: const Color(0xFF4CAF7D),
         behavior: SnackBarBehavior.floating,
@@ -751,7 +752,7 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,
           color: sel ? _white : _grey,
@@ -791,7 +792,7 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.sp,
               color: _greyLight,
             ),
@@ -799,7 +800,7 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
           Text(
             value,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 14.sp,
               fontWeight: FontWeight.w700,
               color: _dark,
@@ -822,7 +823,7 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
               Text(
                 'Copy',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF4CAF7D),
@@ -848,15 +849,15 @@ class _PaymentDetailsBlockState extends State<_PaymentDetailsBlock> {
         Text(
           'Amount to Pay',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: const Color(0xFF4CAF7D),
           ),
         ),
         Text(
-          '₹${widget.inr(widget.amount)}',
+          '₹ ${widget.inr(widget.amount)}',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 16.sp,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF4CAF7D),

@@ -1,11 +1,14 @@
-// lib/views/profile/security_settings_view.dart
+﻿// lib/views/profile/security_settings_view.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/security/security_model.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
 import 'change_password_screen.dart';
+import 'change_login_pin_screen.dart';
+import 'change_withdrawal_pin_screen.dart';
 import '../../utils/responsive.dart';
 
 // -- Palette -------------------------------------------------------------------
@@ -46,7 +49,7 @@ class _SecuritySettingsBody extends StatelessWidget {
           content: Text(
             msg,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w500,
               color: _white,
@@ -99,7 +102,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             title: Text(
               'Security Settings',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -139,7 +142,12 @@ class _SecuritySettingsBody extends StatelessWidget {
                   icon: Icons.lock_outline_rounded,
                   title: 'Change PIN',
                   subtitle: 'Update your 4-digit security PIN',
-                  onTap: () => _openChangePinSheet(context),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ChangeLoginPinScreen(),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 12.h),
                 _actionTile(
@@ -187,7 +195,7 @@ class _SecuritySettingsBody extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontFamily: 'Times New Roman',
+        fontFamily: GoogleFonts.inter().fontFamily,
         fontSize: 14.sp,
         fontWeight: FontWeight.w600,
         color: _subtitleGrey,
@@ -237,7 +245,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: _titleDark,
@@ -247,7 +255,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w400,
                       color: _subtitleGrey,
@@ -305,7 +313,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   'Biometric Login',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -317,7 +325,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                       ? 'Use fingerprint or Face ID to sign in'
                       : 'Not available on this device',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -378,7 +386,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   '2FA via SMS',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -388,7 +396,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   'Receive OTP on your registered mobile',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -417,23 +425,23 @@ class _SecuritySettingsBody extends StatelessWidget {
   // BOTTOM SHEETS
   // --------------------------------------------------------------------------
 
-  // -- Change PIN sheet ------------------------------------------------------
-  void _openChangePinSheet(BuildContext context) {
-    final vm = context.read<SecurityViewModel>()..resetChangePinFlow();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: vm,
-        child: const _ChangePinSheet(),
-      ),
-    );
-  }
-
-  // -- Withdrawal PIN sheet --------------------------------------------------
+  // -- Withdrawal PIN ----------------------------------------------------
+  // If a Withdrawal PIN already exists, use the dedicated Change Withdrawal
+  // PIN flow (server-enforced current-PIN verification with a 5-attempt
+  // cap and 5-minute lockout). If none is set yet, there's no "current
+  // PIN" to verify, so first-time setup stays on the simpler bottom sheet.
   void _openWithdrawalPinSheet(BuildContext context) {
-    final vm = context.read<SecurityViewModel>()..resetWithdrawalPinFlow();
+    final vm = context.read<SecurityViewModel>();
+    if (vm.hasWithdrawalPin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const ChangeWithdrawalPinScreen(),
+        ),
+      );
+      return;
+    }
+    vm.resetWithdrawalPinFlow();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -469,7 +477,7 @@ class _SecuritySettingsBody extends StatelessWidget {
         title: Text(
           'Disable 2FA',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 17.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -478,7 +486,7 @@ class _SecuritySettingsBody extends StatelessWidget {
         content: Text(
           'Disabling two-factor authentication will make your account less secure. Are you sure?',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -490,7 +498,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
               ),
@@ -504,7 +512,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             child: Text(
               'Disable',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
               ),
@@ -525,126 +533,6 @@ class _SecuritySettingsBody extends StatelessWidget {
       builder: (_) => ChangeNotifierProvider.value(
         value: vm,
         child: const _ManageDevicesSheet(),
-      ),
-    );
-  }
-}
-
-// ------------------------------------------------------------------------------
-// CHANGE PIN SHEET
-// ------------------------------------------------------------------------------
-class _ChangePinSheet extends StatelessWidget {
-  const _ChangePinSheet();
-
-  @override
-  Widget build(BuildContext context) {
-    final vm = context.watch<SecurityViewModel>();
-
-    // Auto-close when done
-    if (vm.pinChanged) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Navigator.canPop(context)) Navigator.pop(context);
-      });
-    }
-
-    return _SheetWrapper(
-      height: 0.88.h,
-      child: Column(
-        children: [
-          _SheetHandle(),
-          SizedBox(height: 20.h),
-          // Step indicator
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              final done = i < vm.changePinStep;
-              final active = i == vm.changePinStep;
-              return Container(
-                width: active ? 24 : 8,
-                height: 8.h,
-                margin: EdgeInsets.symmetric(horizontal: 3.w),
-                decoration: BoxDecoration(
-                  color: done || active ? _brandGreen : _dotEmpty,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              );
-            }),
-          ),
-          SizedBox(height: 20.h),
-          // Lock icon
-          Container(
-            width: 64.w,
-            height: 64.h,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: _iconBg,
-            ),
-            child: Icon(
-              vm.changePinStep == 0
-                  ? Icons.lock_open_rounded
-                  : vm.changePinStep == 1
-                  ? Icons.lock_outline_rounded
-                  : Icons.lock_rounded,
-              size: 30.sp,
-              color: _brandGreen,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            vm.changePinTitle,
-            style: TextStyle(
-              fontFamily: 'Times New Roman',
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w800,
-              color: _titleDark,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 28.w),
-            child: Text(
-              vm.changePinSubtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Times New Roman',
-                fontSize: 13.5.sp,
-                fontWeight: FontWeight.w400,
-                color: _subtitleGrey,
-                height: 1.5,
-              ),
-            ),
-          ),
-          SizedBox(height: 28.h),
-          // PIN dots
-          _PinDots(
-            length: SecurityViewModel.pinLength,
-            filled: vm.activePinEntry.length,
-          ),
-          if (vm.pinError != null) ...[
-            SizedBox(height: 10.h),
-            Text(
-              vm.pinError!,
-              style: TextStyle(
-                fontFamily: 'Times New Roman',
-                fontSize: 12.5.sp,
-                fontWeight: FontWeight.w600,
-                color: _errorRed,
-              ),
-            ),
-          ],
-          const Spacer(),
-          // Numpad
-          _NumPad(
-            onKey: vm.pinKeyPress,
-            onDelete: vm.pinDelete,
-            onConfirm: vm.action == SecurityAction.loading
-                ? null
-                : () => vm.pinConfirm(),
-            confirmLabel: vm.changePinStep == 2 ? 'Confirm' : 'Next',
-            isLoading: vm.action == SecurityAction.loading,
-          ),
-          SizedBox(height: 20.h),
-        ],
       ),
     );
   }
@@ -709,7 +597,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
           Text(
             vm.withdrawalPinTitle,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 20.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -722,7 +610,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
               vm.withdrawalPinSubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.5.sp,
                 fontWeight: FontWeight.w400,
                 color: _subtitleGrey,
@@ -741,7 +629,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
             Text(
               vm.withdrawalPinError!,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: _errorRed,
@@ -821,7 +709,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
           Text(
             'Verify your number',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 20.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -834,7 +722,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 : 'We\'ll send an OTP to your registered\nmobile number to enable 2FA.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -885,7 +773,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                           : Text(
                               'Send OTP',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF1F6B45),
@@ -914,7 +802,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                       maxLength: 1,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -959,7 +847,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 Text(
                   "Didn't receive OTP? ",
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     color: _subtitleGrey,
                   ),
@@ -968,7 +856,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                     ? Text(
                         'Resend in ${vm.otpCountdown}s',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           color: _accentGreen,
@@ -979,7 +867,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                         child: Text(
                           'Resend OTP',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w700,
                             color: _brandGreen,
@@ -1030,7 +918,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                         : Text(
                             'Verify & Enable',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF1F6B45),
@@ -1076,7 +964,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Active Sessions',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w800,
                 color: _titleDark,
@@ -1091,7 +979,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                   ? 'Loading sessions...'
                   : '${vm.sessions.length} device${vm.sessions.length == 1 ? '' : 's'} currently signed in',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.5.sp,
                 color: _subtitleGrey,
               ),
@@ -1117,7 +1005,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                         Text(
                           'No active sessions found',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp,
                             color: _labelGrey,
                             fontWeight: FontWeight.w500,
@@ -1176,7 +1064,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                         child: Text(
                                           s.deviceName,
                                           style: TextStyle(
-                                            fontFamily: 'Times New Roman',
+                                            fontFamily: GoogleFonts.inter().fontFamily,
                                             fontSize: 14.5.sp,
                                             fontWeight: FontWeight.w700,
                                             color: _titleDark,
@@ -1199,7 +1087,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                           child: Text(
                                             'This device',
                                             style: TextStyle(
-                                              fontFamily: 'Times New Roman',
+                                              fontFamily: GoogleFonts.inter().fontFamily,
                                               fontSize: 10.5.sp,
                                               fontWeight: FontWeight.w700,
                                               color: _accentGreen,
@@ -1213,7 +1101,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                   Text(
                                     '${s.location} � ${s.lastActive}',
                                     style: TextStyle(
-                                      fontFamily: 'Times New Roman',
+                                      fontFamily: GoogleFonts.inter().fontFamily,
                                       fontSize: 12.sp,
                                       color: _subtitleGrey,
                                     ),
@@ -1236,7 +1124,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                   child: Text(
                                     'Sign out',
                                     style: TextStyle(
-                                      fontFamily: 'Times New Roman',
+                                      fontFamily: GoogleFonts.inter().fontFamily,
                                       fontSize: 12.5.sp,
                                       fontWeight: FontWeight.w700,
                                       color: _errorRed,
@@ -1270,7 +1158,7 @@ class _ManageDevicesSheet extends StatelessWidget {
         title: Text(
           'Sign out device?',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 17.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -1279,7 +1167,7 @@ class _ManageDevicesSheet extends StatelessWidget {
         content: Text(
           'Are you sure you want to sign out "${session.deviceName}"?',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -1291,7 +1179,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
               ),
@@ -1305,7 +1193,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Sign Out',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
               ),
@@ -1482,7 +1370,7 @@ class _NumPad extends StatelessWidget {
                     : Text(
                         confirmLabel,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF1F6B45),
@@ -1519,7 +1407,7 @@ class _KeyBtn extends StatelessWidget {
             child: Text(
               '$digit',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
                 color: _titleDark,

@@ -1,6 +1,7 @@
 ﻿import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -384,7 +385,7 @@ class _SoftActionState extends State<_SoftAction> {
                 Text(
                   widget.label,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.5.sp,
                     fontWeight: FontWeight.w700,
                     color: widget.outline ? _primaryDark : _primaryDark,
@@ -529,7 +530,7 @@ class _SupportScreenState extends State<SupportScreen> {
             child: Text(
               'Help & Support',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 19.sp,
                 fontWeight: FontWeight.w700,
                 color: _ink,
@@ -588,7 +589,7 @@ class _SupportScreenState extends State<SupportScreen> {
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w700,
                 color: selected ? _primaryDark : _bodyGrey,
@@ -822,7 +823,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
       SnackBar(
         content: Text(
           msg,
-          style: TextStyle(fontFamily: 'Times New Roman', fontSize: 13.sp),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
         ),
         backgroundColor: error ? _danger : _primaryDark,
         behavior: SnackBarBehavior.floating,
@@ -877,7 +878,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
               Text(
                 'New',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: _primaryDark,
@@ -939,7 +940,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
               Text(
                 'No conversations yet',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 17.sp,
                   fontWeight: FontWeight.w700,
                   color: _ink,
@@ -950,7 +951,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                 'Start a conversation with our support team.\nWe usually respond within 24 hours.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp,
                   color: _bodyGrey,
                   height: 1.6,
@@ -1023,7 +1024,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w700,
                             color: _ink,
@@ -1034,7 +1035,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                         Text(
                           _formatShort(updatedAt),
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 10.5.sp,
                             color: _mutedGrey,
                           ),
@@ -1047,7 +1048,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       color: _bodyGrey,
                     ),
@@ -1067,7 +1068,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                         child: Text(
                           statusInfo.$3,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w700,
                             color: statusInfo.$1,
@@ -1085,7 +1086,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                         Text(
                           'Replied',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 10.5.sp,
                             fontWeight: FontWeight.w600,
                             color: _primary,
@@ -1121,7 +1122,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
               Text(
                 'New Conversation',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.w700,
                   color: _ink,
@@ -1139,7 +1140,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                 Text(
                   'Category',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w700,
                     color: _bodyGrey,
@@ -1186,7 +1187,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                             Text(
                               cat.label,
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
                                 color: selected ? _chipDark : _bodyGrey,
@@ -1202,7 +1203,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                 Text(
                   'Subject',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w700,
                     color: _bodyGrey,
@@ -1214,7 +1215,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                 Text(
                   'Message',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w700,
                     color: _bodyGrey,
@@ -1241,7 +1242,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
             child: Text(
               'Our team typically responds within 24 hours',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 11.5.sp,
                 color: _mutedGrey,
               ),
@@ -1278,14 +1279,14 @@ class _TicketsPaneState extends State<_TicketsPane> {
         controller: ctrl,
         maxLines: maxLines,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 13.5.sp,
           color: _ink,
         ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             color: _mutedGrey,
           ),
@@ -1338,7 +1339,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w700,
                           color: _ink,
@@ -1359,7 +1360,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                           Text(
                             statusInfo.$3,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 11.sp,
                               color: statusInfo.$1,
                               fontWeight: FontWeight.w600,
@@ -1414,7 +1415,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                         Text(
                           'Awaiting a response from our team',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 12.5.sp,
                             color: _bodyGrey,
                           ),
@@ -1465,14 +1466,14 @@ class _TicketsPaneState extends State<_TicketsPane> {
                       maxLines: 4,
                       minLines: 1,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 13.5.sp,
                         color: _ink,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
                         hintStyle: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.sp,
                           color: _mutedGrey,
                         ),
@@ -1503,7 +1504,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
               child: Text(
                 'This conversation is closed',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   color: _mutedGrey,
                 ),
@@ -1546,7 +1547,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                 Text(
                   isAdmin ? 'Support Team' : name,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
                     color: _bodyGrey,
@@ -1590,7 +1591,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
                   child: Text(
                     message,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.5.sp,
                       color: isAdmin ? _ink : Colors.white,
                       height: 1.55,
@@ -1604,7 +1605,7 @@ class _TicketsPaneState extends State<_TicketsPane> {
               Text(
                 _formatShort(date),
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 10.sp,
                   color: _mutedGrey,
                 ),
@@ -1711,14 +1712,14 @@ class _FaqPaneState extends State<_FaqPane> {
             controller: _searchCtrl,
             onChanged: (v) => setState(() => _query = v),
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               color: _ink,
             ),
             decoration: InputDecoration(
               hintText: 'Search FAQs — e.g. withdraw, KYC, ROI...',
               hintStyle: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 color: _mutedGrey,
               ),
@@ -1788,7 +1789,7 @@ class _FaqPaneState extends State<_FaqPane> {
                   child: Text(
                     cat,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w600,
                       color: selected ? _chipDark : _bodyGrey,
@@ -1815,7 +1816,7 @@ class _FaqPaneState extends State<_FaqPane> {
                   Text(
                     'No FAQs match your search',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.sp,
                       color: _bodyGrey,
                     ),
@@ -1853,7 +1854,7 @@ class _FaqPaneState extends State<_FaqPane> {
         Text(
           title,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.5.sp,
             fontWeight: FontWeight.w700,
             color: _ink,
@@ -1897,7 +1898,7 @@ class _FaqPaneState extends State<_FaqPane> {
                       child: Text(
                         faq.q,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.3.sp,
                           fontWeight: FontWeight.w600,
                           color: _ink,
@@ -1924,7 +1925,7 @@ class _FaqPaneState extends State<_FaqPane> {
                           child: Text(
                             faq.a,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.8.sp,
                               color: _bodyGrey,
                               height: 1.6,
@@ -1991,7 +1992,7 @@ class _FaqPaneState extends State<_FaqPane> {
                         Text(
                           t.$2,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 12.8.sp,
                             fontWeight: FontWeight.w700,
                             color: _ink,
@@ -2001,7 +2002,7 @@ class _FaqPaneState extends State<_FaqPane> {
                         Text(
                           t.$3,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 11.8.sp,
                             color: _bodyGrey,
                             height: 1.5,
@@ -2085,7 +2086,7 @@ class _FaqPaneState extends State<_FaqPane> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: _ink,
@@ -2157,7 +2158,7 @@ class _FaqPaneState extends State<_FaqPane> {
                           child: Text(
                             title,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 17.sp,
                               fontWeight: FontWeight.w700,
                               color: _ink,
@@ -2175,7 +2176,7 @@ class _FaqPaneState extends State<_FaqPane> {
                       child: Text(
                         content,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 13.sp,
                           color: _bodyGrey,
                           height: 1.75,

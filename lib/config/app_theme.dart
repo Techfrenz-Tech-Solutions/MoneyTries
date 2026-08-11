@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import '../utils/responsive.dart';
 
@@ -34,7 +35,8 @@ class AppTheme {
   static const Color goldGlow = Color(0x334CAF7D);
   static const Color canvasDark = AppColors.background;
 
-  static const String _font = 'Times New Roman';
+  // Inter via google_fonts — clean, modern, professional fintech typography
+  static String get _font => GoogleFonts.inter().fontFamily!;
 
   // ── Static base theme (used as fallback before context is available) ──
   // Font sizes here use design-baseline values (375 dp reference frame).
@@ -64,40 +66,38 @@ class AppTheme {
     required double bodyLargeFontSize,
     required double labelLargeFontSize,
   }) {
+    final baseTextTheme = GoogleFonts.interTextTheme();
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: background,
       brightness: Brightness.light,
       fontFamily: _font,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryGreen,
-        primary: primaryGreen,
-        surface: surfaceCard,
-        brightness: Brightness.light,
-      ),
-      textTheme: TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: _font,
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: baseTextTheme.displayLarge?.copyWith(
           fontSize: displayLargeFontSize,
           fontWeight: FontWeight.w800,
           color: titleColor,
           letterSpacing: -0.3,
           height: 1.15,
         ),
-        bodyLarge: TextStyle(
-          fontFamily: _font,
+        bodyLarge: baseTextTheme.bodyLarge?.copyWith(
           fontSize: bodyLargeFontSize,
           fontWeight: FontWeight.w400,
           color: bodyColor,
           height: 1.65,
         ),
-        labelLarge: TextStyle(
-          fontFamily: _font,
+        labelLarge: baseTextTheme.labelLarge?.copyWith(
           fontSize: labelLargeFontSize,
           fontWeight: FontWeight.w800,
           color: white,
           letterSpacing: 1.2,
         ),
+      ),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primaryGreen,
+        primary: primaryGreen,
+        surface: surfaceCard,
+        brightness: Brightness.light,
       ),
     );
   }

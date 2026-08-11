@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -174,7 +175,7 @@ class _LoginContentState extends State<_LoginContent> {
             borderRadius: BorderRadius.circular(10.r),
             borderSide: BorderSide(color: _borderColorFocus, width: 1.5.r),
           ),
-          hintStyle: TextStyle(fontFamily: 'Times New Roman',
+          hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             color: _hintColor,
             fontSize: 14.5.sp,
             fontWeight: FontWeight.w400,
@@ -257,7 +258,7 @@ class _LoginContentState extends State<_LoginContent> {
                         // ── Title ────────────────────────────────────────
                         Text(
                           'Welcome Back',
-                          style: TextStyle(fontFamily: 'Times New Roman',
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 26.sp,
                             fontWeight: FontWeight.w800,
                             color: _titleColor,
@@ -269,7 +270,7 @@ class _LoginContentState extends State<_LoginContent> {
                         SizedBox(height: 6.h),
                         Text(
                           'Secure access to your Moneytries portfolio',
-                          style: TextStyle(fontFamily: 'Times New Roman',
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 13.5.sp,
                             fontWeight: FontWeight.w400,
                             color: _subtitleColor,
@@ -317,7 +318,7 @@ class _LoginContentState extends State<_LoginContent> {
                                   // ── Identifier label + field ──────────
                                   Text(
                                     'Mobile Number or Email',
-                                    style: TextStyle(fontFamily: 'Times New Roman',
+                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                       fontSize: 12.5.sp,
                                       fontWeight: FontWeight.w500,
                                       color: _labelColor,
@@ -343,7 +344,7 @@ class _LoginContentState extends State<_LoginContent> {
                                     children: [
                                       Text(
                                         'Password',
-                                        style: TextStyle(fontFamily: 'Times New Roman',
+                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                           fontSize: 12.5.sp,
                                           fontWeight: FontWeight.w500,
                                           color: _labelColor,
@@ -354,7 +355,7 @@ class _LoginContentState extends State<_LoginContent> {
                                         onTap: _handleForgotPassword,
                                         child: Text(
                                           'Forgot Password?',
-                                          style: TextStyle(fontFamily: 'Times New Roman',
+                                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                             fontSize: 12.5.sp,
                                             fontWeight: FontWeight.w600,
                                             color: _forgotColor,
@@ -413,7 +414,7 @@ class _LoginContentState extends State<_LoginContent> {
                                         SizedBox(width: 10.w),
                                         Text(
                                           'Remember me',
-                                          style: TextStyle(fontFamily: 'Times New Roman',
+                                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                             fontSize: 13.sp,
                                             fontWeight: FontWeight.w500,
                                             color: _labelColor,
@@ -455,7 +456,7 @@ class _LoginContentState extends State<_LoginContent> {
                                             )
                                           : Text(
                                               'Login',
-                                              style: TextStyle(fontFamily: 'Times New Roman',
+                                              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                                 fontSize: 16.sp,
                                                 fontWeight: FontWeight.w700,
                                                 color: Colors.white,
@@ -480,7 +481,7 @@ class _LoginContentState extends State<_LoginContent> {
                             children: [
                               Text(
                                 "Don't have an account?  ",
-                                style: TextStyle(fontFamily: 'Times New Roman',
+                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                   fontSize: 13.5.sp,
                                   fontWeight: FontWeight.w400,
                                   color: _subtitleColor,
@@ -493,7 +494,7 @@ class _LoginContentState extends State<_LoginContent> {
                                 ),
                                 child: Text(
                                   'Register',
-                                  style: TextStyle(fontFamily: 'Times New Roman',
+                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                     fontSize: 13.5.sp,
                                     fontWeight: FontWeight.w600,
                                     color: _greenLink,
@@ -522,7 +523,7 @@ class _LoginContentState extends State<_LoginContent> {
         SnackBar(
           content: Text(
             message,
-            style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.5.sp, color: Colors.white),
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, color: Colors.white),
           ),
           backgroundColor: isError ? _errorRed : _greenPrimary,
           behavior: SnackBarBehavior.floating,
@@ -680,7 +681,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
                 color: _errorRed,
@@ -724,14 +725,14 @@ class _InputField extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           onChanged: onChanged,
-          style: TextStyle(fontFamily: 'Times New Roman',
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.5.sp,
             color: const Color(0xFF374151),
             fontWeight: FontWeight.w400,
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(fontFamily: 'Times New Roman',
+            hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               color: _hintColor,
               fontSize: 14.5.sp,
               fontWeight: FontWeight.w400,
@@ -786,7 +787,7 @@ class _InputField extends StatelessWidget {
               Expanded(
                 child: Text(
                   errorText!,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp,
                     color: _errorRed,
                     fontWeight: FontWeight.w500,
@@ -830,7 +831,7 @@ class _PasswordField extends StatelessWidget {
           obscureText: obscure,
           obscuringCharacter: '●',
           onChanged: onChanged,
-          style: TextStyle(fontFamily: 'Times New Roman',
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.5.sp,
             color: const Color(0xFF374151),
             fontWeight: FontWeight.w400,
@@ -838,7 +839,7 @@ class _PasswordField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: 'Enter password',
-            hintStyle: TextStyle(fontFamily: 'Times New Roman',
+            hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               color: _hintColor,
               fontSize: 14.5.sp,
               fontWeight: FontWeight.w400,
@@ -910,7 +911,7 @@ class _PasswordField extends StatelessWidget {
               Expanded(
                 child: Text(
                   errorText!,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp,
                     color: _errorRed,
                     fontWeight: FontWeight.w500,

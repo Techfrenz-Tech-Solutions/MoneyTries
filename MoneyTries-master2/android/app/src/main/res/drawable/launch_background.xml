@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Solid background that matches the top gradient colour of the Flutter
-     SplashScreen (#F3FBF6 near-white mint). No logo is drawn here — the
-     animated Flutter SplashScreen is the only branded splash the user sees.
-     This prevents any flash or icon pop before Flutter paints its first frame. -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/launch_background" />
-</layer-list>

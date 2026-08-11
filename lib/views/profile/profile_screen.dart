@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/plan/plan_models.dart';
@@ -300,7 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             'Moneytries',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 24.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -460,7 +461,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : Text(
                     userName.isEmpty ? '—' : userName,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 22.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF111827),
@@ -506,7 +507,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         tierLabel,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w600,
                           color: _brandGreen,
@@ -555,7 +556,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: _accentGreen,
                 iconBg: _iconBg,
                 label: 'Plan Balance',
-                value: '₹${_fmtAmount(planBalance)}',
+                value: '₹ ${_fmtAmount(planBalance)}',
                 isLoading: vm.listState == PlanVmState.loading,
               ),
               _buildPillDivider(),
@@ -622,14 +623,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   value,
                   style: isMonospace
                       ? TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w700,
                           color: _titleDark,
                           height: 1.1,
                         )
                       : TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
                           color: _titleDark,
@@ -641,7 +642,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.sp,
               color: _subtitleGrey,
               fontWeight: FontWeight.w400,
@@ -678,7 +679,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Text(
       title,
       style: TextStyle(
-        fontFamily: 'Times New Roman',
+        fontFamily: GoogleFonts.inter().fontFamily,
         fontSize: 15.sp,
         fontWeight: FontWeight.w600,
         color: _titleDark,
@@ -729,7 +730,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     title,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: _titleDark,
@@ -749,7 +750,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text(
                       badgeText,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 12.5.sp,
                         fontWeight: FontWeight.w600,
                         color: _pendingText,
@@ -786,7 +787,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Text(
                               c,
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 12.5.sp,
                                 fontWeight: FontWeight.w500,
                                 color: _chipText,
@@ -852,7 +853,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         'Plan Details',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: _titleDark,
@@ -865,7 +866,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ? '${activePlans.length} active plan${activePlans.length > 1 ? 's' : ''} running'
                               : '$totalPlans plan${totalPlans > 1 ? 's' : ''} completed',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 12.sp,
                             color: _subtitleGrey,
                           ),
@@ -887,7 +888,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text(
                       '${activePlans.length} Active',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.5.sp,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF4CAF7D),
@@ -943,7 +944,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     'Invite Friends',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1A1A),
@@ -982,7 +983,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Text(
               'Logout',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w700,
                 color: _logoutText,
@@ -1049,7 +1050,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Text(
         'App Version 1.1.14',
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 12.5.sp,
           fontWeight: FontWeight.w400,
           color: _subtitleGrey,

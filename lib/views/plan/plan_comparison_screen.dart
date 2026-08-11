@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
@@ -161,7 +162,7 @@ class PlanComparisonScreen extends StatelessWidget {
                     Text(
                       'Moneytries',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 17.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -208,8 +209,8 @@ class PlanComparisonScreen extends StatelessWidget {
     final subtitle = planCount == 0
         ? 'You\'ve already enrolled in every available plan.'
         : planCount == 1
-        ? 'Based on an investment of ₹${_inr(amount)}, here\'s your remaining plan option.'
-        : 'Based on an investment of ₹${_inr(amount)}, here\'s how each plan performs.';
+        ? 'Based on an investment of ₹ ${_inr(amount)}, here\'s your remaining plan option.'
+        : 'Based on an investment of ₹ ${_inr(amount)}, here\'s how each plan performs.';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -226,7 +227,7 @@ class PlanComparisonScreen extends StatelessWidget {
           child: Text(
             'Step 2 of 3 · Compare Plans',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.sp,
               fontWeight: FontWeight.w700,
               color: _brandGreen,
@@ -238,7 +239,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           'Compare your returns',
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 26.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -250,7 +251,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           subtitle,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -278,7 +279,7 @@ class PlanComparisonScreen extends StatelessWidget {
             child: Text(
               'There are no more plan types left to enroll in.',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: _brandGreen,
@@ -340,7 +341,7 @@ class PlanComparisonScreen extends StatelessWidget {
                     Text(
                       'RECOMMENDED',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 9.5.sp,
                         fontWeight: FontWeight.w700,
                         color: _brandGreen,
@@ -359,7 +360,7 @@ class PlanComparisonScreen extends StatelessWidget {
                 Text(
                   c.planType.displayName,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 19.sp,
                     fontWeight: FontWeight.w800,
                     color: _brandGreen,
@@ -370,7 +371,7 @@ class PlanComparisonScreen extends StatelessWidget {
                 Text(
                   '${c.planType.durationDays} days total',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -405,7 +406,7 @@ class PlanComparisonScreen extends StatelessWidget {
                             child: Text(
                               'Select Plan',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w700,
                                 color: _brandGreen,
@@ -426,7 +427,7 @@ class PlanComparisonScreen extends StatelessWidget {
                           child: Text(
                             'Select Plan',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
                               color: _brandGreen,
@@ -446,10 +447,10 @@ class PlanComparisonScreen extends StatelessWidget {
   Widget _statGrid(_PlanComparison c) {
     final stats = [
       ('Daily ROI', '${c.planType.dailyRoiPercent.toStringAsFixed(2)}%'),
-      ('Investment Amount', '₹${_inr(c.monthlyAmount)}'),
-      ('Total Investment', '₹${_inr(c.totalInvestment)}'),
-      ('Est. Total ROI', '₹${_inr(c.estimatedTotalRoi)}'),
-      ('Est. Total Return', '₹${_inr(c.estimatedTotalReturn)}'),
+      ('Investment Amount', '₹ ${_inr(c.monthlyAmount)}'),
+      ('Total Investment', '₹ ${_inr(c.totalInvestment)}'),
+      ('Est. Total ROI', '₹ ${_inr(c.estimatedTotalRoi)}'),
+      ('Est. Total Return', '₹ ${_inr(c.estimatedTotalReturn)}'),
       ('Total Days', '${c.planType.durationDays} days'),
     ];
 
@@ -478,7 +479,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 10.5.sp,
             fontWeight: FontWeight.w500,
             color: _subtitleGrey,
@@ -489,7 +490,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.5.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,

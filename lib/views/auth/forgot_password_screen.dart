@@ -1,6 +1,7 @@
 ﻿// lib/views/auth/forgot_password_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -152,7 +153,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
 
                           Text(
                             'Forgot Password',
-                            style: TextStyle(fontFamily: 'Times New Roman',
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 26.sp,
                               fontWeight: FontWeight.w800,
                               color: _titleColor,
@@ -165,7 +166,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                             'Enter your registered email or mobile number '
                             'and we\'ll send you a 6-digit OTP to reset your '
                             'password.',
-                            style: TextStyle(fontFamily: 'Times New Roman',
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 13.5.sp,
                               fontWeight: FontWeight.w400,
                               color: _subtitleColor,
@@ -205,7 +206,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
 
                                     Text(
                                       'Email or Mobile Number',
-                                      style: TextStyle(fontFamily: 'Times New Roman',
+                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                         fontSize: 12.5.sp,
                                         fontWeight: FontWeight.w500,
                                         color: _labelColor,
@@ -217,14 +218,14 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                                       keyboardType:
                                           TextInputType.emailAddress,
                                       onChanged: (_) => vm.clearError(),
-                                      style: TextStyle(fontFamily: 'Times New Roman',
+                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                         fontSize: 14.5.sp,
                                         color: const Color(0xFF374151),
                                       ),
                                       decoration: InputDecoration(
                                         hintText:
                                             'Enter your email or 10-digit mobile',
-                                        hintStyle: TextStyle(fontFamily: 'Times New Roman',
+                                        hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                           color: _hintColor,
                                           fontSize: 14.5.sp,
                                         ),
@@ -305,7 +306,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                                               )
                                             : Text(
                                                 'Send Reset OTP',
-                                                style: TextStyle(fontFamily: 'Times New Roman',
+                                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                                                   fontSize: 15.sp,
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.white,
@@ -357,7 +358,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
                 color: _errorRed,

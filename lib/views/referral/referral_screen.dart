@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../routes/app_routes.dart';
@@ -183,11 +184,11 @@ class _ReferralScreenState extends State<ReferralScreen>
           dividerColor: Colors.transparent,
           labelColor: _brandGreen,
           unselectedLabelColor: _subtitleGrey,
-          labelStyle: TextStyle(fontFamily: 'Times New Roman',
+          labelStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 12.5.sp,
             fontWeight: FontWeight.w700,
           ),
-          unselectedLabelStyle: TextStyle(fontFamily: 'Times New Roman',
+          unselectedLabelStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 12.5.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -244,8 +245,8 @@ class _ReferralScreenState extends State<ReferralScreen>
   Widget _buildHeroBanner(ReferralViewModel vm) {
     final earnings = vm.totalEarnings;
     final earningsStr = earnings >= 1000
-        ? '₹${(earnings / 1000).toStringAsFixed(1)}k'
-        : '₹${earnings.toStringAsFixed(2)}';
+        ? '₹ ${(earnings / 1000).toStringAsFixed(1)}k'
+        : '₹ ${earnings.toStringAsFixed(2)}';
 
     return Container(
       width: double.infinity,
@@ -320,7 +321,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                         SizedBox(width: 5.w),
                         Text(
                           'REFER & EARN',
-                          style: TextStyle(fontFamily: 'Times New Roman',
+                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w700,
                             color: _goldDeep,
@@ -333,7 +334,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   SizedBox(height: 14.h),
                   Text(
                     'Give a plan.\nGet rewarded.',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 21.sp,
                       fontWeight: FontWeight.w800,
                       color: _titleDark,
@@ -344,7 +345,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   SizedBox(height: 8.h),
                   Text(
                     'Invite friends & earn a bonus on their first\nplan payment — straight to your Wallet.',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w400,
                       color: _subtitleGrey,
@@ -414,7 +415,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           SizedBox(height: 10.h),
           Text(
             value,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 19.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -424,7 +425,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           SizedBox(height: 2.h),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 10.5.sp,
               fontWeight: FontWeight.w500,
               color: _subtitleGrey,
@@ -532,14 +533,14 @@ class _ReferralScreenState extends State<ReferralScreen>
         Text(
           vm.candidatesError ?? 'Could not load referral candidates.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: 'Times New Roman',fontSize: 13.sp, color: _subtitleGrey),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, color: _subtitleGrey),
         ),
         SizedBox(height: 12.h),
         GestureDetector(
           onTap: () => vm.loadReferralCandidates(),
           child: Text(
             'Tap to retry',
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 12.5.sp,
               color: _brandGreen,
               fontWeight: FontWeight.w700,
@@ -623,7 +624,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                 ),
                 child: Text(
                   initials,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: _brandGreen,
@@ -639,7 +640,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                       c.userName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -652,7 +653,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                           : 'Mobile not available',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.5.sp,
                         fontWeight: FontWeight.w400,
                         color: _subtitleGrey,
@@ -692,14 +693,14 @@ class _ReferralScreenState extends State<ReferralScreen>
                   child: _buildCandidateStat(
                     label: 'FIRST PAYMENT',
                     value: c.firstPaymentAmount != null
-                        ? '₹${_fmt(c.firstPaymentAmount!)}'
+                        ? '₹ ${_fmt(c.firstPaymentAmount!)}'
                         : '—',
                   ),
                 ),
                 Expanded(
                   child: _buildCandidateStat(
                     label: 'BONUS EARNED',
-                    value: '₹${_fmt(c.bonusEarned)}',
+                    value: '₹ ${_fmt(c.bonusEarned)}',
                     valueColor: _candidateBonus,
                   ),
                 ),
@@ -720,7 +721,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   dateLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -745,7 +746,7 @@ class _ReferralScreenState extends State<ReferralScreen>
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Times New Roman',
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 9.sp,
             fontWeight: FontWeight.w600,
             color: _subtitleGrey,
@@ -762,7 +763,7 @@ class _ReferralScreenState extends State<ReferralScreen>
             ),
             child: Text(
               value,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 11.5.sp,
                 fontWeight: FontWeight.w700,
                 color: _planChipText,
@@ -772,7 +773,7 @@ class _ReferralScreenState extends State<ReferralScreen>
         else
           Text(
             value,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 12.5.sp,
               fontWeight: FontWeight.w700,
               color: valueColor ?? _titleDark,
@@ -841,7 +842,7 @@ class _ReferralScreenState extends State<ReferralScreen>
             child: Text(
               label,
               softWrap: true,
-              style: TextStyle(fontFamily: 'Times New Roman',
+              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 10.sp,
                 fontWeight: FontWeight.w700,
                 color: fg,
@@ -923,7 +924,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           SizedBox(width: 12.w),
           Text(
             'Moneytries',
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 24.sp,
               fontWeight: FontWeight.w800,
               color: _brandGreen,
@@ -1000,7 +1001,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   children: [
                     Text(
                       'Your Referral Code',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -1008,7 +1009,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                     ),
                     Text(
                       'Earn a bonus when they start any plan',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.sp,
                         color: _subtitleGrey,
                       ),
@@ -1046,7 +1047,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                         : hasError
                         ? Text(
                             'ERROR',
-                            style: TextStyle(fontFamily: 'Times New Roman',
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.red.shade400,
@@ -1054,7 +1055,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                           )
                         : Text(
                             code,
-                            style: TextStyle(fontFamily: 'Times New Roman',
+                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 22.sp,
                               fontWeight: FontWeight.w800,
                               color: _codeText,
@@ -1095,7 +1096,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               SizedBox(width: 4.w),
               Text(
                 'Tap the code to copy',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.sp,
                   color: _subtitleGrey.withOpacity(0.7),
                 ),
@@ -1108,7 +1109,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               onTap: () => vm.loadReferralInfo(),
               child: Text(
                 'Tap to retry',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   color: _brandGreen,
                   fontWeight: FontWeight.w600,
@@ -1171,7 +1172,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   children: [
                     Text(
                       'Invite 5 Users',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -1179,7 +1180,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                     ),
                     Text(
                       'Get 5 friends to start any investment plan',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 11.5.sp,
                         color: _subtitleGrey,
                       ),
@@ -1206,7 +1207,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   ),
                   Text(
                     '$progress/$target',
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w800,
                       color: completed ? _brandGreen : _titleDark,
@@ -1225,7 +1226,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                 completed
                     ? '🎉 Goal reached!'
                     : '${target - progress} more to unlock ₹500 reward',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.5.sp,
                   fontWeight: FontWeight.w500,
                   color: completed ? _brandGreen : _subtitleGrey,
@@ -1233,7 +1234,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               ),
               Text(
                 '${(fraction * 100).toInt()}%',
-                style: TextStyle(fontFamily: 'Times New Roman',
+                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.5.sp,
                   fontWeight: FontWeight.w700,
                   color: completed ? _brandGreen : _amberText,
@@ -1277,7 +1278,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               children: [
                 Text(
                   vm.claimError!,
-                  style: TextStyle(fontFamily: 'Times New Roman',
+                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.sp,
                     color: Colors.red.shade400,
                   ),
@@ -1362,7 +1363,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                     SizedBox(width: 8.w),
                     Text(
                       'Claim ₹500 Reward',
-                      style: TextStyle(fontFamily: 'Times New Roman',
+                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.w700,
                         color: enabled ? _white : _subtitleGrey,
@@ -1396,7 +1397,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           SizedBox(width: 8.w),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 14.sp,
               fontWeight: FontWeight.w700,
               color: color,
@@ -1449,7 +1450,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           padding: EdgeInsets.only(left: 2.w, bottom: 16.h),
           child: Text(
             'How it works',
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -1537,7 +1538,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                 children: [
                   Text(
                     step.title,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 13.5.sp,
                       fontWeight: FontWeight.w700,
                       color: _titleDark,
@@ -1546,7 +1547,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                   SizedBox(height: 4.h),
                   Text(
                     step.desc,
-                    style: TextStyle(fontFamily: 'Times New Roman',
+                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.5.sp,
                       fontWeight: FontWeight.w400,
                       color: _subtitleGrey,
@@ -1574,7 +1575,7 @@ class _ReferralScreenState extends State<ReferralScreen>
         children: [
           Text(
             rate,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 15.sp,
               fontWeight: FontWeight.w800,
               color: _goldDeep,
@@ -1583,7 +1584,7 @@ class _ReferralScreenState extends State<ReferralScreen>
           SizedBox(height: 2.h),
           Text(
             period,
-            style: TextStyle(fontFamily: 'Times New Roman',
+            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 10.sp,
               fontWeight: FontWeight.w600,
               color: _subtitleGrey,
@@ -1683,7 +1684,7 @@ class _CandidatesEmptyState extends StatelessWidget {
         SizedBox(height: 20.h),
         Text(
           'No referral candidates yet.',
-          style: TextStyle(fontFamily: 'Times New Roman',
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -1693,7 +1694,7 @@ class _CandidatesEmptyState extends StatelessWidget {
         Text(
           'Invite friends to start earning rewards.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: 'Times New Roman',
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,

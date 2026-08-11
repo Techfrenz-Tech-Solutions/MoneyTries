@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../routes/app_routes.dart';
 import 'dart:convert';
@@ -251,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? 'KYC Rejected'
                   : 'Complete KYC First',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -267,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   : 'You need to complete KYC verification\nbefore you can use Deposit, Withdraw,\nor Investment Plans.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 13.5.sp,
                 color: _subtitleGrey,
                 height: 1.5,
@@ -298,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     isRejected ? 'Re-submit KYC' : 'Verify Now',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                     ),
@@ -321,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     'OK, Got It',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                     ),
@@ -543,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Hello,',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
                   color: _subtitleGrey,
@@ -553,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 _userName.isEmpty ? '' : '$_userName!',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -669,7 +670,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     b.tag,
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF1F6B45),
@@ -681,7 +682,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   b.title,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF1E2A22),
@@ -694,7 +695,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF3F5B4C).withOpacity(0.88),
@@ -730,7 +731,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             'Quick Actions',
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -792,7 +793,7 @@ class _HomeScreenState extends State<HomeScreen> {
               action.label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1E2A22),
@@ -817,7 +818,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Recent Transactions',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -828,7 +829,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   'See All',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.w600,
                     color: _successGreen,
@@ -855,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   'No transactions yet',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.sp,
                     color: _labelGrey,
                   ),
@@ -892,12 +893,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Amount widget
               final amountStr =
-                  '${isCredit ? '+' : '-'}₹${t.amount.toStringAsFixed(2)}';
+                  '${isCredit ? '+' : '-'}₹ ${t.amount.toStringAsFixed(2)}';
               final amountColor = isCredit ? _successGreen : _withdrawRed;
               final amountWidget = Text(
                 amountStr,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
                   color: amountColor,
@@ -1007,7 +1008,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -1017,7 +1018,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   date,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _labelGrey,
@@ -1040,7 +1041,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   status,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
                     color: statusColor,
@@ -1164,7 +1165,7 @@ class _TotalBalanceCardState extends State<_TotalBalanceCard> {
                 Text(
                   'TOTAL BALANCE',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
@@ -1220,9 +1221,9 @@ class _TotalBalanceCardState extends State<_TotalBalanceCard> {
                               key: const ValueKey('wallet-balance-amount'),
                               value: widget.walletBalance,
                               replayTrigger: _revealCount,
-                              formatter: (v) => '₹${widget.formatINR(v)}',
+                              formatter: (v) => '₹ ${widget.formatINR(v)}',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 34.sp,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black,
@@ -1269,7 +1270,7 @@ class _TotalBalanceCardState extends State<_TotalBalanceCard> {
                       child: Text(
                         'Could not refresh balance. Pull down to retry.',
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 11.sp,
                           color: Colors.black,
                         ),
@@ -1297,7 +1298,7 @@ class _TotalBalanceCardState extends State<_TotalBalanceCard> {
                           Text(
                             'Tap to check balance',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
@@ -1372,7 +1373,7 @@ class _CardButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1F6B45),

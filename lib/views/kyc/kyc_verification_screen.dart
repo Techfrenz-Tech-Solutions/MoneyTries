@@ -9,6 +9,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,7 +121,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 child: Text(
                   msg,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.w500,
                     color: _white,
@@ -229,7 +230,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   vm.stepTitle,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 19.sp,
                     fontWeight: FontWeight.w700,
                     color: _mint,
@@ -240,7 +241,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   'Step ${vm.currentStepIndex + 1} of ${KycStep.values.length} · Secure Verification',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500,
                     color: _muted,
@@ -335,7 +336,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                     Text(
                       labels[i],
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 9.5.sp,
                         fontWeight: isActive
                             ? FontWeight.w700
@@ -499,7 +500,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           'Selfie Verification',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 23.sp,
             fontWeight: FontWeight.w700,
             color: _mint,
@@ -510,7 +511,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           'Take a selfie to verify your identity. Ensure\nyour face is within the frame and clearly visible.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.5.sp,
             fontWeight: FontWeight.w400,
             color: _bodyGrey,
@@ -558,7 +559,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             Text(
               'Encrypted biometric transmission',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 11.5.sp,
                 fontWeight: FontWeight.w500,
                 color: _muted,
@@ -675,7 +676,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                   Text(
                     captured ? 'Selfie Captured' : 'No selfie yet',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w700,
                       color: captured ? _white : _muted,
@@ -725,7 +726,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
                 color: filled ? _white : _emerald,
@@ -763,7 +764,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
                   color: _mint,
@@ -773,7 +774,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               Text(
                 subtitle,
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
                   color: _bodyGrey,
@@ -838,7 +839,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 child: Text(
                   vm.ifscError!,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w500,
                     color: _danger,
@@ -859,7 +860,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             Text(
               'PCI-DSS Compliant · 256-bit Encryption',
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 11.5.sp,
                 fontWeight: FontWeight.w500,
                 color: _muted,
@@ -876,7 +877,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     return Text(
       label.toUpperCase(),
       style: TextStyle(
-        fontFamily: 'Times New Roman',
+        fontFamily: GoogleFonts.inter().fontFamily,
         fontSize: 11.5.sp,
         fontWeight: FontWeight.w700,
         color: _emerald,
@@ -908,7 +909,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         onChanged: onChanged,
         cursorColor: _emerald,
         style: TextStyle(
-          fontFamily: 'Times New Roman',
+          fontFamily: GoogleFonts.inter().fontFamily,
           fontSize: 15.sp,
           fontWeight: FontWeight.w500,
           color: _mint,
@@ -916,7 +917,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 14.5.sp,
             fontWeight: FontWeight.w400,
             color: _muted,
@@ -967,7 +968,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               onChanged: vm.updateIfsc,
               cursorColor: _emerald,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w600,
                 color: _mint,
@@ -976,7 +977,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               decoration: InputDecoration(
                 hintText: 'e.g. SBIN0001234',
                 hintStyle: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: _muted,
@@ -1009,7 +1010,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                   : Text(
                       'FIND',
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 12.5.sp,
                         fontWeight: FontWeight.w800,
                         color: _emerald,
@@ -1051,7 +1052,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   info.bankName,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: _mint,
@@ -1061,7 +1062,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   '${info.branch} — ${info.city}, ${info.state}',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _bodyGrey,
@@ -1108,7 +1109,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   'Instant Verification',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.5.sp,
                     fontWeight: FontWeight.w800,
                     color: _mint,
@@ -1118,7 +1119,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   "We'll deposit ₹1.00 to verify your account instantly.",
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _bodyGrey,
@@ -1158,7 +1159,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
             Text(
               title,
               style: TextStyle(
-                fontFamily: 'Times New Roman',
+                fontFamily: GoogleFonts.inter().fontFamily,
                 fontSize: fontSize,
                 fontWeight: FontWeight.w700,
                 color: _mint,
@@ -1170,7 +1171,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         Text(
           subtitle,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 13.5.sp,
             fontWeight: FontWeight.w400,
             color: _bodyGrey,
@@ -1246,7 +1247,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 12.5.sp,
                               fontWeight: FontWeight.w600,
                               color: _white,
@@ -1284,7 +1285,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                     Text(
                       title,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 15.5.sp,
                         fontWeight: FontWeight.w800,
                         color: _mint,
@@ -1294,7 +1295,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 12.5.sp,
                         fontWeight: FontWeight.w500,
                         color: _muted,
@@ -1330,7 +1331,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           Text(
             title,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w800,
               color: _mint,
@@ -1340,7 +1341,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           Text(
             subtitle,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 11.5.sp,
               fontWeight: FontWeight.w400,
               color: _bodyGrey,
@@ -1364,7 +1365,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               Text(
                 'Requirements',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 14.5.sp,
                   fontWeight: FontWeight.w800,
                   color: _mint,
@@ -1398,7 +1399,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                     child: Text(
                       r,
                       style: TextStyle(
-                        fontFamily: 'Times New Roman',
+                        fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 12.5.sp,
                         fontWeight: FontWeight.w400,
                         color: _bodyGrey,
@@ -1458,7 +1459,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 11.5.sp,
                           fontWeight: FontWeight.w800,
                           color: _champagne,
@@ -1471,7 +1472,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 11.5.sp,
                           fontWeight: FontWeight.w400,
                           color: _bodyGrey,
@@ -1524,7 +1525,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 Text(
                   'Bank-Grade Encryption Enabled',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w700,
                     color: _mint,
@@ -1650,7 +1651,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                             Text(
                               vm.nextLabel,
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 15.5.sp,
                                 fontWeight: FontWeight.w700,
                                 color: _white,
@@ -1674,7 +1675,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
               textAlign: TextAlign.center,
               text: TextSpan(
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w400,
                   color: _muted,
@@ -1685,7 +1686,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                   TextSpan(
                     text: 'Privacy Policy',
                     style: TextStyle(
-                      fontFamily: 'Times New Roman',
+                      fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w700,
                       color: _emerald,
@@ -1740,7 +1741,7 @@ class _SelfiePreviewScreen extends StatelessWidget {
                         'Review Your Selfie',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'Times New Roman',
+                          fontFamily: GoogleFonts.inter().fontFamily,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: _mint,
@@ -1795,7 +1796,7 @@ class _SelfiePreviewScreen extends StatelessWidget {
                         label: Text(
                           'Retake',
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.5.sp,
                             fontWeight: FontWeight.w600,
                             color: _mint,
@@ -1829,7 +1830,7 @@ class _SelfiePreviewScreen extends StatelessWidget {
                           label: Text(
                             'Use Photo',
                             style: TextStyle(
-                              fontFamily: 'Times New Roman',
+                              fontFamily: GoogleFonts.inter().fontFamily,
                               fontSize: 14.5.sp,
                               fontWeight: FontWeight.w700,
                               color: _white,
@@ -1878,12 +1879,10 @@ class _KycDocCard extends StatelessWidget {
     this.aspectRatio = 4 / 3,
   });
 
-  String get _heroTag =>
-      'kyc-doc-${label.toLowerCase().replaceAll(' ', '-')}';
+  String get _heroTag => 'kyc-doc-${label.toLowerCase().replaceAll(' ', '-')}';
 
-  Map<String, String> get _headers => authToken != null
-      ? {'Authorization': 'Bearer $authToken'}
-      : const {};
+  Map<String, String> get _headers =>
+      authToken != null ? {'Authorization': 'Bearer $authToken'} : const {};
 
   void _openPreview(BuildContext context) {
     if (url == null) return;
@@ -1916,7 +1915,7 @@ class _KycDocCard extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontFamily: 'Times New Roman',
+            fontFamily: GoogleFonts.inter().fontFamily,
             fontSize: 11.5.sp,
             fontWeight: FontWeight.w700,
             color: _bodyGrey,
@@ -1960,14 +1959,13 @@ class _KycDocCard extends StatelessWidget {
                                 url: url!,
                                 fit: BoxFit.cover,
                                 headers: _headers,
-                                errorBuilder: (context, error, stack) =>
-                                    Center(
-                                      child: Icon(
-                                        Icons.broken_image_outlined,
-                                        color: _muted,
-                                        size: 22.sp,
-                                      ),
-                                    ),
+                                errorBuilder: (context, error, stack) => Center(
+                                  child: Icon(
+                                    Icons.broken_image_outlined,
+                                    color: _muted,
+                                    size: 22.sp,
+                                  ),
+                                ),
                               ),
                         if (url != null)
                           Positioned(
@@ -2017,8 +2015,7 @@ class _DocumentPreviewScreen extends StatefulWidget {
   });
 
   @override
-  State<_DocumentPreviewScreen> createState() =>
-      _DocumentPreviewScreenState();
+  State<_DocumentPreviewScreen> createState() => _DocumentPreviewScreenState();
 }
 
 class _DocumentPreviewScreenState extends State<_DocumentPreviewScreen> {
@@ -2071,7 +2068,10 @@ class _DocumentPreviewScreenState extends State<_DocumentPreviewScreen> {
                         minScale: 1,
                         maxScale: 4,
                         child: Image(
-                          image: NetworkImage(widget.url, headers: widget.headers),
+                          image: NetworkImage(
+                            widget.url,
+                            headers: widget.headers,
+                          ),
                           fit: BoxFit.contain,
                           loadingBuilder: (context, child, progress) {
                             if (progress == null) return child;
@@ -2130,7 +2130,7 @@ class _DocumentPreviewScreenState extends State<_DocumentPreviewScreen> {
                           widget.label,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
                             color: _white,
@@ -2272,10 +2272,11 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: (_isApproved
-                                                ? _emerald
-                                                : _pendingAmber)
-                                            .withOpacity(0.4),
+                                        color:
+                                            (_isApproved
+                                                    ? _emerald
+                                                    : _pendingAmber)
+                                                .withOpacity(0.4),
                                         blurRadius: 36,
                                         offset: const Offset(0, 12),
                                       ),
@@ -2301,9 +2302,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                                     ),
                                     decoration: BoxDecoration(
                                       color: _surface,
-                                      borderRadius: BorderRadius.circular(
-                                        30.r,
-                                      ),
+                                      borderRadius: BorderRadius.circular(30.r),
                                       border: Border.all(
                                         color: _isApproved
                                             ? _emerald.withOpacity(0.35)
@@ -2312,9 +2311,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(
-                                            0.08,
-                                          ),
+                                          color: Colors.black.withOpacity(0.08),
                                           blurRadius: 10,
                                           offset: const Offset(0, 4),
                                         ),
@@ -2338,7 +2335,8 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                                               ? 'VERIFIED'
                                               : 'UNDER REVIEW',
                                           style: TextStyle(
-                                            fontFamily: 'Times New Roman',
+                                            fontFamily:
+                                                GoogleFonts.inter().fontFamily,
                                             fontSize: 10.sp,
                                             fontWeight: FontWeight.w800,
                                             letterSpacing: 0.8,
@@ -2365,7 +2363,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                               : 'Verification\nSubmitted!',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 30.sp,
                             fontWeight: FontWeight.w700,
                             color: _mint,
@@ -2382,7 +2380,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                               : 'Your KYC documents have been submitted successfully. Our team will review and verify your identity within 24 hours.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'Times New Roman',
+                            fontFamily: GoogleFonts.inter().fontFamily,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
                             color: _bodyGrey,
@@ -2438,7 +2436,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                             child: Text(
                               'Back to Home',
                               style: TextStyle(
-                                fontFamily: 'Times New Roman',
+                                fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 15.5.sp,
                                 fontWeight: FontWeight.w700,
                                 color: _white,
@@ -2551,7 +2549,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 14.5.sp,
                     fontWeight: FontWeight.w800,
                     color: _mint,
@@ -2612,16 +2610,12 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
           SizedBox(height: 24.h),
           Row(
             children: [
-              Icon(
-                Icons.account_balance_rounded,
-                size: 15.sp,
-                color: _muted,
-              ),
+              Icon(Icons.account_balance_rounded, size: 15.sp, color: _muted),
               SizedBox(width: 6.w),
               Text(
                 'Bank Details',
                 style: TextStyle(
-                  fontFamily: 'Times New Roman',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 12.5.sp,
                   fontWeight: FontWeight.w800,
                   color: _muted,
@@ -2652,8 +2646,12 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                   d.accountNumber,
                   copyable: true,
                 ),
-                _detailRow(Icons.tag_rounded, 'IFSC Code', d.ifscCode,
-                    copyable: true),
+                _detailRow(
+                  Icons.tag_rounded,
+                  'IFSC Code',
+                  d.ifscCode,
+                  copyable: true,
+                ),
                 _detailRow(
                   Icons.apartment_rounded,
                   'Bank',
@@ -2706,7 +2704,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500,
                     color: _muted,
@@ -2716,7 +2714,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                 Text(
                   hasValue ? value : '—',
                   style: TextStyle(
-                    fontFamily: 'Times New Roman',
+                    fontFamily: GoogleFonts.inter().fontFamily,
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.w700,
                     color: _mint,
@@ -2731,11 +2729,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
               onTap: () => _copyToClipboard(value, label),
               child: Padding(
                 padding: EdgeInsets.only(left: 8.w, top: 2.h),
-                child: Icon(
-                  Icons.copy_rounded,
-                  size: 15.sp,
-                  color: _emerald,
-                ),
+                child: Icon(Icons.copy_rounded, size: 15.sp, color: _emerald),
               ),
             ),
         ],
@@ -2754,7 +2748,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
         duration: const Duration(seconds: 2),
         content: Text(
           '$label copied',
-          style: const TextStyle(fontFamily: 'Times New Roman'),
+          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily),
         ),
       ),
     );
@@ -2800,7 +2794,7 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontFamily: 'Times New Roman',
+              fontFamily: GoogleFonts.inter().fontFamily,
               fontSize: 14.5.sp,
               fontWeight: done || active ? FontWeight.w700 : FontWeight.w400,
               color: done

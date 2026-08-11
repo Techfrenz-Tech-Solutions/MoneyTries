@@ -266,6 +266,133 @@ class SecurityRepository {
     }
   }
 
+  // ── Login PIN → Change Login PIN ─────────────────────────────────────────
+  // Server-enforced version of the Login PIN change flow: current-PIN
+  // verification, attempts, and any resulting lockout are all tracked and
+  // checked on the backend so the 5-attempt limit can't be bypassed by
+  // restarting the app or clearing local storage.
+
+  // Step 1: verify the account's current Login PIN.
+  Future<PasswordChangeStatus> verifyCurrentLoginPin(String currentPin) async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        return const PasswordChangeStatus(
+          success: false,
+          locked: false,
+          remainingSeconds: 0,
+          remainingAttempts: 5,
+          message: 'Session expired. Please log in again.',
+        );
+      }
+
+      final res = await sessionHttpClient
+          .post(
+            Uri.parse('$_kBaseUrl/api/security/pin/login/change/verify'),
+            headers: _authHeader(token),
+            body: jsonEncode({'current_pin': currentPin}),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final success = res.statusCode == 200 && body['success'] == true;
+      final message = body['message']?.toString() ??
+          (success ? 'PIN verified' : 'Incorrect PIN');
+
+      return PasswordChangeStatus.fromJson(body, success: success, message: message);
+    } on SocketException {
+      return const PasswordChangeStatus(
+        success: false,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: 'No internet connection.',
+      );
+    } catch (_) {
+      return const PasswordChangeStatus(
+        success: false,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: 'Something went wrong. Please try again.',
+      );
+    }
+  }
+
+  // Resumes lock/attempt state if the user re-opens Change Login PIN after
+  // the app was backgrounded or killed mid-lockout.
+  Future<PasswordChangeStatus> getLoginPinChangeStatus() async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        return const PasswordChangeStatus(
+          success: false,
+          locked: false,
+          remainingSeconds: 0,
+          remainingAttempts: 5,
+          message: 'Session expired. Please log in again.',
+        );
+      }
+
+      final res = await sessionHttpClient
+          .get(
+            Uri.parse('$_kBaseUrl/api/security/pin/login/change/status'),
+            headers: _authHeader(token),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final success = res.statusCode == 200 && body['success'] == true;
+      return PasswordChangeStatus.fromJson(
+        body,
+        success: success,
+        message: body['message']?.toString() ?? '',
+      );
+    } catch (_) {
+      return const PasswordChangeStatus(
+        success: true,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: '',
+      );
+    }
+  }
+
+  // Step 2: set the new Login PIN. Only succeeds within the short window
+  // opened by a successful verifyCurrentLoginPin call.
+  /// Returns null on success, error message on failure.
+  Future<String?> updateLoginPin({
+    required String newPin,
+    required String confirmPin,
+  }) async {
+    try {
+      final token = await _getToken();
+      if (token == null) return 'Session expired. Please log in again.';
+
+      final res = await sessionHttpClient
+          .post(
+            Uri.parse('$_kBaseUrl/api/security/pin/login/change/update'),
+            headers: _authHeader(token),
+            body: jsonEncode({
+              'new_pin': newPin,
+              'confirm_pin': confirmPin,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      if (res.statusCode == 200 && body['success'] == true) {
+        return null;
+      }
+      return body['message']?.toString() ?? 'Failed to save Login PIN.';
+    } on SocketException {
+      return 'No internet connection.';
+    } catch (_) {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
   Future<String?> setWithdrawalPinRemote({
     required String newPin,
     String? currentPin,
@@ -317,6 +444,128 @@ class SecurityRepository {
       return false;
     } catch (_) {
       return false;
+    }
+  }
+
+  // Step 1: verify the current Withdrawal PIN (server-side attempt counter,
+  // 5-attempt cap, 5-minute lockout — mirrors verifyCurrentLoginPin).
+  Future<PasswordChangeStatus> verifyCurrentWithdrawalPin(String currentPin) async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        return const PasswordChangeStatus(
+          success: false,
+          locked: false,
+          remainingSeconds: 0,
+          remainingAttempts: 5,
+          message: 'Session expired. Please log in again.',
+        );
+      }
+
+      final res = await sessionHttpClient
+          .post(
+            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/verify'),
+            headers: _authHeader(token),
+            body: jsonEncode({'current_pin': currentPin}),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final success = res.statusCode == 200 && body['success'] == true;
+      final message = body['message']?.toString() ??
+          (success ? 'PIN verified' : 'Incorrect PIN');
+
+      return PasswordChangeStatus.fromJson(body, success: success, message: message);
+    } on SocketException {
+      return const PasswordChangeStatus(
+        success: false,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: 'No internet connection.',
+      );
+    } catch (_) {
+      return const PasswordChangeStatus(
+        success: false,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: 'Something went wrong. Please try again.',
+      );
+    }
+  }
+
+  // Resumes lock/attempt state if the user re-opens Change Withdrawal PIN
+  // after the app was backgrounded or killed mid-lockout.
+  Future<PasswordChangeStatus> getWithdrawalPinChangeStatus() async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        return const PasswordChangeStatus(
+          success: false,
+          locked: false,
+          remainingSeconds: 0,
+          remainingAttempts: 5,
+          message: 'Session expired. Please log in again.',
+        );
+      }
+
+      final res = await sessionHttpClient
+          .get(
+            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/status'),
+            headers: _authHeader(token),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final success = res.statusCode == 200 && body['success'] == true;
+      return PasswordChangeStatus.fromJson(
+        body,
+        success: success,
+        message: body['message']?.toString() ?? '',
+      );
+    } catch (_) {
+      return const PasswordChangeStatus(
+        success: true,
+        locked: false,
+        remainingSeconds: 0,
+        remainingAttempts: 5,
+        message: '',
+      );
+    }
+  }
+
+  // Step 2: set the new Withdrawal PIN. Only succeeds within the short
+  // window opened by a successful verifyCurrentWithdrawalPin call.
+  /// Returns null on success, error message on failure.
+  Future<String?> updateWithdrawalPin({
+    required String newPin,
+    required String confirmPin,
+  }) async {
+    try {
+      final token = await _getToken();
+      if (token == null) return 'Session expired. Please log in again.';
+
+      final res = await sessionHttpClient
+          .post(
+            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/update'),
+            headers: _authHeader(token),
+            body: jsonEncode({
+              'new_pin': newPin,
+              'confirm_pin': confirmPin,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      if (res.statusCode == 200 && body['success'] == true) {
+        return null;
+      }
+      return body['message']?.toString() ?? 'Failed to save Withdrawal PIN.';
+    } on SocketException {
+      return 'No internet connection.';
+    } catch (_) {
+      return 'Something went wrong. Please try again.';
     }
   }
 

@@ -1,4 +1,4 @@
-// lib/viewmodels/history/history_viewmodel.dart
+﻿// lib/viewmodels/history/history_viewmodel.dart
 import 'package:flutter/foundation.dart';
 import '../../data/deposit/deposit_repository.dart';
 import '../../data/withdrawal/withdrawal_repository.dart';
@@ -324,7 +324,7 @@ class HistoryViewModel extends ChangeNotifier {
         : 'New user';
     final plan = t.selectedPlan?.isNotEmpty == true ? t.selectedPlan! : '—';
     final firstPayment = t.firstPaymentAmount != null
-        ? '₹${t.firstPaymentAmount!.toStringAsFixed(2)}'
+        ? '₹ ${t.firstPaymentAmount!.toStringAsFixed(2)}'
         : '—';
 
     return HistoryTxn(
