@@ -4,7 +4,7 @@
 class ReferralInfo {
   final String myReferralCode;
 
-  /// Lifetime referral earnings (sum of all referral bonuses + the ₹500
+  /// Lifetime referral earnings (sum of all referral bonuses + the ₹300
   /// task reward). This is a display-only figure — there is no separate
   /// Referral Wallet; every rupee here has already been credited directly
   /// to the user's Main Wallet Balance at the moment it was earned/claimed.
@@ -23,7 +23,7 @@ class ReferralInfo {
   /// True once [taskProgress] >= [taskTarget].
   final bool taskCompleted;
 
-  /// True once the ₹500 "Invite 5 Users" reward has already been claimed.
+  /// True once the ₹300 "Invite 5 Users" reward has already been claimed.
   final bool rewardClaimed;
 
   const ReferralInfo({
@@ -59,7 +59,7 @@ class ReferralInfo {
 /// A single row in the Referral tab of Transaction History.
 ///
 /// [kind] distinguishes a per-referral bonus credit from the one-time
-/// ₹500 "Invite 5 Users" task reward, since the two carry different
+/// ₹300 "Invite 5 Users" task reward, since the two carry different
 /// display fields.
 enum ReferralTxnKind { bonus, taskReward }
 
@@ -73,7 +73,7 @@ class ReferralTransaction {
   final double? firstPaymentAmount;
 
   /// The credited amount — the referral bonus for [ReferralTxnKind.bonus],
-  /// or ₹500 for [ReferralTxnKind.taskReward].
+  /// or ₹300 for [ReferralTxnKind.taskReward].
   final double amount;
 
   final DateTime? date;

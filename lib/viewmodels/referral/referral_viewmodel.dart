@@ -7,7 +7,7 @@ import '../../services/audio/interaction_feedback.dart';
 
 enum ReferralLoadState { idle, loading, loaded, error }
 
-/// Drives the "Claim ₹500" button on the Referral screen.
+/// Drives the "Claim ₹300" button on the Referral screen.
 enum ClaimRewardState { idle, claiming, claimed, error }
 
 class ReferralViewModel extends ChangeNotifier {
@@ -135,7 +135,7 @@ class ReferralViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Claims the one-time ₹500 "Invite 5 Users" reward and credits it to
+  /// Claims the one-time ₹300 "Invite 5 Users" reward and credits it to
   /// the user's main Wallet Balance. Refreshes referral info afterwards so
   /// [rewardClaimed] flips and the button locks immediately.
   Future<void> claimReward() async {

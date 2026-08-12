@@ -18,6 +18,7 @@ class _PlanComparison {
   final PlanType planType;
   final int monthlyAmount;
   final int totalInvestment;
+  final double dailyRoiAmount;
   final double estimatedTotalRoi;
   final double estimatedTotalReturn;
 
@@ -25,6 +26,7 @@ class _PlanComparison {
     required this.planType,
     required this.monthlyAmount,
     required this.totalInvestment,
+    required this.dailyRoiAmount,
     required this.estimatedTotalRoi,
     required this.estimatedTotalReturn,
   });
@@ -68,6 +70,10 @@ class PlanComparisonScreen extends StatelessWidget {
     // One-time investment: the total invested amount IS the amount entered
     // — never multiplied by the plan's duration in months.
     final totalInvestment = amount;
+    // Rupee amount credited per day — the flat rate applied once to the
+    // full one-time investment, shown alongside the percentage so the
+    // user can compare plans by actual daily payout, not just rate.
+    final dailyRoiAmount = amount * dailyRoiRate;
     final estimatedTotalRoi = _estimatedTotalRoi(
       investedAmount: amount,
       dailyRoiRate: dailyRoiRate,
@@ -77,6 +83,7 @@ class PlanComparisonScreen extends StatelessWidget {
       planType: type,
       monthlyAmount: amount,
       totalInvestment: totalInvestment,
+      dailyRoiAmount: dailyRoiAmount,
       estimatedTotalRoi: estimatedTotalRoi,
       estimatedTotalReturn: totalInvestment + estimatedTotalRoi,
     );
@@ -95,6 +102,16 @@ class PlanComparisonScreen extends StatelessWidget {
       buf.write(rest[i]);
     }
     return '${buf.toString()},$last3';
+  }
+
+  /// Same comma-grouping as [_inr] but keeps 2 decimal places — used for the
+  /// daily ROI amount, which is often a small sum where rounding to whole
+  /// rupees would hide the difference between plans.
+  String _inrDecimal(num n) {
+    final fixed = n.toStringAsFixed(2);
+    final parts = fixed.split('.');
+    final wholePart = int.tryParse(parts[0]) ?? 0;
+    return '${_inr(wholePart)}.${parts[1]}';
   }
 
   void _selectPlan(BuildContext context, _PlanComparison c) {
@@ -447,6 +464,7 @@ class PlanComparisonScreen extends StatelessWidget {
   Widget _statGrid(_PlanComparison c) {
     final stats = [
       ('Daily ROI', '${c.planType.dailyRoiPercent.toStringAsFixed(2)}%'),
+      ('Daily ROI Amount', '₹ ${_inrDecimal(c.dailyRoiAmount)}'),
       ('Investment Amount', '₹ ${_inr(c.monthlyAmount)}'),
       ('Total Investment', '₹ ${_inr(c.totalInvestment)}'),
       ('Est. Total ROI', '₹ ${_inr(c.estimatedTotalRoi)}'),

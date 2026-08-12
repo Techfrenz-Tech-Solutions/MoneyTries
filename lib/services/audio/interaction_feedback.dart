@@ -13,6 +13,7 @@
 import 'app_haptic_service.dart';
 import 'app_sound_event.dart';
 import 'app_sound_service.dart';
+import 'keypad_sound_player.dart';
 
 class InteractionFeedback {
   InteractionFeedback._();
@@ -22,6 +23,10 @@ class InteractionFeedback {
       AppSoundService.instance.init(),
       AppHapticService.instance.init(),
     ]);
+    // Depends on AppSoundService's enabled-flag being loaded above, and
+    // AppSoundService.instance.init() must run first so KeypadSoundPlayer
+    // can read AppSoundService.instance.isEnabled.
+    await KeypadSoundPlayer.instance.init();
   }
 
   /// Wallet balance revealed via the eye-icon toggle on Home.

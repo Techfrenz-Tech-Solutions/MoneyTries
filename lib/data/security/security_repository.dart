@@ -248,11 +248,28 @@ class SecurityRepository {
       final token = await _getToken();
       if (token == null) return false;
 
+      // Same device/platform context sent with email/password login — lets
+      // the Admin Dashboard's "Today's Active Users" / "Today's Login
+      // Attempts" analytics and the Login Attempts page track PIN-only
+      // unlocks (Device / Platform columns) the same way it tracks a normal
+      // login. Safe to omit — the backend falls back to a User-Agent-based
+      // guess if not provided.
+      final deviceName = await _resolveDeviceName();
+      final platform = Platform.isAndroid
+          ? 'android'
+          : Platform.isIOS
+              ? 'ios'
+              : 'other';
+
       final res = await sessionHttpClient
           .post(
             Uri.parse('$_kBaseUrl/api/security/pin/login/verify'),
             headers: _authHeader(token),
-            body: jsonEncode({'pin': pin}),
+            body: jsonEncode({
+              'pin': pin,
+              'device_name': deviceName,
+              'platform': platform,
+            }),
           )
           .timeout(const Duration(seconds: 15));
 

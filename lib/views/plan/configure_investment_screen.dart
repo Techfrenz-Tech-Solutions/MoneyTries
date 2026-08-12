@@ -9,6 +9,7 @@ import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
 import '../../utils/responsive.dart';
+import '../../widgets/premium/premium_keypad_key.dart';
 
 const _bg = Color(0xFFF4F6F4);
 const _white = Color(0xFFFFFFFF);
@@ -110,8 +111,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     return '${buf.toString()},$last3';
   }
 
+  // Sound + haptic feedback for each tap now lives in PremiumKeypadKey
+  // (fired before this handler runs), so this only mutates the amount.
   void _onKeyTap(String key) {
-    HapticFeedback.lightImpact();
     setState(() {
       if (key == 'back') {
         if (_amountText.isNotEmpty) {
@@ -908,8 +910,11 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       Row(children: keys.map(_keypadKey).toList());
 
   Widget _keypadKey(String key) {
-    if (key.isEmpty) return Expanded(child: SizedBox(height: 64.h));
-    Widget content = key == 'back'
+    if (key.isEmpty) {
+      return const PremiumKeypadKey(onTap: null, child: SizedBox());
+    }
+    final isBack = key == 'back';
+    Widget content = isBack
         ? Icon(Icons.backspace_outlined, size: 22.sp, color: _dark)
         : Text(
             key,
@@ -921,16 +926,11 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               height: 1.0,
             ),
           );
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _onKeyTap(key),
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          height: 64.h,
-          alignment: Alignment.center,
-          child: content,
-        ),
-      ),
+    return PremiumKeypadKey(
+      onTap: () => _onKeyTap(key),
+      isBackspace: isBack,
+      height: 64.h,
+      child: content,
     );
   }
 }

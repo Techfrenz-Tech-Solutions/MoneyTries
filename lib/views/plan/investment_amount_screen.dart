@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../config/app_constants.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/responsive.dart';
+import '../../widgets/premium/premium_keypad_key.dart';
 
 // ── Palette (matches ConfigureInvestmentScreen for visual consistency) ────────
 const _bg = Color(0xFFF4F6F4);
@@ -91,8 +92,9 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
     return '${buf.toString()},$last3';
   }
 
+  // Sound + haptic feedback for each tap now lives in PremiumKeypadKey
+  // (fired before this handler runs), so this only mutates the amount.
   void _onKeyTap(String key) {
-    HapticFeedback.lightImpact();
     setState(() {
       if (key == 'back') {
         if (_amountText.isNotEmpty) {
@@ -391,26 +393,25 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
   Widget _keypadRow(List<String> keys) {
     return Row(
       children: keys.map((k) {
-        if (k.isEmpty) return const Expanded(child: SizedBox());
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => _onKeyTap(k),
-            child: Container(
-              height: 64.h,
-              alignment: Alignment.center,
-              child: k == 'back'
-                  ? Icon(Icons.backspace_outlined, size: 22.sp, color: _dark)
-                  : Text(
-                      k,
-                      style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
-                        fontSize: 26.sp,
-                        fontWeight: FontWeight.w600,
-                        color: _dark,
-                      ),
-                    ),
-            ),
-          ),
+        if (k.isEmpty) {
+          return const PremiumKeypadKey(onTap: null, child: SizedBox());
+        }
+        final isBack = k == 'back';
+        return PremiumKeypadKey(
+          onTap: () => _onKeyTap(k),
+          isBackspace: isBack,
+          height: 64.h,
+          child: isBack
+              ? Icon(Icons.backspace_outlined, size: 22.sp, color: _dark)
+              : Text(
+                  k,
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w600,
+                    color: _dark,
+                  ),
+                ),
         );
       }).toList(),
     );

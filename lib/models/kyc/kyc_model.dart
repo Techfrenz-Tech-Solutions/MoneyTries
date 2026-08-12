@@ -29,10 +29,12 @@ class IfscBankInfo {
 
 class KycFormData {
   // Aadhaar
+  String aadhaarNumber;
   String? aadhaarFrontPath;
   String? aadhaarBackPath;
 
   // PAN
+  String panNumber;
   String? panFrontPath;
 
   // Selfie
@@ -43,22 +45,37 @@ class KycFormData {
   String accountNumber;
   String ifscCode;
   IfscBankInfo? bankInfo;
+  String? bankPassbookFrontPath;
 
   KycFormData({
+    this.aadhaarNumber = '',
     this.aadhaarFrontPath,
     this.aadhaarBackPath,
+    this.panNumber = '',
     this.panFrontPath,
     this.selfiePath,
     this.accountHolderName = '',
     this.accountNumber = '',
     this.ifscCode = '',
     this.bankInfo,
+    this.bankPassbookFrontPath,
   });
 
-  bool get aadhaarComplete =>
-      aadhaarFrontPath != null && aadhaarBackPath != null;
+  /// True once a 12-digit Aadhaar number (spaces allowed) has been entered.
+  bool get aadhaarNumberValid =>
+      aadhaarNumber.replaceAll(' ', '').length == 12;
 
-  bool get panComplete => panFrontPath != null;
+  /// True once a well-formed PAN (5 letters + 4 digits + 1 letter) has been
+  /// entered, case-insensitively.
+  bool get panNumberValid => RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$')
+      .hasMatch(panNumber.trim().toUpperCase());
+
+  bool get aadhaarComplete =>
+      aadhaarNumberValid &&
+      aadhaarFrontPath != null &&
+      aadhaarBackPath != null;
+
+  bool get panComplete => panNumberValid && panFrontPath != null;
 
   bool get selfieComplete => selfiePath != null;
 
@@ -66,7 +83,8 @@ class KycFormData {
       accountHolderName.trim().isNotEmpty &&
       accountNumber.trim().length >= 9 &&
       ifscCode.trim().length == 11 &&
-      bankInfo != null;
+      bankInfo != null &&
+      bankPassbookFrontPath != null;
 }
 
 /// Full KYC submission record as returned by GET /api/kyc/status,
@@ -77,8 +95,10 @@ class KycSubmissionDetails {
   final String status; // 'pending' | 'approved' | 'rejected'
   final String? rejectionReason;
 
+  final String aadhaarNumber;
   final String? aadhaarFrontUrl;
   final String? aadhaarBackUrl;
+  final String panNumber;
   final String? panFrontUrl;
   final String? selfieUrl;
 
@@ -89,6 +109,7 @@ class KycSubmissionDetails {
   final String bankBranch;
   final String bankCity;
   final String bankState;
+  final String? bankPassbookFrontUrl;
 
   final String? createdAt;
   final String? reviewedAt;
@@ -96,8 +117,10 @@ class KycSubmissionDetails {
   const KycSubmissionDetails({
     required this.status,
     this.rejectionReason,
+    this.aadhaarNumber = '',
     this.aadhaarFrontUrl,
     this.aadhaarBackUrl,
+    this.panNumber = '',
     this.panFrontUrl,
     this.selfieUrl,
     this.accountHolderName = '',
@@ -107,6 +130,7 @@ class KycSubmissionDetails {
     this.bankBranch = '',
     this.bankCity = '',
     this.bankState = '',
+    this.bankPassbookFrontUrl,
     this.createdAt,
     this.reviewedAt,
   });
@@ -144,8 +168,10 @@ class KycSubmissionDetails {
     return KycSubmissionDetails(
       status: json['status'] as String? ?? 'pending',
       rejectionReason: json['rejection_reason'] as String?,
+      aadhaarNumber: json['aadhaar_number'] as String? ?? '',
       aadhaarFrontUrl: full(json['aadhaar_front_url'] as String?),
       aadhaarBackUrl: full(json['aadhaar_back_url'] as String?),
+      panNumber: json['pan_number'] as String? ?? '',
       panFrontUrl: full(json['pan_front_url'] as String?),
       selfieUrl: full(json['selfie_url'] as String?),
       accountHolderName: json['account_holder_name'] as String? ?? '',
@@ -155,6 +181,7 @@ class KycSubmissionDetails {
       bankBranch: json['bank_branch'] as String? ?? '',
       bankCity: json['bank_city'] as String? ?? '',
       bankState: json['bank_state'] as String? ?? '',
+      bankPassbookFrontUrl: full(json['bank_passbook_front_url'] as String?),
       createdAt: json['created_at']?.toString(),
       reviewedAt: json['reviewed_at']?.toString(),
     );

@@ -1225,7 +1225,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               Text(
                 completed
                     ? '🎉 Goal reached!'
-                    : '${target - progress} more to unlock ₹500 reward',
+                    : '${target - progress} more to unlock ₹300 reward',
                 style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 11.5.sp,
                   fontWeight: FontWeight.w500,
@@ -1308,7 +1308,7 @@ class _ReferralScreenState extends State<ReferralScreen>
               if (vm.claimState == ClaimRewardState.claimed) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('₹500 reward added to your Wallet!'),
+                    content: Text('₹300 reward added to your Wallet!'),
                     backgroundColor: _brandGreen,
                   ),
                 );
@@ -1362,7 +1362,7 @@ class _ReferralScreenState extends State<ReferralScreen>
                     ),
                     SizedBox(width: 8.w),
                     Text(
-                      'Claim ₹500 Reward',
+                      'Claim ₹300 Reward',
                       style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.w700,
@@ -1435,9 +1435,9 @@ class _ReferralScreenState extends State<ReferralScreen>
       ),
       (
         icon: Icons.card_giftcard_rounded,
-        title: 'Unlock ₹500',
+        title: 'Unlock ₹300',
         desc: 'Invite 5 friends who each complete a first plan payment '
-            'to unlock an extra ₹500 bonus.',
+            'to unlock an extra ₹300 bonus.',
         color: Color(0xFFDB2777),
         bg: Color(0xFFFDF2F8),
       ),

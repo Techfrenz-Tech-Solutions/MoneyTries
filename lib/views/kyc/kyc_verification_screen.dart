@@ -8,6 +8,7 @@
 // rewrite, no ViewModel or backend changes required.
 
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +41,51 @@ const _fieldBorder = Color(0xFFD9D5CF); // warm grey border
 const _pendingAmber = Color(0xFFB78A2E); // muted gold — "under review" accent
 const _pendingAmberBg = Color(0xFFFBF3E1);
 
+// ══════════════════════════════════════════════════════════════════════════
+// FORMATTERS
+// ══════════════════════════════════════════════════════════════════════════
+
+/// Formats Aadhaar digit entry as "XXXX XXXX XXXX" while typing, capped at
+/// 12 digits.
+class _AadhaarNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var digitsOnly = newValue.text.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.length > 12) {
+      digitsOnly = digitsOnly.substring(0, 12);
+    }
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < digitsOnly.length; i++) {
+      if (i != 0 && i % 4 == 0) buffer.write(' ');
+      buffer.write(digitsOnly[i]);
+    }
+
+    final formatted = buffer.toString();
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+/// Forces all typed characters to uppercase (used for the PAN number field).
+class _UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
 // ── Entry widget (public API — unchanged) ────────────────────────────────────
 class KycVerificationScreen extends StatelessWidget {
   const KycVerificationScreen({super.key});
@@ -69,6 +115,14 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   late AnimationController _scanCtrl;
   late Animation<double> _scanAnim;
 
+  /// Scrolls the single step-content ScrollView back to the top whenever
+  /// the current KYC step changes (Continue, Back, or any programmatic
+  /// step change), so every step — Aadhaar, PAN, Selfie, Bank — always
+  /// opens showing its header/title/description/fields from the top,
+  /// never at a scroll offset left over from the previous step.
+  final ScrollController _scrollController = ScrollController();
+  KycStep? _lastStep;
+
   KycViewModel? _vm;
 
   @override
@@ -84,6 +138,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     ).animate(CurvedAnimation(parent: _scanCtrl, curve: Curves.easeInOut));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _vm = context.read<KycViewModel>();
+      _lastStep = _vm!.currentStep;
       _vm!.addListener(_onVmChanged);
     });
   }
@@ -92,6 +147,21 @@ class _KycVerificationViewState extends State<_KycVerificationView>
     if (!mounted) return;
     final vm = _vm;
     if (vm == null) return;
+
+    // Reset scroll to top only when the step itself changed — not on every
+    // notifyListeners() call (e.g. a keystroke in a text field), which
+    // would otherwise yank the scroll position while the user is typing.
+    if (_lastStep != null && _lastStep != vm.currentStep) {
+      _lastStep = vm.currentStep;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _scrollController.hasClients) {
+          _scrollController.jumpTo(0);
+        }
+      });
+    } else {
+      _lastStep = vm.currentStep;
+    }
+
     if (vm.errorMessage != null) {
       final msg = vm.errorMessage!;
       vm.clearError();
@@ -105,6 +175,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
   void dispose() {
     _vm?.removeListener(_onVmChanged);
     _scanCtrl.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -171,6 +242,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
       // scroll to reach content or the Continue button; nothing is ever
       // clipped or hidden behind a fixed bar.
       child: SingleChildScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom > 0
@@ -370,15 +442,23 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   // ── Step router ───────────────────────────────────────────────────────────
   Widget _buildStepContent(KycViewModel vm) {
+    // KeyedSubtree forces Flutter to treat each step as a distinct subtree
+    // instead of diffing it against the previous step's widget tree. Without
+    // this, steps that start with a structurally identical field (e.g. the
+    // first _buildBankTextField in both the Aadhaar and PAN steps) can have
+    // their TextFormField element/state reused across the step switch —
+    // the new step then renders with the *previous* step's leftover text
+    // instead of its own value, since TextFormField only reads its
+    // `initialValue` once, on first creation.
     switch (vm.currentStep) {
       case KycStep.aadhaar:
-        return _buildAadhaarStep(vm);
+        return KeyedSubtree(key: const ValueKey('kyc-step-aadhaar'), child: _buildAadhaarStep(vm));
       case KycStep.pan:
-        return _buildPanStep(vm);
+        return KeyedSubtree(key: const ValueKey('kyc-step-pan'), child: _buildPanStep(vm));
       case KycStep.selfie:
-        return _buildSelfieStep(vm);
+        return KeyedSubtree(key: const ValueKey('kyc-step-selfie'), child: _buildSelfieStep(vm));
       case KycStep.bank:
-        return _buildBankStep(vm);
+        return KeyedSubtree(key: const ValueKey('kyc-step-bank'), child: _buildBankStep(vm));
     }
   }
 
@@ -394,6 +474,17 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           'Upload a clear picture of your original Aadhaar Card for instant verification.',
         ),
         SizedBox(height: 22.h),
+        _bankFieldLabel('Aadhaar Number'),
+        SizedBox(height: 8.h),
+        _buildBankTextField(
+          hint: 'XXXX XXXX XXXX',
+          prefixIcon: Icons.badge_outlined,
+          keyboardType: TextInputType.number,
+          inputFormatters: [_AadhaarNumberFormatter()],
+          onChanged: vm.updateAadhaarNumber,
+          initialValue: vm.form.aadhaarNumber,
+        ),
+        SizedBox(height: 18.h),
         _buildUploadCard(
           title: 'Upload Aadhaar Front',
           subtitle: 'Any image format (Max 5MB)',
@@ -431,6 +522,22 @@ class _KycVerificationViewState extends State<_KycVerificationView>
           'Upload a clear picture of your PAN card for tax compliance and identity verification.',
         ),
         SizedBox(height: 22.h),
+        _bankFieldLabel('PAN Number'),
+        SizedBox(height: 8.h),
+        _buildBankTextField(
+          hint: 'e.g. ABCDE1234F',
+          prefixIcon: Icons.badge_outlined,
+          keyboardType: TextInputType.text,
+          textCapitalization: TextCapitalization.characters,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
+            LengthLimitingTextInputFormatter(10),
+            _UpperCaseTextFormatter(),
+          ],
+          onChanged: vm.updatePanNumber,
+          initialValue: vm.form.panNumber,
+        ),
+        SizedBox(height: 18.h),
         _buildUploadCard(
           title: 'Upload PAN Front',
           subtitle: 'Any image format (Max 5MB)',
@@ -851,6 +958,15 @@ class _KycVerificationViewState extends State<_KycVerificationView>
         ],
         SizedBox(height: 22.h),
         _buildInstantVerificationBanner(),
+        SizedBox(height: 22.h),
+        _bankFieldLabel('Bank Passbook Front Page'),
+        SizedBox(height: 8.h),
+        _buildUploadCard(
+          title: 'Upload Passbook Front Page',
+          subtitle: 'Any image format (Max 5MB)',
+          imagePath: vm.form.bankPassbookFrontPath,
+          onTap: vm.pickBankPassbookFront,
+        ),
         SizedBox(height: 26.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1217,7 +1333,10 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                 children: [
                   AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: Image.file(File(imagePath), fit: BoxFit.cover),
+                    child: Container(
+                      color: _fieldBg,
+                      child: _buildPickedImagePreview(imagePath),
+                    ),
                   ),
                   Container(
                     width: double.infinity,
@@ -1243,7 +1362,7 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
-                            'Uploaded successfully — tap to change',
+                            'Uploaded successfully — Tap to change',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -1304,6 +1423,51 @@ class _KycVerificationViewState extends State<_KycVerificationView>
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  /// Renders a just-picked local image for the upload preview.
+  ///
+  /// `Image.file` is not supported on Flutter Web (dart:io has no real file
+  /// access there) and silently falls back to the platform's generic
+  /// "broken file" placeholder instead of the document itself. On web the
+  /// picked [XFile]'s path is a loadable blob/network URL, so we render it
+  /// with `Image.network` there and `Image.file` everywhere else. Either
+  /// path falls back to a clean, on-brand placeholder (never a default
+  /// system icon) if decoding still fails.
+  Widget _buildPickedImagePreview(String imagePath) {
+    final ImageProvider provider = kIsWeb
+        ? NetworkImage(imagePath)
+        : FileImage(File(imagePath));
+
+    return Image(
+      image: provider,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stack) => Container(
+        color: _fieldBg,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.image_outlined,
+                color: _muted,
+                size: 26.sp,
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                'Preview unavailable',
+                style: TextStyle(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w500,
+                  color: _muted,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -2560,6 +2724,25 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
           ),
           SizedBox(height: 18.h),
 
+          // ── Aadhaar Number ───────────────────────────────────────────────
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: _surfaceDeep,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: _cardBorder),
+            ),
+            child: _detailRow(
+              Icons.badge_outlined,
+              'Aadhaar Number',
+              d.aadhaarNumber,
+              copyable: true,
+              isLast: true,
+            ),
+          ),
+          SizedBox(height: 12.h),
+
           // ── Aadhaar Card — front + back side by side ──────────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2583,6 +2766,25 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
           ),
 
           SizedBox(height: 22.h),
+
+          // ── PAN Number ───────────────────────────────────────────────────
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: _surfaceDeep,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: _cardBorder),
+            ),
+            child: _detailRow(
+              Icons.badge_outlined,
+              'PAN Number',
+              d.panNumber,
+              copyable: true,
+              isLast: true,
+            ),
+          ),
+          SizedBox(height: 12.h),
 
           // ── PAN Card — its own full-width section ──────────────────────────
           _KycDocCard(
@@ -2671,6 +2873,16 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                 ),
               ],
             ),
+          ),
+
+          SizedBox(height: 22.h),
+
+          // ── Bank Passbook Front Page ────────────────────────────────────────
+          _KycDocCard(
+            label: 'Bank Passbook Front Page',
+            url: d.bankPassbookFrontUrl,
+            authToken: authToken,
+            aspectRatio: 8 / 5,
           ),
         ],
       ),

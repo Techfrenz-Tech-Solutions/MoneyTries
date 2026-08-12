@@ -320,6 +320,11 @@ class KycViewModel extends ChangeNotifier {
     if (path != null) { _form.panFrontPath = path; _errorMessage = null; notifyListeners(); }
   }
 
+  Future<void> pickBankPassbookFront() async {
+    final path = await _pickAndConvertImage(source: ImageSource.gallery);
+    if (path != null) { _form.bankPassbookFrontPath = path; _errorMessage = null; notifyListeners(); }
+  }
+
   /// Opens the device camera to capture a live selfie and returns the local
   /// file path of the captured photo (or `null` if the user cancelled).
   /// This does NOT commit the photo as the KYC selfie — the UI must show a
@@ -396,6 +401,10 @@ class KycViewModel extends ChangeNotifier {
       return null;
     }
   }
+
+  // ── Aadhaar / PAN number updaters ────────────────────────────────────────
+  void updateAadhaarNumber(String v) { _form.aadhaarNumber = v; notifyListeners(); }
+  void updatePanNumber(String v) { _form.panNumber = v.toUpperCase(); notifyListeners(); }
 
   // ── Bank field updaters ───────────────────────────────────────────────────
   void updateAccountHolder(String v) { _form.accountHolderName = v; notifyListeners(); }
@@ -480,8 +489,13 @@ class KycViewModel extends ChangeNotifier {
       request.files.add(await http.MultipartFile.fromPath(
           'selfie', _form.selfiePath!,
           contentType: _imageMediaType(_form.selfiePath!)));
+      request.files.add(await http.MultipartFile.fromPath(
+          'bank_passbook_front', _form.bankPassbookFrontPath!,
+          contentType: _imageMediaType(_form.bankPassbookFrontPath!)));
 
-      // Attach bank text fields
+      // Attach Aadhaar / PAN numbers and bank text fields
+      request.fields['aadhaarNumber']     = _form.aadhaarNumber.trim();
+      request.fields['panNumber']         = _form.panNumber.trim().toUpperCase();
       request.fields['accountHolderName'] = _form.accountHolderName.trim();
       request.fields['accountNumber']     = _form.accountNumber.trim();
       request.fields['ifscCode']          = _form.ifscCode.trim().toUpperCase();
@@ -576,12 +590,14 @@ class KycViewModel extends ChangeNotifier {
   String _validationMessage() {
     switch (_currentStep) {
       case KycStep.aadhaar:
+        if (!_form.aadhaarNumberValid) return 'Please enter a valid 12-digit Aadhaar number.';
         if (_form.aadhaarFrontPath == null && _form.aadhaarBackPath == null) {
           return 'Please upload both front and back of your Aadhaar card.';
         }
         if (_form.aadhaarFrontPath == null) return 'Please upload Aadhaar front side.';
         return 'Please upload Aadhaar back side.';
       case KycStep.pan:
+        if (!_form.panNumberValid) return 'Please enter a valid PAN number (e.g. ABCDE1234F).';
         return 'Please upload your PAN card.';
       case KycStep.selfie:
         return 'Please capture or upload your selfie.';
@@ -590,6 +606,7 @@ class KycViewModel extends ChangeNotifier {
         if (_form.accountNumber.trim().length < 9)  return 'Please enter a valid account number (min 9 digits).';
         if (_form.ifscCode.trim().length != 11)     return 'IFSC code must be 11 characters.';
         if (_form.bankInfo == null) return 'Please verify your IFSC code first using the FIND button.';
+        if (_form.bankPassbookFrontPath == null) return 'Please upload your bank passbook front page.';
         return 'Please fill all bank details correctly.';
     }
   }

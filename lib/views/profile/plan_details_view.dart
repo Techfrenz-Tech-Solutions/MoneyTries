@@ -263,7 +263,12 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
 
   // ── Portfolio Overview Card ──────────────────────────────────────────────
   Widget _buildOverviewCard(PlanViewModel vm) {
-    final total = vm.plans.length;
+    // Total Plans = Approved + Pending (Under Review) — rejected plans are
+    // excluded from this count, same as the "Only Approved and Pending"
+    // filtering already used for the plans list above.
+    final total = vm.plans
+        .where((p) => p.status != PlanStatus.rejected)
+        .length;
     final active = vm.plans.where((p) => p.status.isRunning).length;
     final completed = vm.plans
         .where((p) => p.status == PlanStatus.completed)

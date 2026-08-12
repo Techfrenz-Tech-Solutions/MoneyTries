@@ -95,6 +95,8 @@ flutter:
     - assets/sounds/success_chime.wav
     - assets/sounds/tap_tick.wav
     - assets/sounds/error_soft.wav
+    - assets/sounds/keypad_tap.wav
+    - assets/sounds/keypad_backspace.wav
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

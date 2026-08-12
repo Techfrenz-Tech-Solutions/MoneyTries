@@ -37,6 +37,15 @@ enum AppSoundEvent {
   /// Light tactile confirmation for primary-action button taps.
   buttonTap('assets/sounds/tap_tick.wav'),
 
+  /// Numeric digit tapped on an amount-entry keypad (investment amount,
+  /// configure-investment amount). Short and bright so it stays crisp
+  /// even under fast, repeated typing.
+  keypadTap('assets/sounds/keypad_tap.wav'),
+
+  /// Backspace tapped on an amount-entry keypad. Slightly lower-pitched
+  /// than [keypadTap] so deletions read distinctly from digit entry.
+  keypadBackspace('assets/sounds/keypad_backspace.wav'),
+
   /// Soft, non-alarming cue for failures — used sparingly.
   error('assets/sounds/error_soft.wav');
 

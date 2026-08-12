@@ -64,7 +64,7 @@ class ReferralRepository {
   }
 
   /// POST /api/referral/claim-reward
-  /// Claims the one-time ₹500 "Invite 5 Users" reward. Only succeeds once
+  /// Claims the one-time ₹300 "Invite 5 Users" reward. Only succeeds once
   /// the task is complete and hasn't already been claimed — the server is
   /// the source of truth for that check.
   /// Returns the updated (main) wallet balance on success.
