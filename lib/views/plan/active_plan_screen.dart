@@ -339,7 +339,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
     title: 'Under Review',
     titleColor: const Color(0xFF92400E),
     body:
-        'Your first payment is under admin review. Plan will be activated and ROI will start from the approval date.',
+        'Your payment is under admin review. Plan will be activated and ROI will start from the approval date.',
     bodyColor: const Color(0xFFB45309),
   );
 

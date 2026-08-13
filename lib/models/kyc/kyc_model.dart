@@ -1,6 +1,6 @@
 // lib/models/kyc/kyc_model.dart
 
-enum KycStep { aadhaar, pan, selfie, bank }
+enum KycStep { aadhaar, pan, bank, selfie }
 
 enum KycStatus { idle, loading, success, error }
 

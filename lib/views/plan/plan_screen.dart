@@ -270,25 +270,26 @@ class _PlanScreenState extends State<PlanScreen> {
                                   ),
                               ],
                             ),
+                          // ── "Continue Another Plan" — scrolls with content,
+                          // appears after all plan cards ─────────────────────
+                          if (showContinueBtn)
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 32.h, 0, 8.h),
+                              child: Center(
+                                child: _continueButton(
+                                  label: 'Continue Another Plan',
+                                  onTap: () => _navigateToInvestWithKycCheck(
+                                    context,
+                                    excludeTypes: activeTypes.toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
                           SizedBox(height: 28.h),
                         ],
                       ),
                     ),
                   ),
-                  // ── "Continue Another Plan" pinned between scroll & nav ──
-                  if (showContinueBtn)
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20.w, 32.h, 20.w, 48.h),
-                      child: Center(
-                        child: _continueButton(
-                          label: 'Continue Another Plan',
-                          onTap: () => _navigateToInvestWithKycCheck(
-                            context,
-                            excludeTypes: activeTypes.toList(),
-                          ),
-                        ),
-                      ),
-                    ),
                   _buildBottomNav(),
                 ],
               );

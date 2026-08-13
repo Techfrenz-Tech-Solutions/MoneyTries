@@ -258,9 +258,9 @@ class KycViewModel extends ChangeNotifier {
   String get nextLabel {
     switch (_currentStep) {
       case KycStep.aadhaar: return 'Continue to PAN';
-      case KycStep.pan:     return 'Continue to Selfie';
-      case KycStep.selfie:  return 'Continue to Bank';
-      case KycStep.bank:    return 'Complete Verification';
+      case KycStep.pan:     return 'Continue to Bank Details';
+      case KycStep.bank:    return 'Continue to Selfie';
+      case KycStep.selfie:  return 'Complete Verification';
     }
   }
 

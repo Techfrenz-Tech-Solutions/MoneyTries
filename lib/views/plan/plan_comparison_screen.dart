@@ -466,7 +466,6 @@ class PlanComparisonScreen extends StatelessWidget {
       ('Daily ROI', '${c.planType.dailyRoiPercent.toStringAsFixed(2)}%'),
       ('Daily ROI Amount', '₹ ${_inrDecimal(c.dailyRoiAmount)}'),
       ('Investment Amount', '₹ ${_inr(c.monthlyAmount)}'),
-      ('Total Investment', '₹ ${_inr(c.totalInvestment)}'),
       ('Est. Total ROI', '₹ ${_inr(c.estimatedTotalRoi)}'),
       ('Est. Total Return', '₹ ${_inr(c.estimatedTotalReturn)}'),
       ('Total Days', '${c.planType.durationDays} days'),

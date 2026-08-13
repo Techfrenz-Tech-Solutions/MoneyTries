@@ -353,12 +353,12 @@ class _KycVerificationViewState extends State<_KycVerificationView>
 
   // ── Progress bar (premium segmented stepper) ─────────────────────────────
   Widget _buildProgressBar(KycViewModel vm) {
-    const labels = ['Aadhaar', 'PAN', 'Selfie', 'Bank'];
+    const labels = ['Aadhaar', 'PAN', 'Bank', 'Selfie'];
     const icons = [
       Icons.badge_outlined,
       Icons.credit_card_rounded,
-      Icons.face_retouching_natural_rounded,
       Icons.account_balance_rounded,
+      Icons.face_retouching_natural_rounded,
     ];
     return Padding(
       padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 4.h),
@@ -2554,11 +2554,6 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
                       ),
                       // Show the submitted documents + bank details for both
                       // pending review and approved KYC.
-                      SizedBox(height: 32.h),
-                      FadeTransition(
-                        opacity: _fadeAnim,
-                        child: _buildProgressCard(),
-                      ),
                       if (d != null) ...[
                         SizedBox(height: 36.h),
                         FadeTransition(
@@ -2617,68 +2612,6 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // ── Verification progress — gives the pending state a sense of motion
-  // instead of a single static paragraph, and gives the approved state a
-  // clear "here's how you got here" recap. ─────────────────────────────────
-  Widget _buildProgressCard() {
-    final approved = _isApproved;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 22.h),
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(22.r),
-        border: Border.all(color: _cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _statusRow(
-            icon: Icons.upload_file_rounded,
-            label: 'Documents Submitted',
-            done: true,
-          ),
-          _timelineConnector(done: true),
-          _statusRow(
-            icon: Icons.fact_check_rounded,
-            label: 'Under Admin Review',
-            done: approved,
-            active: !approved,
-          ),
-          _timelineConnector(done: approved),
-          _statusRow(
-            icon: Icons.verified_user_rounded,
-            label: 'Verified & Approved',
-            done: approved,
-            active: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _timelineConnector({required bool done}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 2.h),
-      child: Row(
-        children: [
-          SizedBox(width: 19.5.w),
-          Container(
-            width: 2,
-            height: 22.h,
-            color: done ? _emerald.withOpacity(0.4) : _cardBorder,
-          ),
-        ],
       ),
     );
   }
@@ -2794,21 +2727,6 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
             aspectRatio: 8 / 5,
           ),
 
-          SizedBox(height: 22.h),
-
-          // ── Selfie — its own section, portrait card ────────────────────────
-          Center(
-            child: SizedBox(
-              width: 160.w,
-              child: _KycDocCard(
-                label: 'Selfie',
-                url: d.selfieUrl,
-                authToken: authToken,
-                aspectRatio: 3 / 4,
-              ),
-            ),
-          ),
-
           SizedBox(height: 24.h),
           Row(
             children: [
@@ -2883,6 +2801,21 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
             url: d.bankPassbookFrontUrl,
             authToken: authToken,
             aspectRatio: 8 / 5,
+          ),
+
+          SizedBox(height: 22.h),
+
+          // ── Selfie — its own section, portrait card ────────────────────────
+          Center(
+            child: SizedBox(
+              width: 160.w,
+              child: _KycDocCard(
+                label: 'Selfie',
+                url: d.selfieUrl,
+                authToken: authToken,
+                aspectRatio: 3 / 4,
+              ),
+            ),
           ),
         ],
       ),
@@ -2966,73 +2899,6 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
     );
   }
 
-  Widget _statusRow({
-    required IconData icon,
-    required String label,
-    required bool done,
-    bool active = false,
-  }) {
-    return Row(
-      children: [
-        Container(
-          width: 40.w,
-          height: 40.h,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: done
-                ? const LinearGradient(colors: [_primary, _emerald])
-                : null,
-            color: done
-                ? null
-                : active
-                ? _emerald.withOpacity(0.16)
-                : _fieldBg,
-            border: done ? null : Border.all(color: _cardBorder),
-          ),
-          child: Icon(
-            icon,
-            size: 20.sp,
-            color: done
-                ? _white
-                : active
-                ? _emerald
-                : _muted,
-          ),
-        ),
-        SizedBox(width: 14.w),
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
-              fontSize: 14.5.sp,
-              fontWeight: done || active ? FontWeight.w700 : FontWeight.w400,
-              color: done
-                  ? _mint
-                  : active
-                  ? _emerald
-                  : _muted,
-            ),
-          ),
-        ),
-        SizedBox(width: 8.w),
-        if (done)
-          Icon(Icons.check_circle_rounded, size: 18.sp, color: _emerald)
-        else if (active)
-          SizedBox(
-            width: 16.w,
-            height: 16.h,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: _emerald,
-              backgroundColor: _emerald.withOpacity(0.2),
-            ),
-          ),
-      ],
-    );
-  }
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
