@@ -232,14 +232,19 @@ class _PlanScreenState extends State<PlanScreen> {
               return Column(
                 children: [
                   Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
+                    child: RefreshIndicator(
+                      color: _brandGreen,
+                      onRefresh: () => context.read<PlanViewModel>().loadPlans(),
+                      child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 20.h),
-                          _buildHeader(),
+                          _buildHeader(vm),
                           SizedBox(height: 24.h),
                           if (vm.listState == PlanVmState.loading &&
                               vm.plans.isEmpty)
@@ -288,6 +293,7 @@ class _PlanScreenState extends State<PlanScreen> {
                           SizedBox(height: 28.h),
                         ],
                       ),
+                      ),
                     ),
                   ),
                   _buildBottomNav(),
@@ -301,30 +307,76 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   // ── Header ─────────────────────────────────────────────────────────────────
-  Widget _buildHeader() {
-    return Column(
+  Widget _buildHeader(PlanViewModel vm) {
+    final isRefreshing = vm.listState == PlanVmState.loading;
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Investment Plans',
-          style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
-            fontSize: 28.sp,
-            fontWeight: FontWeight.w800,
-            color: _titleDark,
-            height: 1.18,
-            letterSpacing: -0.5,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Investment Plans',
+                style: TextStyle(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.w800,
+                  color: _titleDark,
+                  height: 1.18,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Choose a plan and grow your wealth with\ndaily ROI credited directly to your wallet.',
+                style: TextStyle(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: _subtitleGrey,
+                  height: 1.6,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(
-          'Choose a plan and grow your wealth with\ndaily ROI credited directly to your wallet.',
-          style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w400,
-            color: _subtitleGrey,
-            height: 1.6,
+        SizedBox(width: 12.w),
+        GestureDetector(
+          onTap: isRefreshing
+              ? null
+              : () => context.read<PlanViewModel>().loadPlans(),
+          child: Container(
+            width: 40.w,
+            height: 40.h,
+            margin: EdgeInsets.only(top: 2.h),
+            decoration: BoxDecoration(
+              color: _white,
+              borderRadius: BorderRadius.circular(12.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Center(
+              child: isRefreshing
+                  ? SizedBox(
+                      width: 18.w,
+                      height: 18.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(_brandGreen),
+                      ),
+                    )
+                  : Icon(
+                      Icons.refresh_rounded,
+                      size: 20.sp,
+                      color: _titleDark,
+                    ),
+            ),
           ),
         ),
       ],
@@ -884,8 +936,22 @@ class _PlanScreenState extends State<PlanScreen> {
                               ],
                             ),
                             SizedBox(height: 14.h),
+                            // ── Invested amount ─────────────────────────────
+                            // Always the amount the user actually paid at
+                            // enrollment (plan.totalCommitment == monthlyAmount,
+                            // the one-time payment — see ActivePlan). This is
+                            // the SAME figure and the SAME backend field the
+                            // Plan Dashboard (active_plan_screen.dart) reads,
+                            // so this card and the dashboard can never show
+                            // different numbers for the same plan again.
+                            //
+                            // Deliberately NOT plan.totalPrincipal
+                            // (monthlyAmount × monthsPaid): monthsPaid is 0
+                            // until admin approval, which made this figure
+                            // incorrectly show ₹0 for an Under Review plan
+                            // even though the user had already paid in full.
                             Text(
-                              '₹ ${_inr(plan.totalPrincipal)}',
+                              '₹ ${_inr(plan.totalCommitment)}',
                               style: TextStyle(
                                 fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 34.sp,
@@ -897,7 +963,12 @@ class _PlanScreenState extends State<PlanScreen> {
                             ),
                             SizedBox(height: 6.h),
                             Text(
-                              'Sealed principal · ${plan.planType.rateLabel} daily',
+                              plan.status == PlanStatus.underReview
+                                  // Under review: money is paid but not yet
+                                  // locked/earning — say so plainly instead
+                                  // of implying it's already sealed/accruing.
+                                  ? 'Under review · locks once approved'
+                                  : 'Sealed principal · ${plan.planType.rateLabel} daily',
                               style: TextStyle(
                                 fontFamily: GoogleFonts.inter().fontFamily,
                                 fontSize: 12.sp,

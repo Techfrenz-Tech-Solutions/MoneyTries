@@ -113,14 +113,19 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               child: Column(
                 children: [
                   Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
+                    child: RefreshIndicator(
+                      color: _green,
+                      onRefresh: () => context.read<PlanViewModel>().loadPlans(),
+                      child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 20.h),
-                          _buildAppBar(context),
+                          _buildAppBar(context, vm),
                           SizedBox(height: 24.h),
                           _buildHeroCard(),
                           SizedBox(height: 20.h),
@@ -155,6 +160,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                           SizedBox(height: 12.h),
                         ],
                       ),
+                      ),
                     ),
                   ),
                   _buildBottomBar(),
@@ -168,38 +174,65 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
   }
 
   // ── App Bar ────────────────────────────────────────────────────────────────
-  Widget _buildAppBar(BuildContext ctx) => Row(
-    children: [
-      GestureDetector(
-        onTap: () => Navigator.pop(ctx),
-        child: Container(
-          width: 40.w,
-          height: 40.h,
-          decoration: BoxDecoration(
-            color: _white,
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 18.sp,
-            color: _dark,
-          ),
-        ),
-      ),
-      SizedBox(width: 14.w),
-      Expanded(
-        child: Text(
-          'Plan Dashboard',
-          style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
-            fontSize: 17.sp,
-            fontWeight: FontWeight.w700,
-            color: _dark,
+  Widget _buildAppBar(BuildContext ctx, PlanViewModel vm) {
+    final isRefreshing = vm.listState == PlanVmState.loading;
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () => Navigator.pop(ctx),
+          child: Container(
+            width: 40.w,
+            height: 40.h,
+            decoration: BoxDecoration(
+              color: _white,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 18.sp,
+              color: _dark,
+            ),
           ),
         ),
-      ),
-    ],
-  );
+        SizedBox(width: 14.w),
+        Expanded(
+          child: Text(
+            'Plan Dashboard',
+            style: TextStyle(
+              fontFamily: GoogleFonts.inter().fontFamily,
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w700,
+              color: _dark,
+            ),
+          ),
+        ),
+        SizedBox(width: 14.w),
+        GestureDetector(
+          onTap: isRefreshing ? null : () => ctx.read<PlanViewModel>().loadPlans(),
+          child: Container(
+            width: 40.w,
+            height: 40.h,
+            decoration: BoxDecoration(
+              color: _white,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Center(
+              child: isRefreshing
+                  ? SizedBox(
+                      width: 18.w,
+                      height: 18.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(_green),
+                      ),
+                    )
+                  : Icon(Icons.refresh_rounded, size: 20.sp, color: _dark),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   // ── Hero Card ──────────────────────────────────────────────────────────────
   Widget _buildHeroCard() {
@@ -282,7 +315,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 '${_plan.planType.rateLabel} / ${_plan.dailyRoiAmount > 0 ? '₹ ${_plan.dailyRoiAmount.toStringAsFixed(2)}' : '--'}',
               ),
               SizedBox(width: 24.w),
-              _heroStat('Payment', _plan.monthsPaid > 0 ? 'Paid' : 'Pending'),
+              _heroStat('Payment', _plan.monthsPaid > 0 ? 'Paid' : 'Under Review'),
             ],
           ),
         ],
@@ -450,7 +483,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               _vDiv(),
               _summaryGreen(
                 'Payment Status',
-                _plan.monthsPaid > 0 ? 'Paid' : 'Pending',
+                _plan.monthsPaid > 0 ? 'Paid' : 'Under Review',
               ),
               _vDiv(),
               _summaryGreen(
@@ -468,7 +501,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           '₹ ${_inr(_plan.monthlyAmount)}',
         ),
         _divLine(),
-        _detailRow('Payment Status', _plan.monthsPaid > 0 ? 'Paid' : 'Pending'),
+        _detailRow('Payment Status', _plan.monthsPaid > 0 ? 'Paid' : 'Under Review'),
         _divLine(),
         _detailRow('Daily ROI Rate', _plan.planType.rateLabel),
         _divLine(),
@@ -651,7 +684,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
-                    _plan.monthsPaid > 0 ? 'Paid' : 'Pending',
+                    _plan.monthsPaid > 0 ? 'Paid' : 'Under Review',
                     style: TextStyle(
                       fontFamily: GoogleFonts.inter().fontFamily,
                       fontSize: 11.sp,

@@ -59,6 +59,13 @@ class KycViewModel extends ChangeNotifier {
   bool _checkingStatus = true;
   bool get checkingStatus => _checkingStatus;
 
+  /// True while a manual (user-triggered) refresh of the KYC status is in
+  /// flight — distinct from [checkingStatus], which only covers the very
+  /// first load. The UI uses this to show a small inline spinner on the
+  /// Refresh button instead of the full-screen loader.
+  bool _refreshing = false;
+  bool get refreshing => _refreshing;
+
   static const String _baseUrl = ApiConfig.baseUrl;
   /// Public accessor so views can build absolute URLs (e.g. for images)
   /// from the relative paths stored on [KycSubmissionDetails].
@@ -128,6 +135,58 @@ class KycViewModel extends ChangeNotifier {
 
     _checkingStatus = false;
     notifyListeners();
+  }
+
+  // ── Manual refresh (Refresh button) ──────────────────────────────────────
+
+  /// Re-fetches the latest KYC status and full submission details from the
+  /// backend — verification status, Aadhaar/PAN numbers, uploaded documents,
+  /// bank details, passbook, selfie, and admin approval/rejection status —
+  /// and updates the UI immediately. Safe to call repeatedly; overlapping
+  /// taps are ignored while a refresh is already in flight. Does not touch
+  /// [checkingStatus], so it never re-shows the full-screen initial loader.
+  Future<void> refreshKycDetails() async {
+    if (_refreshing) return;
+    _refreshing = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      if (token == null || token.isEmpty) {
+        _errorMessage = 'Session expired. Please log in again.';
+        return;
+      }
+
+      final status = await _fetchAndStoreKycDetails(token);
+      if (status == null) {
+        // Network/parse failure — keep showing whatever was last loaded.
+        _errorMessage = 'Could not refresh right now. Please try again.';
+        return;
+      }
+
+      _serverKycStatus = status;
+      if (status == 'pending' || status == 'approved') {
+        _alreadySubmitted = true;
+        _completed = true;
+      } else {
+        // rejected / not_submitted — fall back to the upload flow so the
+        // user can see the rejection reason and re-submit, same as on
+        // first load.
+        _alreadySubmitted = false;
+        _completed = false;
+      }
+
+      final storedUserId = prefs.getString('logged_in_user_id');
+      final effectiveUserId = (storedUserId != null && storedUserId.isNotEmpty)
+          ? storedUserId
+          : _extractUserIdFromToken(token);
+      await _maybePlayApprovalSound(status, effectiveUserId);
+    } finally {
+      _refreshing = false;
+      notifyListeners();
+    }
   }
 
   /// Resets KYC state to a clean "not submitted" baseline.

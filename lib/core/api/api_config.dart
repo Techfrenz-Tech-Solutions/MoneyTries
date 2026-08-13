@@ -20,8 +20,8 @@
 class ApiConfig {
   // Default backend base URL. Change this single value to repoint the
   // entire app at a different backend.
- // static const String _defaultBaseUrl = 'http://192.168.0.17:3000';
-    static const String _defaultBaseUrl = 'https://moneytries.com/v1/api';
+   static const String _defaultBaseUrl = 'http://192.168.0.17:3000';
+    //static const String _defaultBaseUrl = 'https://moneytries.com/v1/api';
   // static const String _defaultBaseUrl = 'https://greenvault-backend-production.up.railway.app';
 
   /// Base URL — resolves to `--dart-define=API_BASE_URL=...` if provided,

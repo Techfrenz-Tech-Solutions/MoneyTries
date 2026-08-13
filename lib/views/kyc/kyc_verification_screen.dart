@@ -2371,6 +2371,12 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Watching the KycViewModel here (in addition to the parent) keeps the
+    // Refresh button's spinner in sync, and means widget.kycStatus /
+    // widget.details (passed down from the parent's build, which already
+    // watches this same ViewModel) are always current — no navigation or
+    // screen reopen required to see updated data after a refresh.
+    final vm = context.watch<KycViewModel>();
     final d = widget.details;
     return _DarkScaffold(
       child: SafeArea(
@@ -2378,25 +2384,82 @@ class _KycSuccessScreenState extends State<_KycSuccessScreen>
           padding: EdgeInsets.symmetric(horizontal: 28.w),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: 40.w,
-                    height: 40.h,
-                    decoration: BoxDecoration(
-                      color: _surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: _cardBorder),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 17.sp,
-                      color: _emerald,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 40.w,
+                      height: 40.h,
+                      decoration: BoxDecoration(
+                        color: _surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: _cardBorder),
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 17.sp,
+                        color: _emerald,
+                      ),
                     ),
                   ),
-                ),
+                  // ── Refresh button ─────────────────────────────────────
+                  // Re-fetches the latest KYC status + full submission
+                  // details (verification status, Aadhaar/PAN, uploaded
+                  // documents, bank details, passbook, selfie, and admin
+                  // approval/rejection status) from the backend and updates
+                  // this screen immediately — no need to leave and reopen.
+                  Semantics(
+                    label: 'Refresh KYC status',
+                    button: true,
+                    child: GestureDetector(
+                      onTap: vm.refreshing
+                          ? null
+                          : () => context.read<KycViewModel>().refreshKycDetails(),
+                      child: Container(
+                        width: 40.w,
+                        height: 40.h,
+                        decoration: BoxDecoration(
+                          color: _surface,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: _cardBorder),
+                        ),
+                        child: Center(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            switchInCurve: Curves.easeOut,
+                            switchOutCurve: Curves.easeIn,
+                            transitionBuilder: (child, anim) =>
+                                FadeTransition(
+                              opacity: anim,
+                              child: ScaleTransition(
+                                scale: anim,
+                                child: child,
+                              ),
+                            ),
+                            child: vm.refreshing
+                                ? SizedBox(
+                                    key: const ValueKey('kyc-refresh-spinner'),
+                                    width: 17.w,
+                                    height: 17.h,
+                                    child: CircularProgressIndicator(
+                                      color: _emerald,
+                                      strokeWidth: 2.2,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.refresh_rounded,
+                                    key: const ValueKey('kyc-refresh-icon'),
+                                    size: 19.sp,
+                                    color: _emerald,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Expanded(
                 child: SingleChildScrollView(
