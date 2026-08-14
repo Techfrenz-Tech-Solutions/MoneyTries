@@ -375,8 +375,9 @@ class ActivePlan {
     DateTime midnight(DateTime d) => DateTime(d.year, d.month, d.day);
     final storedStart = midnight(startDate);
     final earliestPaid = midnight(paid.first.paidAt!);
-    final effectiveStart =
-        earliestPaid.isBefore(storedStart) ? earliestPaid : storedStart;
+    final effectiveStart = earliestPaid.isBefore(storedStart)
+        ? earliestPaid
+        : storedStart;
 
     final tiers = <({DateTime from, int amount})>[
       (from: effectiveStart, amount: monthlyAmount * 1),
@@ -636,29 +637,6 @@ class ActivePlan {
 }
 
 // ── API Response Wrappers ─────────────────────────────────────────────────────
-
-class PlanPaymentResponse {
-  final bool success;
-  final String message;
-  final String? transactionId;
-
-  const PlanPaymentResponse({
-    required this.success,
-    required this.message,
-    this.transactionId,
-  });
-
-  factory PlanPaymentResponse.fromJson(Map<String, dynamic> json) {
-    return PlanPaymentResponse(
-      success:
-          json['success'] == true ||
-          (json['status']?.toString().toLowerCase() == 'success'),
-      message: json['message']?.toString() ?? 'Payment processed',
-      transactionId:
-          json['transaction_id']?.toString() ?? json['txn_id']?.toString(),
-    );
-  }
-}
 
 class RoiWithdrawalResponse {
   final bool success;

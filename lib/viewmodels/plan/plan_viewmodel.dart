@@ -22,11 +22,6 @@ class PlanViewModel extends ChangeNotifier {
   String? enrollError;
   ActivePlan? enrolledPlan;
 
-  // ── Monthly instalment ─────────────────────────────────────────────────────
-  PlanVmState payState = PlanVmState.idle;
-  String? payError;
-  PlanPaymentResponse? paymentResult;
-
   // ── ROI withdrawal ─────────────────────────────────────────────────────────
   PlanVmState roiState = PlanVmState.idle;
   String? roiError;
@@ -150,33 +145,6 @@ class PlanViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Monthly instalment via UPI ─────────────────────────────────────────────
-  Future<void> payMonthlyInstalment({
-    required String planId,
-    required String utrId,
-    required String proofImageUrl,
-  }) async {
-    payState = PlanVmState.loading;
-    payError = null;
-    paymentResult = null;
-    notifyListeners();
-
-    try {
-      paymentResult = await _repo.payMonthlyInstalment(
-        planId: planId,
-        utrId: utrId,
-        proofImageUrl: proofImageUrl,
-      );
-      payState = PlanVmState.success;
-      InteractionFeedback.planActivated();
-      await loadPlans();
-    } catch (e) {
-      payError = e.toString().replaceFirst('Exception: ', '');
-      payState = PlanVmState.error;
-    }
-    notifyListeners();
-  }
-
   // ── ROI withdrawal ─────────────────────────────────────────────────────────
   Future<void> withdrawRoi({
     required String planId,
@@ -232,13 +200,6 @@ class PlanViewModel extends ChangeNotifier {
     enrollState = PlanVmState.idle;
     enrollError = null;
     enrolledPlan = null;
-    notifyListeners();
-  }
-
-  void resetPay() {
-    payState = PlanVmState.idle;
-    payError = null;
-    paymentResult = null;
     notifyListeners();
   }
 
