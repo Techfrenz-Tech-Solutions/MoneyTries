@@ -807,103 +807,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Plan Details tile ────────────────────────────────────────────────────
+  // Kept as a Consumer so the tile still rebuilds when plan data changes
+  // (business logic / data source untouched), but the card now renders
+  // via the shared _buildSettingsTile so it's visually identical to the
+  // other Account Settings cards: icon + title + nav arrow only.
   Widget _buildPlanDetailsTile() {
     return Consumer<PlanViewModel>(
       builder: (context, vm, _) {
-        final activePlans = vm.plans.where((p) => p.status.isRunning).toList();
-        final totalPlans = vm.plans.length;
-        final hasPlans = totalPlans > 0;
-
-        return GestureDetector(
+        return _buildSettingsTile(
+          icon: Icons.trending_up_rounded,
+          title: 'Plan Details',
           onTap: () => Navigator.pushNamed(context, AppRoutes.planDetails),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(14.w),
-            decoration: BoxDecoration(
-              color: _white,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 44.w,
-                  height: 44.h,
-                  decoration: BoxDecoration(
-                    color: _iconBg,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.trending_up_rounded,
-                    color: _iconGreen,
-                    size: 22.sp,
-                  ),
-                ),
-                SizedBox(width: 14.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Plan Details',
-                        style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: _titleDark,
-                        ),
-                      ),
-                      if (hasPlans) ...[
-                        SizedBox(height: 2.h),
-                        Text(
-                          activePlans.isNotEmpty
-                              ? '${activePlans.length} active plan${activePlans.length > 1 ? 's' : ''} running'
-                              : '$totalPlans plan${totalPlans > 1 ? 's' : ''} completed',
-                          style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontSize: 12.sp,
-                            color: _subtitleGrey,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (activePlans.isNotEmpty)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5EE),
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    child: Text(
-                      '${activePlans.length} Active',
-                      style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
-                        fontSize: 11.5.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF4CAF7D),
-                      ),
-                    ),
-                  ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: _subtitleGrey,
-                  size: 22.sp,
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
