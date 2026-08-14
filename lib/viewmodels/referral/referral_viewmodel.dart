@@ -12,9 +12,14 @@ enum ClaimRewardState { idle, claiming, claimed, error }
 
 class ReferralViewModel extends ChangeNotifier {
   final ReferralRepository _repo;
+  bool _isDisposed = false;
 
   ReferralViewModel({ReferralRepository? repo})
       : _repo = repo ?? ReferralRepository();
+
+  void _notifyListenersIfActive() {
+    if (!_isDisposed) notifyListeners();
+  }
 
   ReferralLoadState _state = ReferralLoadState.idle;
   ReferralLoadState get state => _state;
@@ -74,18 +79,21 @@ class ReferralViewModel extends ChangeNotifier {
   /// avoids a skeleton-list flash) — used by the background auto-refresh
   /// timer so a periodic poll doesn't visibly reset an already-loaded list.
   Future<void> loadReferralCandidates({bool silent = false}) async {
+    if (_isDisposed) return;
     if (!silent) {
       _candidatesState = ReferralLoadState.loading;
       _candidatesError = null;
-      notifyListeners();
+      _notifyListenersIfActive();
     }
 
     try {
       final fresh = await _repo.fetchReferralCandidates();
+      if (_isDisposed) return;
       _candidates = fresh;
       _candidatesError = null;
       _candidatesState = ReferralLoadState.loaded;
     } catch (e) {
+      if (_isDisposed) return;
       if (!silent) {
         _candidatesError = e.toString().replaceFirst('Exception: ', '');
         _candidatesState = ReferralLoadState.error;
@@ -94,7 +102,7 @@ class ReferralViewModel extends ChangeNotifier {
       // rather than surfacing an error over content the user already has.
     }
 
-    notifyListeners();
+    _notifyListenersIfActive();
   }
 
   Timer? _candidatesAutoRefreshTimer;
@@ -120,46 +128,53 @@ class ReferralViewModel extends ChangeNotifier {
   }
 
   Future<void> loadReferralInfo() async {
+    if (_isDisposed) return;
     _state = ReferralLoadState.loading;
     _error = null;
-    notifyListeners();
+    _notifyListenersIfActive();
 
     try {
-      _info = await _repo.fetchReferralInfo();
+      final fresh = await _repo.fetchReferralInfo();
+      if (_isDisposed) return;
+      _info = fresh;
       _state = ReferralLoadState.loaded;
     } catch (e) {
+      if (_isDisposed) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _state = ReferralLoadState.error;
     }
 
-    notifyListeners();
+    _notifyListenersIfActive();
   }
 
   /// Claims the one-time ₹300 "Invite 5 Users" reward and credits it to
   /// the user's main Wallet Balance. Refreshes referral info afterwards so
   /// [rewardClaimed] flips and the button locks immediately.
   Future<void> claimReward() async {
-    if (!canClaimReward) return;
+    if (_isDisposed || !canClaimReward) return;
 
     _claimState = ClaimRewardState.claiming;
     _claimError = null;
-    notifyListeners();
+    _notifyListenersIfActive();
 
     try {
       await _repo.claimTaskReward();
+      if (_isDisposed) return;
       _claimState = ClaimRewardState.claimed;
       InteractionFeedback.referralSuccess();
       await loadReferralInfo(); // refresh so rewardClaimed = true, UI locks
     } catch (e) {
+      if (_isDisposed) return;
       _claimError = e.toString().replaceFirst('Exception: ', '');
       _claimState = ClaimRewardState.error;
     }
 
-    notifyListeners();
+    _notifyListenersIfActive();
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     _candidatesAutoRefreshTimer?.cancel();
     super.dispose();
   }
