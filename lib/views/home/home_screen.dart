@@ -359,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // returns a full https:// URL, local disk returns a bare
             // relative path — only the latter needs the base URL prefixed.
             _avatarUrl = (img != null && img.isNotEmpty)
-                ? (img.startsWith('http') ? img : '$_kBaseUrl/uploads/$img')
+                ? ApiConfig.resolveUploadUrl(img)
                 : null;
           });
         }

@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/network/session_http_client.dart';
 import '../../core/api/api_config.dart';
@@ -109,7 +108,7 @@ class PushRepository {
       final token = authToken ?? await _getToken();
       if (token == null || token.isEmpty) return;
 
-      final response = await http
+      final response = await sessionHttpClient
           .post(
             Uri.parse('$_kBaseUrl/api/push/unregister-token'),
             headers: _authHeader(token),

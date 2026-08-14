@@ -37,11 +37,29 @@ class ApiConfig {
   /// docs, etc.) served from the backend's `/uploads` directory.
   static const String uploadsBaseUrl = '$baseUrl/uploads';
 
+  /// Joins a first-party path to the configured backend without creating
+  /// duplicate separators. Absolute URLs are preserved unchanged.
+  static String resolveUrl(String path) {
+    final trimmed = path.trim();
+    if (trimmed.isEmpty) return '';
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null && uri.isAbsolute) return uri.toString();
+    final base = baseUrl.replaceFirst(RegExp(r'/+$'), '');
+    final relative = trimmed.replaceFirst(RegExp(r'^/+'), '');
+    return '$base/$relative';
+  }
+
   /// Resolves a possibly-relative image/file path returned by the backend
-  /// into a fully-qualified URL. If [path] is already an absolute URL
-  /// (starts with `http`), it is returned unchanged.
+  /// into a fully-qualified URL. Absolute URLs are returned unchanged.
   static String resolveUploadUrl(String path) {
-    return path.startsWith('http') ? path : '$uploadsBaseUrl/$path';
+    final trimmed = path.trim();
+    if (trimmed.isEmpty) return '';
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null && uri.isAbsolute) return uri.toString();
+    final relative = trimmed
+        .replaceFirst(RegExp(r'^/+'), '')
+        .replaceFirst(RegExp(r'^uploads/+'), '');
+    return resolveUrl('/uploads/$relative');
   }
 
   // Auth Endpoints
