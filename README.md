@@ -1,6 +1,6 @@
-# greenvault
+# MoneyTries
 
-A new Flutter project.
+Flutter mobile application for the MoneyTries platform.
 
 ## Getting Started
 

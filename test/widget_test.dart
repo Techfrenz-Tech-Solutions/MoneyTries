@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:greenvault/main.dart';
+import 'package:moneytries/main.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
