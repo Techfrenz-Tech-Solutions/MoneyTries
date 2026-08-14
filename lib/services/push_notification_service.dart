@@ -33,6 +33,7 @@ import 'dart:ui';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/session/session_manager.dart';
 import '../data/push/push_repository.dart';
 import '../routes/app_routes.dart';
@@ -62,6 +63,8 @@ class PushNotificationService {
   static const String _channelName = 'MoneyTries Notifications';
   static const String _channelDescription =
       'Deposits, withdrawals, ROI, KYC, referrals, and account alerts';
+  static const String _permissionRequestedKey =
+      'notification_permission_requested';
 
   bool _initialized = false;
   String? _currentToken;
@@ -72,11 +75,23 @@ class PushNotificationService {
 
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    final preferences = await SharedPreferences.getInstance();
+    final previouslyRequested =
+        preferences.getBool(_permissionRequestedKey) ?? false;
+    var settings = await _messaging.getNotificationSettings();
+    final androidNeedsFirstRequest =
+        defaultTargetPlatform == TargetPlatform.android && !previouslyRequested;
+    if (settings.authorizationStatus == AuthorizationStatus.notDetermined ||
+        androidNeedsFirstRequest) {
+      // Store before opening the system UI so a process death while the
+      // dialog is visible cannot cause another automatic prompt on restart.
+      await preferences.setBool(_permissionRequestedKey, true);
+      settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
     // Not gated behind kDebugMode — visible via `adb logcat` on a release
     // APK too, which is exactly the build type this needs diagnosing on.
     // If this ever reads anything other than `authorized` on a real
@@ -124,9 +139,12 @@ class PushNotificationService {
   Future<void> _initLocalNotifications() async {
     const androidInit = AndroidInitializationSettings('ic_stat_notification');
     const iosInit = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      // FirebaseMessaging.requestPermission() above is the single owner of
+      // the runtime prompt. Requesting here too can show a second dialog
+      // immediately after the user denies the first one.
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
     final ok = await _localNotifications.initialize(
@@ -158,16 +176,6 @@ class PushNotificationService {
         >();
     await androidPlugin?.createNotificationChannel(androidChannel);
 
-    // Belt-and-suspenders alongside FirebaseMessaging.requestPermission()
-    // above: on some Android 13+ devices / plugin-version combinations,
-    // flutter_local_notifications doesn't reliably pick up a permission
-    // grant made only through the firebase_messaging plugin, and will
-    // silently refuse to post anything until asked directly through its
-    // own API. Safe to call unconditionally — it's a no-op once granted.
-    final localGranted = await androidPlugin?.requestNotificationsPermission();
-    debugPrint(
-      '[PushNotificationService] local_notifications permission granted: $localGranted',
-    );
 
     // Diagnostic only — logs whatever importance the channel actually
     // ended up with. If this ever prints anything below "high" on a real
