@@ -133,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // a malformed, unloadable address (base-url + full-url glued
             // together), which is why avatars silently failed to display.
             _avatarUrl = (img != null && img.isNotEmpty)
-                ? (img.startsWith('http') ? img : '$_kBaseUrl/uploads/$img')
+                ? ApiConfig.resolveUploadUrl(img)
                 : null;
             if (ca != null && ca.isNotEmpty) {
               final dt = DateTime.tryParse(ca);

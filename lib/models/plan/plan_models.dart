@@ -375,8 +375,9 @@ class ActivePlan {
     DateTime midnight(DateTime d) => DateTime(d.year, d.month, d.day);
     final storedStart = midnight(startDate);
     final earliestPaid = midnight(paid.first.paidAt!);
-    final effectiveStart =
-        earliestPaid.isBefore(storedStart) ? earliestPaid : storedStart;
+    final effectiveStart = earliestPaid.isBefore(storedStart)
+        ? earliestPaid
+        : storedStart;
 
     final tiers = <({DateTime from, int amount})>[
       (from: effectiveStart, amount: monthlyAmount * 1),
@@ -552,11 +553,12 @@ class ActivePlan {
       startDate = DateTime.now();
     }
 
-    // Maturity Date = startDate + FIXED days (not calendar months):
-    //   3 months  → startDate + 90 days
-    //   6 months  → startDate + 180 days
-    //   12 months → startDate + 365 days
-    final maturityDate = startDate.add(Duration(days: planType.durationDays));
+    // The server is authoritative because it uses calendar-month arithmetic
+    // (for example, 31 January + 3 months = 30 April). Fall back to the same
+    // calendar-month rule only for legacy responses without maturity_date.
+    final maturityDate =
+        parseServerDateTime(json['maturity_date']) ??
+        addCalendarMonths(startDate, planType.months);
 
     return ActivePlan(
       id: json['id']?.toString() ?? '',
@@ -618,8 +620,8 @@ class ActivePlan {
       monthlyAmount: monthlyAmount ?? this.monthlyAmount,
       monthsPaid: monthsPaid ?? this.monthsPaid,
       startDate: newStart,
-      // Always recompute maturity from (possibly updated) start + fixed days
-      maturityDate: newStart.add(Duration(days: newPlanType.durationDays)),
+      maturityDate:
+          maturityDate ?? addCalendarMonths(newStart, newPlanType.months),
       lastPaymentDate: lastPaymentDate ?? this.lastPaymentDate,
       accruedRoi: accruedRoi ?? this.accruedRoi,
       withdrawnRoi: withdrawnRoi ?? this.withdrawnRoi,
@@ -637,29 +639,6 @@ class ActivePlan {
 
 // ── API Response Wrappers ─────────────────────────────────────────────────────
 
-class PlanPaymentResponse {
-  final bool success;
-  final String message;
-  final String? transactionId;
-
-  const PlanPaymentResponse({
-    required this.success,
-    required this.message,
-    this.transactionId,
-  });
-
-  factory PlanPaymentResponse.fromJson(Map<String, dynamic> json) {
-    return PlanPaymentResponse(
-      success:
-          json['success'] == true ||
-          (json['status']?.toString().toLowerCase() == 'success'),
-      message: json['message']?.toString() ?? 'Payment processed',
-      transactionId:
-          json['transaction_id']?.toString() ?? json['txn_id']?.toString(),
-    );
-  }
-}
-
 class RoiWithdrawalResponse {
   final bool success;
   final String message;
@@ -672,12 +651,15 @@ class RoiWithdrawalResponse {
   });
 
   factory RoiWithdrawalResponse.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] is Map<String, dynamic>
+        ? json['data'] as Map<String, dynamic>
+        : json;
     return RoiWithdrawalResponse(
       success:
           json['success'] == true ||
           (json['status']?.toString().toLowerCase() == 'success'),
       message: json['message']?.toString() ?? 'Withdrawal initiated',
-      amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
+      amount: double.tryParse(data['amount']?.toString() ?? '0') ?? 0.0,
     );
   }
 }
@@ -694,12 +676,15 @@ class PrincipalWithdrawalResponse {
   });
 
   factory PrincipalWithdrawalResponse.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] is Map<String, dynamic>
+        ? json['data'] as Map<String, dynamic>
+        : json;
     return PrincipalWithdrawalResponse(
       success:
           json['success'] == true ||
           (json['status']?.toString().toLowerCase() == 'success'),
       message: json['message']?.toString() ?? 'Principal withdrawal initiated',
-      amount: int.tryParse(json['amount']?.toString() ?? '0') ?? 0,
+      amount: int.tryParse(data['amount']?.toString() ?? '0') ?? 0,
     );
   }
 }

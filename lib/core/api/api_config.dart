@@ -2,7 +2,7 @@
 ///
 /// This is the SINGLE source of truth for the backend `baseUrl` and all
 /// shared API constants. No other file should hardcode a scheme/host/port
-/// (e.g. `http://192.168.0.17:3000` or a Railway URL) — everything should
+/// (e.g. a local development URL) — everything should
 /// reference [ApiConfig.baseUrl] (or the endpoint constants below) instead.
 ///
 /// To point the app at a different backend, change [_defaultBaseUrl] below
@@ -13,16 +13,17 @@
 /// backend:
 ///
 ///   flutter run --dart-define=API_BASE_URL=http://192.168.1.50:3000
-///   flutter build apk --release --dart-define=API_BASE_URL=https://greenvault-backend-production.up.railway.app
+///   flutter build apk --release --dart-define=API_BASE_URL=https://moneytries.com/v1
 ///
 /// Leaving `--dart-define=API_BASE_URL=...` off falls back to
 /// [_defaultBaseUrl].
 class ApiConfig {
   // Default backend base URL. Change this single value to repoint the
   // entire app at a different backend.
-   static const String _defaultBaseUrl = 'http://192.168.0.17:3000';
-    //static const String _defaultBaseUrl = 'https://moneytries.com/v1/api';
-  // static const String _defaultBaseUrl = 'https://greenvault-backend-production.up.railway.app';
+  // Nginx exposes the backend under /v1 and forwards that prefix to the
+  // Express app. Endpoint paths below already include /api, so the base must
+  // stop at /v1 (using /v1/api here would create /v1/api/api/... URLs).
+  static const String _defaultBaseUrl = 'https://moneytries.com/v1';
 
   /// Base URL — resolves to `--dart-define=API_BASE_URL=...` if provided,
   /// otherwise falls back to [_defaultBaseUrl]. This is the ONLY constant
@@ -36,11 +37,29 @@ class ApiConfig {
   /// docs, etc.) served from the backend's `/uploads` directory.
   static const String uploadsBaseUrl = '$baseUrl/uploads';
 
+  /// Joins a first-party path to the configured backend without creating
+  /// duplicate separators. Absolute URLs are preserved unchanged.
+  static String resolveUrl(String path) {
+    final trimmed = path.trim();
+    if (trimmed.isEmpty) return '';
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null && uri.isAbsolute) return uri.toString();
+    final base = baseUrl.replaceFirst(RegExp(r'/+$'), '');
+    final relative = trimmed.replaceFirst(RegExp(r'^/+'), '');
+    return '$base/$relative';
+  }
+
   /// Resolves a possibly-relative image/file path returned by the backend
-  /// into a fully-qualified URL. If [path] is already an absolute URL
-  /// (starts with `http`), it is returned unchanged.
+  /// into a fully-qualified URL. Absolute URLs are returned unchanged.
   static String resolveUploadUrl(String path) {
-    return path.startsWith('http') ? path : '$uploadsBaseUrl/$path';
+    final trimmed = path.trim();
+    if (trimmed.isEmpty) return '';
+    final uri = Uri.tryParse(trimmed);
+    if (uri != null && uri.isAbsolute) return uri.toString();
+    final relative = trimmed
+        .replaceFirst(RegExp(r'^/+'), '')
+        .replaceFirst(RegExp(r'^uploads/+'), '');
+    return resolveUrl('/uploads/$relative');
   }
 
   // Auth Endpoints
@@ -71,7 +90,8 @@ class ApiConfig {
   static const String userDepositList = '/api/deposit/list';
 
   // Withdrawal
-  static const String requestMoveWalletAmount = '/users/requestMoveWalletAmount';
+  static const String requestMoveWalletAmount =
+      '/users/requestMoveWalletAmount';
   static const String userWithdrawRequest = '/users/userWithdrawRequest';
   static const String userWithdrawList = '/users/userWithdrawList';
 

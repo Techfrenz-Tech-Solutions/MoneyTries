@@ -7,6 +7,7 @@ import '../../models/plan/plan_models.dart';
 import '../../core/api/api_config.dart';
 
 const String _kBaseUrl = ApiConfig.baseUrl;
+
 class PlanRepository {
   final http.Client _client;
   PlanRepository({http.Client? client}) : _client = client ?? sessionHttpClient;
@@ -88,48 +89,15 @@ class PlanRepository {
         return ActivePlan.fromJson(data as Map<String, dynamic>);
       }
 
-      throw Exception(json['message'] ?? 'Plan enrollment failed (${response.statusCode}).');
+      throw Exception(
+        json['message'] ?? 'Plan enrollment failed (${response.statusCode}).',
+      );
     } on SocketException {
       throw Exception('No internet connection. Please try again.');
     } on Exception {
       rethrow;
     } catch (e) {
       throw Exception('Plan enrollment failed. Please try again.');
-    }
-  }
-
-  // ── Pay monthly instalment via UPI ────────────────────────────────────────
-  Future<PlanPaymentResponse> payMonthlyInstalment({
-    required String planId,
-    required String utrId,
-    required String proofImageUrl,
-  }) async {
-    try {
-      final uri = Uri.parse('$_kBaseUrl/api/plans/$planId/pay');
-      final response = await _client
-          .post(
-            uri,
-            headers: await _headers(),
-            body: jsonEncode({'utr_id': utrId, 'proof_image': proofImageUrl}),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      Map<String, dynamic> json = {};
-      try {
-        json = jsonDecode(response.body) as Map<String, dynamic>;
-      } catch (_) {}
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return PlanPaymentResponse.fromJson(json);
-      }
-
-      throw Exception(json['message'] ?? 'Payment submission failed (${response.statusCode}).');
-    } on SocketException {
-      throw Exception('No internet connection. Please try again.');
-    } on Exception {
-      rethrow;
-    } catch (e) {
-      throw Exception('Payment submission failed. Please try again.');
     }
   }
 

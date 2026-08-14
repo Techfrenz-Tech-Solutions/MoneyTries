@@ -122,7 +122,7 @@ class ProfileRepository {
         ),
       );
 
-    final streamed = await req.send().timeout(const Duration(seconds: 30));
+    final streamed = await _client.send(req).timeout(const Duration(seconds: 30));
     final resBody = jsonDecode(await streamed.stream.bytesToString())
         as Map<String, dynamic>;
 
@@ -151,7 +151,6 @@ class ProfileRepository {
 
   /// Builds the full URL for a relative avatar path returned by the server.
   String buildAvatarUrl(String relPath) {
-    if (relPath.startsWith('http')) return relPath;
-    return '$_kBaseUrl/uploads/$relPath';
+    return ApiConfig.resolveUploadUrl(relPath);
   }
 }

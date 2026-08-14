@@ -95,7 +95,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
           // latter needs the base URL prefixed.
           setState(() {
             _avatarUrl = (img != null && img.isNotEmpty)
-                ? (img.startsWith('http') ? img : '$_kBaseUrl/uploads/$img')
+                ? ApiConfig.resolveUploadUrl(img)
                 : null;
           });
         }
