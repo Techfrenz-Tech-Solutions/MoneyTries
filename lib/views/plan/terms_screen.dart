@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/responsive.dart';
@@ -85,7 +85,7 @@ class _TermsScreenState extends State<TermsScreen> {
                     Text(
                       'Moneytries',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 17.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -108,7 +108,7 @@ class _TermsScreenState extends State<TermsScreen> {
                         'Terms of\nEngagement',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 34.sp,
                           fontWeight: FontWeight.w800,
                           color: _titleDark,
@@ -121,7 +121,7 @@ class _TermsScreenState extends State<TermsScreen> {
                         'Please review our structural investment\nprotocols before proceeding. These\nmandates ensure the institutional stability\nof your wealth management journey.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: _subtitleGrey,
@@ -165,7 +165,7 @@ class _TermsScreenState extends State<TermsScreen> {
                             Text(
                               'Secure Asset\nGovernance',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 22.sp,
                                 fontWeight: FontWeight.w800,
                                 color: _titleDark,
@@ -176,7 +176,7 @@ class _TermsScreenState extends State<TermsScreen> {
                             Text(
                               'Institutional Grade Compliance',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w400,
                                 color: _brandGreen,
@@ -232,7 +232,7 @@ class _TermsScreenState extends State<TermsScreen> {
                                             Text(
                                               t.title,
                                               style: TextStyle(
-                                                fontFamily: GoogleFonts.inter().fontFamily,
+                                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                 fontSize: 15.sp,
                                                 fontWeight: FontWeight.w700,
                                                 color: _titleDark,
@@ -242,7 +242,7 @@ class _TermsScreenState extends State<TermsScreen> {
                                             Text(
                                               t.body,
                                               style: TextStyle(
-                                                fontFamily: GoogleFonts.inter().fontFamily,
+                                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                 fontSize: 13.sp,
                                                 fontWeight: FontWeight.w400,
                                                 color: _subtitleGrey,
@@ -309,7 +309,7 @@ class _TermsScreenState extends State<TermsScreen> {
                             child: Text(
                               'I hereby acknowledge that I have read, understood, and agreed to the structural investment protocols outlined above.',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 13.5.sp,
                                 fontWeight: FontWeight.w400,
                                 color: _titleDark,
@@ -356,7 +356,7 @@ class _TermsScreenState extends State<TermsScreen> {
                                 child: Text(
                                   'Accept & Continue',
                                   style: TextStyle(
-                                    fontFamily: GoogleFonts.inter().fontFamily,
+                                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w700,
                                     color: _brandGreen,
@@ -378,7 +378,7 @@ class _TermsScreenState extends State<TermsScreen> {
                               child: Text(
                                 'Accept & Continue',
                                 style: TextStyle(
-                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
                                   color: _white,

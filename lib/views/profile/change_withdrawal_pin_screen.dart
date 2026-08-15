@@ -1,4 +1,4 @@
-// lib/views/profile/change_withdrawal_pin_screen.dart
+﻿// lib/views/profile/change_withdrawal_pin_screen.dart
 //
 // Security Settings → PIN & Authentication → Withdrawal PIN → Change PIN
 //
@@ -22,7 +22,7 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
@@ -166,7 +166,7 @@ class _VerifyCurrentWithdrawalPinBodyState
           title: Text(
             'Withdrawal PIN',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 17.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -203,7 +203,7 @@ class _VerifyCurrentWithdrawalPinBodyState
                     Text(
                       'Enter Current PIN',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 21.sp,
                         fontWeight: FontWeight.w800,
                         color: _titleDark,
@@ -218,7 +218,7 @@ class _VerifyCurrentWithdrawalPinBodyState
                         'Withdrawal PIN before setting a new one.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 13.5.sp,
                           fontWeight: FontWeight.w400,
                           color: _subtitleGrey,
@@ -254,7 +254,7 @@ class _VerifyCurrentWithdrawalPinBodyState
                       Text(
                         vm.withdrawalPinChangeError!,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 12.5.sp,
                           fontWeight: FontWeight.w600,
                           color: _errorRed,
@@ -309,7 +309,7 @@ class _AttemptsNotice extends StatelessWidget {
                         'before Withdrawal PIN verification is temporarily locked.'
                     : 'Verification will lock after the next incorrect attempt.',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: _brownAccentText,
@@ -348,7 +348,7 @@ class _LockedCard extends StatelessWidget {
         Text(
           'Withdrawal PIN Locked',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 20.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -363,7 +363,7 @@ class _LockedCard extends StatelessWidget {
             'please wait before trying again.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -390,7 +390,7 @@ class _LockedCard extends StatelessWidget {
               Text(
                 'Try again in',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
                   color: _subtitleGrey,
@@ -400,7 +400,7 @@ class _LockedCard extends StatelessWidget {
               Text(
                 countdown,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 34.sp,
                   fontWeight: FontWeight.w800,
                   color: _lockAccent,
@@ -491,7 +491,7 @@ class _SetNewWithdrawalPinScreenState extends State<SetNewWithdrawalPinScreen>
             title: Text(
               'New PIN',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -524,7 +524,7 @@ class _SetNewWithdrawalPinScreenState extends State<SetNewWithdrawalPinScreen>
                       Text(
                         vm.newWithdrawalPinTitle,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 21.sp,
                           fontWeight: FontWeight.w800,
                           color: _titleDark,
@@ -538,7 +538,7 @@ class _SetNewWithdrawalPinScreenState extends State<SetNewWithdrawalPinScreen>
                           vm.newWithdrawalPinSubtitle,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 13.5.sp,
                             fontWeight: FontWeight.w400,
                             color: _subtitleGrey,
@@ -574,7 +574,7 @@ class _SetNewWithdrawalPinScreenState extends State<SetNewWithdrawalPinScreen>
                         Text(
                           vm.withdrawalPinChangeError!,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 12.5.sp,
                             fontWeight: FontWeight.w600,
                             color: _errorRed,
@@ -626,7 +626,7 @@ class _SuccessView extends StatelessWidget {
           Text(
             'PIN Changed',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 21.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -638,7 +638,7 @@ class _SuccessView extends StatelessWidget {
             'Use your new PIN the next time you confirm a withdrawal.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -662,7 +662,7 @@ class _SuccessView extends StatelessWidget {
               child: Text(
                 'Done',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _white,
@@ -746,7 +746,7 @@ class _NumPad extends StatelessWidget {
                       child: Text(
                         '0',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 26.sp,
                           fontWeight: FontWeight.w600,
                           color: _keyText,
@@ -804,7 +804,7 @@ class _KeyRow extends StatelessWidget {
                   child: Text(
                     '$k',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w600,
                       color: _keyText,

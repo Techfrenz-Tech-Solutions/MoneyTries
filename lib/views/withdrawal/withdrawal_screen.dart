@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_constants.dart';
@@ -124,20 +124,20 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
         title: Text(
           'Set a Withdrawal PIN',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 17.sp, fontWeight: FontWeight.w700, color: _titleDark),
         ),
         content: Text(
           'For your security, you need to set a 4-digit withdrawal PIN '
           'before submitting a withdrawal request.',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 14.sp, fontWeight: FontWeight.w400, color: _subtitleGrey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontWeight: FontWeight.w600, color: _subtitleGrey)),
           ),
           TextButton(
@@ -149,7 +149,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
               );
             },
             child: Text('Set PIN Now',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontWeight: FontWeight.w700, color: _brandGreen)),
           ),
         ],
@@ -284,7 +284,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
             child: Text(
               vm.isWalletMode ? 'Wallet Withdrawal' : 'Capital Withdrawal',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
             ),
           ),
           SizedBox(width: 40.w),
@@ -316,7 +316,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
               vm.isWalletMode
                   ? 'Instant bank transfer'
                   : 'Moves earnings → main wallet (admin review)',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: vm.isWalletMode ? _brandGreen : const Color(0xFF1D4ED8),
@@ -357,12 +357,12 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
                 children: [
                   Text(
                     vm.isWalletMode ? 'WALLET BALANCE' : 'VAULT BALANCE',
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 0.8),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 11.sp, fontWeight: FontWeight.w600, color: _labelGrey, letterSpacing: 0.8),
                   ),
                   SizedBox(height: 6.h),
                   Text(
                     '₹ ${_fmt(balance)}',
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 26.sp, fontWeight: FontWeight.w800, color: _brandGreen),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 26.sp, fontWeight: FontWeight.w800, color: _brandGreen),
                   ),
                 ],
               ),
@@ -396,7 +396,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
               padding: EdgeInsets.only(top: 8.h),
               child: Text(
                 'Withdrawing ₹ ${_fmt(vm.amount)} of ₹ ${_fmt(balance)}',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
                   color: vm.amountExceedsBalance ? _errorRed : _subtitleGrey,
@@ -415,7 +415,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
       children: [
         Text(
           'Enter Amount',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w500, color: _subtitleGrey),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w500, color: _subtitleGrey),
         ),
         SizedBox(height: 8.h),
         Row(
@@ -423,7 +423,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
           children: [
             Padding(
               padding: EdgeInsets.only(bottom: 4.h, right: 6.w),
-              child: Text('₹', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 28.sp, fontWeight: FontWeight.w600, color: _labelGrey)),
+              child: Text('₹', style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 28.sp, fontWeight: FontWeight.w600, color: _labelGrey)),
             ),
             Expanded(
               child: TextField(
@@ -431,7 +431,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
                 onChanged: (v) => vm.setAmount(double.tryParse(v) ?? 0),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 cursorColor: _accentGreen,
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 40.sp, fontWeight: FontWeight.w800,
                   color: (vm.amountExceedsBalance || vm.amountBelowMinimum || vm.amountAboveMaximum)
                       ? _errorRed
@@ -451,7 +451,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
             padding: EdgeInsets.only(top: 8.h),
             child: Text(
               AppConstants.minWithdrawalAmountMessage,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
             ),
           )
         else if (vm.amountAboveMaximum)
@@ -459,7 +459,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
             padding: EdgeInsets.only(top: 8.h),
             child: Text(
               AppConstants.maxWithdrawalAmountMessage,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
             ),
           )
         else if (vm.amountExceedsBalance)
@@ -467,7 +467,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
             padding: EdgeInsets.only(top: 8.h),
             child: Text(
               'Amount exceeds available balance',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.sp, fontWeight: FontWeight.w600, color: _errorRed),
             ),
           ),
       ],
@@ -506,7 +506,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
                 ),
                 child: Text(
                   options[i],
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 13.5.sp, fontWeight: FontWeight.w700,
                     color: selected ? _brandGreen : _titleDark,
                   ),
@@ -526,7 +526,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
       children: [
         Text(
           'Destination Account',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w800, color: _titleDark),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 15.5.sp, fontWeight: FontWeight.w800, color: _titleDark),
         ),
         SizedBox(height: 12.h),
         if (!vm.kycVerified)
@@ -564,16 +564,16 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(bank.bankName,
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.5.sp, fontWeight: FontWeight.w700, color: _titleDark)),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 14.5.sp, fontWeight: FontWeight.w700, color: _titleDark)),
                 SizedBox(height: 3.h),
                 Text(
                   '${bank.accountType}  ${bank.maskedNumber}',
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey),
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey),
                 ),
                 if (bank.ifsc.isNotEmpty)
                   Text(
                     'IFSC: ${bank.ifsc}',
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w400, color: _labelGrey),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.sp, fontWeight: FontWeight.w400, color: _labelGrey),
                   ),
               ],
             ),
@@ -613,7 +613,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
           Expanded(
             child: Text(
               'KYC verification required. Please complete KYC to enable withdrawals.',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: const Color(0xFF92400E), height: 1.45),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w500, color: const Color(0xFF92400E), height: 1.45),
             ),
           ),
         ],
@@ -637,7 +637,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
           Expanded(
             child: Text(
               'No bank account found in your KYC. Please update your KYC details.',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText, height: 1.45),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _infoText, height: 1.45),
             ),
           ),
         ],
@@ -659,7 +659,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Withdrawal summary', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w700, color: _titleDark)),
+          Text('Withdrawal summary', style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w700, color: _titleDark)),
           SizedBox(height: 12.h),
           _Row(label: 'Requested amount', value: '₹ ${_fmt(vm.amount)}'),
           SizedBox(height: 8.h),
@@ -692,14 +692,14 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
               children: [
                 Text(
                   isWallet ? 'Bank transfer with 2% fee' : 'Admin Review Required',
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w700, color: _titleDark),
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w700, color: _titleDark),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   isWallet
                       ? 'A platform fee + GST of 2% is charged on withdrawals. Your bank receives the net amount after fees.'
                       : 'Your withdrawal request is under admin review. The final amount is calculated after a 2% platform fee + GST deduction.',
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
                 ),
               ],
             ),
@@ -725,7 +725,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
           Icon(Icons.error_outline_rounded, color: _errorRed, size: 20.sp),
           SizedBox(width: 10.w),
           Expanded(
-            child: Text(message, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _errorRed)),
+            child: Text(message, style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w500, color: _errorRed)),
           ),
         ],
       ),
@@ -758,7 +758,7 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Request Withdrawal',
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white)),
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white)),
               SizedBox(width: 8.w),
               Icon(Icons.arrow_forward, size: 18.sp, color: _white),
             ],
@@ -814,7 +814,7 @@ class _SuccessView extends StatelessWidget {
                         child: Text(
                           'Withdrawal Receipt',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
                         ),
                       ),
                       SizedBox(width: 40.w),
@@ -864,7 +864,7 @@ class _SuccessView extends StatelessWidget {
                           baseDelay: const Duration(milliseconds: 250),
                           child: Text(
                           isWallet ? 'Withdrawal Initiated!' : 'Request Submitted!',
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark),
                           ),
                         ),
                         SizedBox(height: 6.h),
@@ -873,7 +873,7 @@ class _SuccessView extends StatelessWidget {
                               ? 'Your funds are being transferred to\nyour registered bank account.'
                               : 'Your request is pending admin approval.\nFunds will appear in your main wallet shortly.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.5),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.5),
                         ),
                         SizedBox(height: 28.h),
 
@@ -890,13 +890,13 @@ class _SuccessView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('TRANSACTION DETAILS',
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
                               SizedBox(height: 16.h),
                               // Status badge
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Status', style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+                                  Text('Status', style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                     decoration: BoxDecoration(
@@ -904,7 +904,7 @@ class _SuccessView extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Text(badgeLabel,
-                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.sp, fontWeight: FontWeight.w800, color: badgeColor, letterSpacing: 0.5)),
+                                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.sp, fontWeight: FontWeight.w800, color: badgeColor, letterSpacing: 0.5)),
                                   ),
                                 ],
                               ),
@@ -948,7 +948,7 @@ class _SuccessView extends StatelessWidget {
                                   isWallet
                                       ? 'Please save your Reference ID. Contact support if the amount is not credited within 2 business days.'
                                       : 'Your request has been submitted. Admin approval typically takes 1–2 business days.',
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
                                 ),
                               ),
                             ],
@@ -978,7 +978,7 @@ class _SuccessView extends StatelessWidget {
                         textColor: _white,
                         height: 52.h,
                         borderRadius: 30.r,
-                        textStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
+                        textStyle: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
                       ),
                     ),
                   ),
@@ -1068,7 +1068,7 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                         child: Text(
                           'Withdrawal Request',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 18.sp, fontWeight: FontWeight.w700, color: _brandGreen),
                         ),
                       ),
                       SizedBox(width: 40.w),
@@ -1092,12 +1092,12 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         Text('Withdrawal Under Review',
-                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
+                            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 22.sp, fontWeight: FontWeight.w800, color: _titleDark)),
                         SizedBox(height: 8.h),
                         Text(
                           'Your withdrawal request is being reviewed by our admin team. Please wait for approval or rejection.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.55),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.55),
                         ),
                         SizedBox(height: 28.h),
                         Container(
@@ -1115,7 +1115,7 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('REQUEST DETAILS',
-                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
+                                      style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 11.sp, fontWeight: FontWeight.w700, color: _labelGrey, letterSpacing: 1.1)),
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                     decoration: BoxDecoration(
@@ -1123,7 +1123,7 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Text('Under Review',
-                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 11.5.sp, fontWeight: FontWeight.w700, color: _warningAmber)),
+                                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 11.5.sp, fontWeight: FontWeight.w700, color: _warningAmber)),
                                   ),
                                 ],
                               ),
@@ -1155,7 +1155,7 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   'Only one withdrawal request can be active at a time. Admin approval may take 1–2 business days.',
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.5.sp, fontWeight: FontWeight.w400, color: _infoText, height: 1.45),
                                 ),
                               ),
                             ],
@@ -1183,7 +1183,7 @@ class _PendingWithdrawalBlocker extends StatelessWidget {
                             : Icon(Icons.refresh_rounded, size: 20.sp, color: _white),
                         label: Text(
                           isRefreshing ? 'Checking…' : 'Refresh Status',
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 15.5.sp, fontWeight: FontWeight.w700, color: _white),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _brandGreen,
@@ -1216,11 +1216,11 @@ class _Row extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
+        Text(label, style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w400, color: _subtitleGrey)),
         SizedBox(width: 16.w),
         Flexible(
           child: Text(value, textAlign: TextAlign.right,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: bold ? FontWeight.w700 : FontWeight.w500, color: valueColor ?? _titleDark)),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: bold ? FontWeight.w700 : FontWeight.w500, color: valueColor ?? _titleDark)),
         ),
       ],
     );
@@ -1399,13 +1399,13 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
               SizedBox(height: 14.h),
               Text(
                 'Enter Withdrawal PIN',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 18.sp, fontWeight: FontWeight.w800, color: _titleDark),
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 18.sp, fontWeight: FontWeight.w800, color: _titleDark),
               ),
               SizedBox(height: 6.h),
               Text(
                 'Confirm your 4-digit PIN to submit this withdrawal request.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.4),
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w400, color: _subtitleGrey, height: 1.4),
               ),
               SizedBox(height: 24.h),
               Row(
@@ -1437,7 +1437,7 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
                   duration: const Duration(milliseconds: 200),
                   child: Text(
                     _error ?? '',
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: _errorRed),
                   ),
                 ),
               ),
@@ -1460,7 +1460,7 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
                           child: _PinKeyButton(
                             onTap: (_verifying || _locked) ? null : () => _onKey(0),
                             child: Text('0',
-                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 22.sp, fontWeight: FontWeight.w600, color: _titleDark)),
                           ),
                         ),
@@ -1485,7 +1485,7 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text('Cancel',
-                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 13.5.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
+                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.5.sp, fontWeight: FontWeight.w600, color: _subtitleGrey)),
               ),
             ],
           ),
@@ -1510,7 +1510,7 @@ class _PinKeyRow extends StatelessWidget {
                   child: _PinKeyButton(
                     onTap: enabled ? () => onKey(k) : null,
                     child: Text('$k',
-                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 22.sp, fontWeight: FontWeight.w600, color: _titleDark)),
                   ),
                 ),

@@ -1,4 +1,4 @@
-// lib/views/profile/change_login_pin_screen.dart
+﻿// lib/views/profile/change_login_pin_screen.dart
 //
 // Security Settings → PIN & Authentication → Change PIN (account Login PIN)
 //
@@ -18,7 +18,7 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
@@ -162,7 +162,7 @@ class _VerifyCurrentLoginPinBodyState
           title: Text(
             'Change PIN',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 17.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -199,7 +199,7 @@ class _VerifyCurrentLoginPinBodyState
                     Text(
                       'Enter Current PIN',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 21.sp,
                         fontWeight: FontWeight.w800,
                         color: _titleDark,
@@ -214,7 +214,7 @@ class _VerifyCurrentLoginPinBodyState
                         'Login PIN before setting a new one.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 13.5.sp,
                           fontWeight: FontWeight.w400,
                           color: _subtitleGrey,
@@ -250,7 +250,7 @@ class _VerifyCurrentLoginPinBodyState
                       Text(
                         vm.loginPinChangeError!,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 12.5.sp,
                           fontWeight: FontWeight.w600,
                           color: _errorRed,
@@ -305,7 +305,7 @@ class _AttemptsNotice extends StatelessWidget {
                         'before Change PIN is temporarily locked.'
                     : 'Change PIN will lock after the next incorrect attempt.',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: _brownAccentText,
@@ -344,7 +344,7 @@ class _LockedCard extends StatelessWidget {
         Text(
           'Change PIN Locked',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 20.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -359,7 +359,7 @@ class _LockedCard extends StatelessWidget {
             'please wait before trying again.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -386,7 +386,7 @@ class _LockedCard extends StatelessWidget {
               Text(
                 'Try again in',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
                   color: _subtitleGrey,
@@ -396,7 +396,7 @@ class _LockedCard extends StatelessWidget {
               Text(
                 countdown,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 34.sp,
                   fontWeight: FontWeight.w800,
                   color: _lockAccent,
@@ -486,7 +486,7 @@ class _SetNewLoginPinScreenState extends State<SetNewLoginPinScreen>
             title: Text(
               'New PIN',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -519,7 +519,7 @@ class _SetNewLoginPinScreenState extends State<SetNewLoginPinScreen>
                       Text(
                         vm.newLoginPinTitle,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 21.sp,
                           fontWeight: FontWeight.w800,
                           color: _titleDark,
@@ -533,7 +533,7 @@ class _SetNewLoginPinScreenState extends State<SetNewLoginPinScreen>
                           vm.newLoginPinSubtitle,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 13.5.sp,
                             fontWeight: FontWeight.w400,
                             color: _subtitleGrey,
@@ -569,7 +569,7 @@ class _SetNewLoginPinScreenState extends State<SetNewLoginPinScreen>
                         Text(
                           vm.loginPinChangeError!,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 12.5.sp,
                             fontWeight: FontWeight.w600,
                             color: _errorRed,
@@ -621,7 +621,7 @@ class _SuccessView extends StatelessWidget {
           Text(
             'PIN Changed',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 21.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -633,7 +633,7 @@ class _SuccessView extends StatelessWidget {
             'Use your new PIN the next time you unlock the app.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -657,7 +657,7 @@ class _SuccessView extends StatelessWidget {
               child: Text(
                 'Done',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _white,
@@ -741,7 +741,7 @@ class _NumPad extends StatelessWidget {
                       child: Text(
                         '0',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 26.sp,
                           fontWeight: FontWeight.w600,
                           color: _keyText,
@@ -799,7 +799,7 @@ class _KeyRow extends StatelessWidget {
                   child: Text(
                     '$k',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w600,
                       color: _keyText,

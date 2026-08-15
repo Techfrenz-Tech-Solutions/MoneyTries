@@ -1,7 +1,7 @@
 ﻿// lib/views/auth/register_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
@@ -226,7 +226,7 @@ if (success) {
             borderRadius: BorderRadius.circular(10.r),
             borderSide: BorderSide(color: Color(0xFF4CAF7D), width: 1.5.r),
           ),
-          hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          hintStyle: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               color: _hintColor, fontSize: 14.5.sp, fontWeight: FontWeight.w400),
           contentPadding:
               EdgeInsets.symmetric(horizontal: 14.w, vertical: 15.h),
@@ -270,7 +270,7 @@ if (success) {
                       SizedBox(width: 8.w),
                       Text(
                         'Moneytries',
-                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w800,
                             color: _brandGreen,
@@ -307,7 +307,7 @@ if (success) {
                               // ── Heading ────────────────────────────────
                               Text(
                                 'Create Account',
-                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 26.sp,
                                     fontWeight: FontWeight.w800,
                                     color: _titleColor,
@@ -317,7 +317,7 @@ if (success) {
                               SizedBox(height: 6.h),
                               Text(
                                 'Start your journey to controlled prosperity.',
-                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w400,
                                     color: _subtitleColor,
@@ -461,7 +461,7 @@ if (success) {
                                   Expanded(
                                     child: RichText(
                                       text: TextSpan(
-                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 13.5.sp,
                                             color: _inputTextColor,
                                             height: 1.5),
@@ -472,7 +472,7 @@ if (success) {
                                           ),
                                           TextSpan(
                                             text: 'Terms of Service',
-                                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                 fontSize: 13.5.sp,
                                                 fontWeight: FontWeight.w700,
                                                 color: _tosGreen,
@@ -487,7 +487,7 @@ if (success) {
                                           ),
                                           TextSpan(
                                             text: 'Privacy Policy',
-                                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                 fontSize: 13.5.sp,
                                                 fontWeight: FontWeight.w700,
                                                 color: _tosGreen,
@@ -558,7 +558,7 @@ if (success) {
                                           children: [
                                             Text(
                                               'Sign Up',
-                                              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                   fontSize: 16.sp,
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
@@ -583,7 +583,7 @@ if (success) {
                                   children: [
                                     Text(
                                       'Already have an account?  ',
-                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                      style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                           fontSize: 13.5.sp,
                                           color: _subtitleColor),
                                     ),
@@ -593,7 +593,7 @@ if (success) {
                                               context, AppRoutes.login),
                                       child: Text(
                                         'Login',
-                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 13.5.sp,
                                             fontWeight: FontWeight.w700,
                                             color: _greenLink),
@@ -661,7 +661,7 @@ class _PasswordStrengthBar extends StatelessWidget {
         SizedBox(height: 4.h),
         Text(
           'Password strength: $label',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 11.5.sp, fontWeight: FontWeight.w500, color: color),
         ),
       ],
@@ -681,7 +681,7 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+      style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 11.sp,
           fontWeight: FontWeight.w600,
           color: _labelColor,
@@ -703,7 +703,7 @@ class _ErrorRow extends StatelessWidget {
         Flexible(
           child: Text(
             message,
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 11.5.sp,
                 color: _errorRed,
                 fontWeight: FontWeight.w500),
@@ -748,7 +748,7 @@ class _PlainField extends StatelessWidget {
           textCapitalization: textCapitalization,
           inputFormatters: inputFormatters,
           onChanged: onChanged,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.5.sp, color: _inputTextColor),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 14.5.sp, color: _inputTextColor),
           decoration: _dec(
             hint: hint,
             prefixIcon: Icon(icon,
@@ -801,7 +801,7 @@ class _VerifyField extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           onChanged: onChanged,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.5.sp, color: _inputTextColor),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 14.5.sp, color: _inputTextColor),
           decoration: _dec(
             hint: hint,
             prefixIcon: Icon(icon,
@@ -855,7 +855,7 @@ class _PhoneVerifyField extends StatelessWidget {
             LengthLimitingTextInputFormatter(10),
           ],
           onChanged: onChanged,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,fontSize: 14.5.sp, color: _inputTextColor),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 14.5.sp, color: _inputTextColor),
           decoration: _dec(
             hint: '10-digit mobile number',
             prefixIcon: Icon(Icons.phone_outlined,
@@ -907,7 +907,7 @@ class _PasswordField extends StatelessWidget {
           obscureText: obscure,
           obscuringCharacter: '●',
           onChanged: onChanged,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.5.sp,
             color: _inputTextColor,
             letterSpacing: obscure ? 2.0 : 0,
@@ -966,7 +966,7 @@ class _VerifyPill extends StatelessWidget {
           ),
           child: Text(
             'Verify',
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: hasError ? _errorRed : _greenVerify),
@@ -1000,7 +1000,7 @@ class _VerifiedBadge extends StatelessWidget {
             SizedBox(width: 4.w),
             Text(
               'Verified',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: _greenVerify),
@@ -1021,7 +1021,7 @@ InputDecoration _dec({
 }) {
   return InputDecoration(
     hintText: hint,
-    hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+    hintStyle: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
         color: _hintColor, fontSize: 14.5.sp, fontWeight: FontWeight.w400),
     prefixIcon: prefixIcon != null
         ? Padding(

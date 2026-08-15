@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../routes/app_routes.dart';
@@ -120,7 +120,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen>
                       Text(
                         'Moneytries',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w800,
                           color: _brandGreen,
@@ -182,7 +182,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen>
                 Text(
                   'Set Your App PIN',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 24.sp,
                     fontWeight: FontWeight.w800,
                     color: _titleColor,
@@ -198,7 +198,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen>
                   'You\'ll enter this 4-digit PIN\nevery time you open the app',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleColor,
@@ -269,7 +269,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen>
                                 child: Text(
                                   '0',
                                   style: TextStyle(
-                                    fontFamily: GoogleFonts.inter().fontFamily,
+                                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 26.sp,
                                     fontWeight: FontWeight.w600,
                                     color: _keyText,
@@ -313,7 +313,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen>
                                   child: Text(
                                     'Confirm PIN',
                                     style: TextStyle(
-                                      fontFamily: GoogleFonts.inter().fontFamily,
+                                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
                                       color: pinComplete
@@ -360,7 +360,7 @@ class _KeyRow extends StatelessWidget {
                   child: Text(
                     '$k',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w600,
                       color: _keyText,

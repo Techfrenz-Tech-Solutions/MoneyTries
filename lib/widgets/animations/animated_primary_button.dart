@@ -6,7 +6,7 @@
 // communicates in-flight state instead of a separate spinner overlay.
 // Visual only: pass your existing onPressed/label/style through.
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import '../../services/audio/interaction_feedback.dart';
 
 class AnimatedPrimaryButton extends StatefulWidget {
@@ -110,7 +110,7 @@ class _AnimatedPrimaryButtonState extends State<AnimatedPrimaryButton> {
                             widget.label,
                             style: widget.textStyle ??
                                 TextStyle(
-                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: widget.textColor,

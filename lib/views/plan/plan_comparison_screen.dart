@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
@@ -179,7 +179,7 @@ class PlanComparisonScreen extends StatelessWidget {
                     Text(
                       'Moneytries',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 17.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -244,7 +244,7 @@ class PlanComparisonScreen extends StatelessWidget {
           child: Text(
             'Step 2 of 3 · Compare Plans',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 11.sp,
               fontWeight: FontWeight.w700,
               color: _brandGreen,
@@ -256,7 +256,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           'Compare your returns',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 26.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -268,7 +268,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           subtitle,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -296,7 +296,7 @@ class PlanComparisonScreen extends StatelessWidget {
             child: Text(
               'There are no more plan types left to enroll in.',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: _brandGreen,
@@ -358,7 +358,7 @@ class PlanComparisonScreen extends StatelessWidget {
                     Text(
                       'RECOMMENDED',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 9.5.sp,
                         fontWeight: FontWeight.w700,
                         color: _brandGreen,
@@ -377,7 +377,7 @@ class PlanComparisonScreen extends StatelessWidget {
                 Text(
                   c.planType.displayName,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 19.sp,
                     fontWeight: FontWeight.w800,
                     color: _brandGreen,
@@ -388,7 +388,7 @@ class PlanComparisonScreen extends StatelessWidget {
                 Text(
                   '${c.planType.durationDays} days total',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -423,7 +423,7 @@ class PlanComparisonScreen extends StatelessWidget {
                             child: Text(
                               'Select Plan',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w700,
                                 color: _brandGreen,
@@ -444,7 +444,7 @@ class PlanComparisonScreen extends StatelessWidget {
                           child: Text(
                             'Select Plan',
                             style: TextStyle(
-                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
                               color: _brandGreen,
@@ -496,7 +496,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 10.5.sp,
             fontWeight: FontWeight.w500,
             color: _subtitleGrey,
@@ -507,7 +507,7 @@ class PlanComparisonScreen extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.5.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,

@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -176,7 +176,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen>
                         Text(
                           'Moneytries',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w800,
                             color: _brandGreen,
@@ -230,7 +230,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen>
                     Text(
                       isConfirm ? 'Confirm Your PIN' : 'Set Your PIN',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w800,
                         color: _titleColor,
@@ -245,7 +245,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen>
                           ? 'Re-enter your 4-digit PIN to confirm'
                           : 'Enter a 4-digit PIN — you\'ll use this\nevery time you open the app',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 13.5.sp,
                         color: _subtitleClr,
                         height: 1.5,
@@ -315,7 +315,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen>
                   child: Text(
                     _error ?? '',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.5.sp,
                       color: _errorRed,
                       fontWeight: FontWeight.w500,
@@ -348,7 +348,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen>
                             child: Text(
                               '0',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 26.sp,
                                 fontWeight: FontWeight.w600,
                                 color: _keyText,
@@ -432,7 +432,7 @@ class _KeyRow extends StatelessWidget {
                   child: Text(
                     '$k',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w600,
                       color: _keyText,

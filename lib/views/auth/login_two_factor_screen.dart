@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -205,7 +205,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
 
                           Text(
                             'Enter OTP to Verify Your Login',
-                            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                               fontSize: 24.sp,
                               fontWeight: FontWeight.w800,
                               color: _titleColor,
@@ -218,7 +218,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
 
                           RichText(
                             text: TextSpan(
-                              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 14.sp,
                                 color: _bodyColor,
                                 height: 1.55,
@@ -231,7 +231,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                 ),
                                 TextSpan(
                                   text: phoneHint,
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w700,
                                     color: _boldIdentifier,
@@ -287,7 +287,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                 Flexible(
                                   child: Text(
                                     vm.otpErrorMessage!,
-                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 11.5.sp,
                                       color: _errorRed,
                                       fontWeight: FontWeight.w500,
@@ -315,7 +315,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                   canResend
                                       ? 'OTP expired. '
                                       : 'OTP expires in ',
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 13.sp,
                                     color: _timerGrey,
                                   ),
@@ -323,7 +323,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                 if (!canResend)
                                   Text(
                                     _timerText,
-                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.w700,
                                       color: _timerGreen,
@@ -351,7 +351,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                     )
                                   : Text(
                                       'Resend OTP',
-                                      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                      style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.w600,
                                         color: canResend
@@ -407,7 +407,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                                     children: [
                                       Text(
                                         'Verify & Continue',
-                                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
@@ -440,7 +440,7 @@ class _LoginTwoFactorScreenState extends State<LoginTwoFactorScreen> {
                               child: Text(
                                 'This OTP is valid for 5 minutes and can be '
                                 'used only once.',
-                                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                   fontSize: 11.5.sp,
                                   color: _securityGrey,
                                   height: 1.4,
@@ -502,7 +502,7 @@ class _OtpBox extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLength: 1,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
             color: _otpText,

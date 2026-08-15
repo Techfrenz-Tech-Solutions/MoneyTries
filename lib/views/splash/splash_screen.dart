@@ -1,7 +1,7 @@
 ﻿import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../routes/app_routes.dart';
@@ -302,7 +302,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Text(
                       'MoneyTries',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -318,7 +318,7 @@ class _SplashScreenState extends State<SplashScreen>
                     'INVEST SMART. EARN DAILY. GROW SECURELY.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.5.sp,
                       fontWeight: FontWeight.w500,
                       color: _textMuted,

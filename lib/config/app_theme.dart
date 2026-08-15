@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
+import 'app_fonts.dart';
 import '../utils/responsive.dart';
 
 class AppTheme {
@@ -35,9 +35,6 @@ class AppTheme {
   static const Color goldGlow = Color(0x334CAF7D);
   static const Color canvasDark = AppColors.background;
 
-  // Inter via google_fonts — clean, modern, professional fintech typography
-  static String get _font => GoogleFonts.inter().fontFamily!;
-
   // ── Static base theme (used as fallback before context is available) ──
   // Font sizes here use design-baseline values (375 dp reference frame).
   // Once the app is running, [themeFor] is used via main.dart's builder
@@ -66,12 +63,20 @@ class AppTheme {
     required double bodyLargeFontSize,
     required double labelLargeFontSize,
   }) {
-    final baseTextTheme = GoogleFonts.interTextTheme();
+    // Build a base TextTheme with default Material styles, then apply
+    // Times New Roman + NotoSans fallback (for ₹ and other glyphs not
+    // present in Times New Roman) to every slot.
+    final baseTextTheme = AppFonts.applyToTextTheme(const TextTheme());
+
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: background,
       brightness: Brightness.light,
-      fontFamily: _font,
+      // Setting fontFamily at the ThemeData level ensures widgets that
+      // construct their own DefaultTextStyle (e.g. Tooltip, SnackBar)
+      // inherit Times New Roman automatically.
+      fontFamily: AppFonts.primary,
+      fontFamilyFallback: AppFonts.fallbacks,
       textTheme: baseTextTheme.copyWith(
         displayLarge: baseTextTheme.displayLarge?.copyWith(
           fontSize: displayLargeFontSize,

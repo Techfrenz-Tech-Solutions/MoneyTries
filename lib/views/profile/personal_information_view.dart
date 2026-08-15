@@ -1,6 +1,6 @@
 ﻿import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/profile/personal_information_viewmodel.dart';
@@ -87,7 +87,7 @@ class _PersonalInformationContentState
                 title: Text(
                   'Personal Information',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -122,7 +122,7 @@ class _PersonalInformationContentState
               vm.loadError ?? 'Failed to load profile',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 14.sp,
                 color: _grey,
               ),
@@ -133,7 +133,7 @@ class _PersonalInformationContentState
               style: ElevatedButton.styleFrom(backgroundColor: _green),
               child: Text(
                 'Retry',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, color: _white),
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, color: _white),
               ),
             ),
           ],
@@ -270,7 +270,7 @@ class _PersonalInformationContentState
           Text(
             vm.profile.fullName.isEmpty ? 'Your Name' : vm.profile.fullName,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
               color: _titleDark,
@@ -292,7 +292,7 @@ class _PersonalInformationContentState
                 Text(
                   vm.profile.membershipTier.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
                     color: _green,
@@ -308,7 +308,7 @@ class _PersonalInformationContentState
             Text(
               'User ID: ${vm.profile.memberId}',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: _grey,
@@ -396,7 +396,7 @@ class _PersonalInformationContentState
       title: Text(
         label,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 14.sp,
           fontWeight: FontWeight.w500,
           color: c,
@@ -423,7 +423,7 @@ class _PersonalInformationContentState
         keyboardType: keyboardType,
         onChanged: onChanged,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 15.sp,
           color: _titleDark,
           fontWeight: FontWeight.w500,
@@ -431,7 +431,7 @@ class _PersonalInformationContentState
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 12.sp,
             color: _grey,
           ),
@@ -480,7 +480,7 @@ class _PersonalInformationContentState
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.sp,
                     color: _grey,
                     fontWeight: FontWeight.w500,
@@ -490,7 +490,7 @@ class _PersonalInformationContentState
                 Text(
                   value,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     color: _grey,
                     fontWeight: FontWeight.w500,
@@ -530,7 +530,7 @@ class _PersonalInformationContentState
                 Text(
                   'Phone Number',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.sp,
                     color: _grey,
                     fontWeight: FontWeight.w500,
@@ -542,7 +542,7 @@ class _PersonalInformationContentState
                     Text(
                       masked,
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 15.sp,
                         color: _grey,
                         fontWeight: FontWeight.w500,
@@ -562,7 +562,7 @@ class _PersonalInformationContentState
                         child: Text(
                           'VERIFIED',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 10.sp,
                             color: _green,
                             fontWeight: FontWeight.w700,
@@ -626,7 +626,7 @@ class _PersonalInformationContentState
                   Text(
                     'Date of Birth',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.sp,
                       color: _grey,
                       fontWeight: FontWeight.w500,
@@ -636,7 +636,7 @@ class _PersonalInformationContentState
                   Text(
                     display.isEmpty ? 'Select date' : display,
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 15.sp,
                       color: display.isEmpty ? _grey : _titleDark,
                       fontWeight: FontWeight.w500,
@@ -690,7 +690,7 @@ class _PersonalInformationContentState
                     child: Text(
                       'Select Gender',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: _titleDark,
@@ -710,7 +710,7 @@ class _PersonalInformationContentState
                       title: Text(
                         labels[i],
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
                           color: _titleDark,
@@ -746,7 +746,7 @@ class _PersonalInformationContentState
                   Text(
                     'Gender',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.sp,
                       color: _grey,
                       fontWeight: FontWeight.w500,
@@ -756,7 +756,7 @@ class _PersonalInformationContentState
                   Text(
                     _genderLabel(vm.editGender),
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 15.sp,
                       color: vm.editGender.isEmpty ? _grey : _titleDark,
                       fontWeight: FontWeight.w500,
@@ -783,7 +783,7 @@ class _PersonalInformationContentState
         maxLines: 3,
         onChanged: (v) => vm.editAddress = v,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 15.sp,
           color: _titleDark,
           fontWeight: FontWeight.w500,
@@ -791,7 +791,7 @@ class _PersonalInformationContentState
         decoration: InputDecoration(
           labelText: 'Residential Address',
           labelStyle: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 12.sp,
             color: _grey,
           ),
@@ -830,7 +830,7 @@ class _PersonalInformationContentState
             Text(
               'END-TO-END ENCRYPTED',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 10.sp,
                 color: _grey,
                 fontWeight: FontWeight.w600,
@@ -844,7 +844,7 @@ class _PersonalInformationContentState
           'Your private data is secured with institutional-grade AES-256 protocols.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 10.sp,
             color: _grey,
           ),
@@ -885,7 +885,7 @@ class _PersonalInformationContentState
           label: Text(
             saving ? 'Saving...' : 'Update Profile Information',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               color: _green,
               fontSize: 15.sp,
               fontWeight: FontWeight.w600,
@@ -912,7 +912,7 @@ class _PersonalInformationContentState
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 11.sp,
           fontWeight: FontWeight.w700,
           color: _grey,

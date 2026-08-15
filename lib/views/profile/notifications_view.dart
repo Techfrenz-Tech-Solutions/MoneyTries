@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/notification/notification_models.dart';
@@ -112,7 +112,7 @@ class _NotificationContentState extends State<_NotificationContent> {
                 Text(
                   'Notifications',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: _brandGreen,
@@ -132,7 +132,7 @@ class _NotificationContentState extends State<_NotificationContent> {
                     child: Text(
                       '${vm.unreadCount}',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w700,
                         color: _white,
@@ -153,7 +153,7 @@ class _NotificationContentState extends State<_NotificationContent> {
                       content: Text(
                         'All notifications marked as read',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 13.sp,
                         ),
                       ),
@@ -180,7 +180,7 @@ class _NotificationContentState extends State<_NotificationContent> {
                 child: Text(
                   'Mark all read',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                     color: _brandGreen,
@@ -314,7 +314,7 @@ class _NotificationContentState extends State<_NotificationContent> {
         title: Text(
           'Delete notification?',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -323,7 +323,7 @@ class _NotificationContentState extends State<_NotificationContent> {
         content: Text(
           'This notification will be permanently removed.',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 13.5.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -337,7 +337,7 @@ class _NotificationContentState extends State<_NotificationContent> {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
@@ -349,7 +349,7 @@ class _NotificationContentState extends State<_NotificationContent> {
             child: Text(
               'Delete',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
@@ -379,7 +379,7 @@ class _NotificationContentState extends State<_NotificationContent> {
           SnackBar(
             content: Text(
               'Could not delete notification: $message',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp),
             ),
             backgroundColor: _errorRed,
             behavior: SnackBarBehavior.floating,
@@ -400,7 +400,7 @@ class _NotificationContentState extends State<_NotificationContent> {
           content: Text(
             'Notification deleted',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.sp,
               color: _white,
             ),
@@ -435,7 +435,7 @@ class _NotificationContentState extends State<_NotificationContent> {
       child: Text(
         label.toUpperCase(),
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 11.sp,
           fontWeight: FontWeight.w700,
           color: _labelGrey,
@@ -470,7 +470,7 @@ class _NotificationContentState extends State<_NotificationContent> {
             Text(
               'No notifications yet',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -481,7 +481,7 @@ class _NotificationContentState extends State<_NotificationContent> {
               "You're all caught up!\nWe'll notify you about deposits,\nwithdrawals, and more.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.5.sp,
                 fontWeight: FontWeight.w400,
                 color: _subtitleGrey,
@@ -519,7 +519,7 @@ class _NotificationContentState extends State<_NotificationContent> {
             Text(
               'Could not load notifications',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -530,7 +530,7 @@ class _NotificationContentState extends State<_NotificationContent> {
               vm.errorMessage ?? 'Something went wrong.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w400,
                 color: _subtitleGrey,
@@ -544,7 +544,7 @@ class _NotificationContentState extends State<_NotificationContent> {
               label: Text(
                 'Retry',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                 ),
@@ -679,7 +679,7 @@ class _NotifTile extends StatelessWidget {
                           child: Text(
                             item.title,
                             style: TextStyle(
-                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                               fontSize: 14.sp,
                               fontWeight: item.isRead
                                   ? FontWeight.w600
@@ -704,7 +704,7 @@ class _NotifTile extends StatelessWidget {
                     Text(
                       item.message,
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w400,
                         color: _subtitleGrey,
@@ -715,7 +715,7 @@ class _NotifTile extends StatelessWidget {
                     Text(
                       _formatTime(item.createdAt),
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 11.5.sp,
                         fontWeight: FontWeight.w400,
                         color: _labelGrey,

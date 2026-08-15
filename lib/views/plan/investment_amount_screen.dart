@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../config/app_constants.dart';
 import '../../routes/app_routes.dart';
@@ -156,7 +156,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                             child: Text(
                               'MoneyTries',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.w700,
                                 color: _dark,
@@ -179,7 +179,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                           child: Text(
                             'Step 1 of 3',
                             style: TextStyle(
-                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                               color: _green,
@@ -193,7 +193,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                           'How much do you want\nto invest?',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w800,
                             color: _dark,
@@ -209,7 +209,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                               : 'We\'ll compare your remaining available plans against this amount',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 13.sp,
                             color: _grey,
                           ),
@@ -277,7 +277,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                               Text(
                                 'Compare Plans',
                                 style: TextStyle(
-                                  fontFamily: GoogleFonts.inter().fontFamily,
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
                                   color: _green,
@@ -327,7 +327,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
               Text(
                 'Investment Amount',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   color: _greyL,
                   letterSpacing: 0.3,
@@ -340,7 +340,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                   Text(
                     '₹',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w600,
                       color: _grey,
@@ -350,7 +350,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                   Text(
                     _amountText.isEmpty ? '0' : _inr(_amount),
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 40.sp,
                       fontWeight: FontWeight.w800,
                       color: _dark,
@@ -377,7 +377,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                         : 'Enter the amount you\'ll invest every month',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: (_underMin || _overMax) ? FontWeight.w600 : FontWeight.normal,
                   color: (_underMin || _overMax) ? const Color(0xFFDC2626) : _greyL,
@@ -406,7 +406,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
               : Text(
                   k,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 26.sp,
                     fontWeight: FontWeight.w600,
                     color: _dark,

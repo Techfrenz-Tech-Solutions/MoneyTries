@@ -15,7 +15,7 @@
 // is a separate feature covering the account's real login password.
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
@@ -139,7 +139,7 @@ class _VerifyCurrentPasswordBodyState
           ),
           title: Text(
             'Change Password',
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 17.sp,
               fontWeight: FontWeight.w700,
               color: _titleDark,
@@ -174,7 +174,7 @@ class _VerifyCurrentPasswordBodyState
                       SizedBox(height: 20.h),
                       Text(
                         'Enter Current Password',
-                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 21.sp,
                           fontWeight: FontWeight.w800,
                           color: _titleDark,
@@ -185,7 +185,7 @@ class _VerifyCurrentPasswordBodyState
                       Text(
                         'For your security, confirm your current login '
                         'password before setting a new one.',
-                        style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                        style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 13.5.sp,
                           fontWeight: FontWeight.w400,
                           color: _subtitleGrey,
@@ -243,7 +243,7 @@ class _VerifyCurrentPasswordBodyState
                                 )
                               : Text(
                                   'Continue',
-                                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                     fontSize: 15.sp,
                                     fontWeight: FontWeight.w700,
                                     color: _white,
@@ -284,7 +284,7 @@ class _AttemptsNotice extends StatelessWidget {
                   ? '$remaining attempt${remaining == 1 ? '' : 's'} remaining '
                         'before Change Password is temporarily locked.'
                   : 'Change Password will lock after the next incorrect attempt.',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: _amberText,
@@ -325,7 +325,7 @@ class _LockedCard extends StatelessWidget {
         SizedBox(height: 22.h),
         Text(
           'Change Password Locked',
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 20.sp,
             fontWeight: FontWeight.w800,
             color: _titleDark,
@@ -339,7 +339,7 @@ class _LockedCard extends StatelessWidget {
             'Too many incorrect attempts. For your account\'s security, '
             'please wait before trying again.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -365,7 +365,7 @@ class _LockedCard extends StatelessWidget {
             children: [
               Text(
                 'Try again in',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
                   color: _subtitleGrey,
@@ -374,7 +374,7 @@ class _LockedCard extends StatelessWidget {
               SizedBox(height: 4.h),
               Text(
                 countdown,
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 34.sp,
                   fontWeight: FontWeight.w800,
                   color: _lockRed,
@@ -455,7 +455,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                   ),
             title: Text(
               'New Password',
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -490,7 +490,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         SizedBox(height: 20.h),
                         Text(
                           'Set a New Password',
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 21.sp,
                             fontWeight: FontWeight.w800,
                             color: _titleDark,
@@ -500,7 +500,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         SizedBox(height: 8.h),
                         Text(
                           'Choose a strong password you haven\'t used before.',
-                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 13.5.sp,
                             fontWeight: FontWeight.w400,
                             color: _subtitleGrey,
@@ -576,7 +576,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                                   )
                                 : Text(
                                     'Update Password',
-                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.w700,
                                       color: _white,
@@ -612,7 +612,7 @@ class _PasswordRequirement extends StatelessWidget {
         SizedBox(width: 8.w),
         Text(
           label,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 12.3.sp,
             fontWeight: FontWeight.w500,
             color: met ? _accentGreen : _subtitleGrey,
@@ -651,7 +651,7 @@ class _SuccessView extends StatelessWidget {
           SizedBox(height: 24.h),
           Text(
             'Password Changed',
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 21.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -662,7 +662,7 @@ class _SuccessView extends StatelessWidget {
             'Your login password was updated successfully. '
             'Use your new password the next time you sign in.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -685,7 +685,7 @@ class _SuccessView extends StatelessWidget {
               ),
               child: Text(
                 'Done',
-                style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _white,
@@ -734,14 +734,14 @@ class _PasswordField extends StatelessWidget {
           onChanged: onChanged,
           onSubmitted: onSubmitted,
           textInputAction: TextInputAction.next,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.5.sp,
             color: _inputTextColor,
             letterSpacing: obscure ? 2.0 : 0,
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+            hintStyle: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               color: _hintColor,
               fontSize: 14.5.sp,
               fontWeight: FontWeight.w400,
@@ -805,7 +805,7 @@ class _PasswordField extends StatelessWidget {
               Expanded(
                 child: Text(
                   errorText!,
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
                     color: _errorRed,

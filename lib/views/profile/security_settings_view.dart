@@ -1,7 +1,7 @@
 ﻿// lib/views/profile/security_settings_view.dart
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/security/security_model.dart';
@@ -49,7 +49,7 @@ class _SecuritySettingsBody extends StatelessWidget {
           content: Text(
             msg,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w500,
               color: _white,
@@ -102,7 +102,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             title: Text(
               'Security Settings',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w700,
                 color: _titleDark,
@@ -195,7 +195,7 @@ class _SecuritySettingsBody extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontFamily: GoogleFonts.inter().fontFamily,
+        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
         fontSize: 14.sp,
         fontWeight: FontWeight.w600,
         color: _subtitleGrey,
@@ -245,7 +245,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: _titleDark,
@@ -255,7 +255,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w400,
                       color: _subtitleGrey,
@@ -313,7 +313,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   'Biometric Login',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -325,7 +325,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                       ? 'Use fingerprint or Face ID to sign in'
                       : 'Not available on this device',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -386,7 +386,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   '2FA via SMS',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: _titleDark,
@@ -396,7 +396,7 @@ class _SecuritySettingsBody extends StatelessWidget {
                 Text(
                   'Receive OTP on your registered mobile',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w400,
                     color: _subtitleGrey,
@@ -477,7 +477,7 @@ class _SecuritySettingsBody extends StatelessWidget {
         title: Text(
           'Disable 2FA',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 17.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -486,7 +486,7 @@ class _SecuritySettingsBody extends StatelessWidget {
         content: Text(
           'Disabling two-factor authentication will make your account less secure. Are you sure?',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -498,7 +498,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
               ),
@@ -512,7 +512,7 @@ class _SecuritySettingsBody extends StatelessWidget {
             child: Text(
               'Disable',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
               ),
@@ -597,7 +597,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
           Text(
             vm.withdrawalPinTitle,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 20.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -610,7 +610,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
               vm.withdrawalPinSubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.5.sp,
                 fontWeight: FontWeight.w400,
                 color: _subtitleGrey,
@@ -629,7 +629,7 @@ class _WithdrawalPinSheet extends StatelessWidget {
             Text(
               vm.withdrawalPinError!,
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.5.sp,
                 fontWeight: FontWeight.w600,
                 color: _errorRed,
@@ -709,7 +709,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
           Text(
             'Verify your number',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 20.sp,
               fontWeight: FontWeight.w800,
               color: _titleDark,
@@ -722,7 +722,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 : 'We\'ll send an OTP to your registered\nmobile number to enable 2FA.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.5.sp,
               fontWeight: FontWeight.w400,
               color: _subtitleGrey,
@@ -773,7 +773,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                           : Text(
                               'Send OTP',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF1F6B45),
@@ -802,7 +802,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                       maxLength: 1,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
                         color: _titleDark,
@@ -847,7 +847,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                 Text(
                   "Didn't receive OTP? ",
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 13.sp,
                     color: _subtitleGrey,
                   ),
@@ -856,7 +856,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                     ? Text(
                         'Resend in ${vm.otpCountdown}s',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           color: _accentGreen,
@@ -867,7 +867,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                         child: Text(
                           'Resend OTP',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w700,
                             color: _brandGreen,
@@ -918,7 +918,7 @@ class _TwoFaSheetState extends State<_TwoFaSheet> {
                         : Text(
                             'Verify & Enable',
                             style: TextStyle(
-                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF1F6B45),
@@ -964,7 +964,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Active Sessions',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w800,
                 color: _titleDark,
@@ -979,7 +979,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                   ? 'Loading sessions...'
                   : '${vm.sessions.length} device${vm.sessions.length == 1 ? '' : 's'} currently signed in',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.5.sp,
                 color: _subtitleGrey,
               ),
@@ -1005,7 +1005,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                         Text(
                           'No active sessions found',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 14.sp,
                             color: _labelGrey,
                             fontWeight: FontWeight.w500,
@@ -1064,7 +1064,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                         child: Text(
                                           s.deviceName,
                                           style: TextStyle(
-                                            fontFamily: GoogleFonts.inter().fontFamily,
+                                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 14.5.sp,
                                             fontWeight: FontWeight.w700,
                                             color: _titleDark,
@@ -1087,7 +1087,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                           child: Text(
                                             'This device',
                                             style: TextStyle(
-                                              fontFamily: GoogleFonts.inter().fontFamily,
+                                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                               fontSize: 10.5.sp,
                                               fontWeight: FontWeight.w700,
                                               color: _accentGreen,
@@ -1101,7 +1101,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                   Text(
                                     '${s.location} � ${s.lastActive}',
                                     style: TextStyle(
-                                      fontFamily: GoogleFonts.inter().fontFamily,
+                                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 12.sp,
                                       color: _subtitleGrey,
                                     ),
@@ -1124,7 +1124,7 @@ class _ManageDevicesSheet extends StatelessWidget {
                                   child: Text(
                                     'Sign out',
                                     style: TextStyle(
-                                      fontFamily: GoogleFonts.inter().fontFamily,
+                                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 12.5.sp,
                                       fontWeight: FontWeight.w700,
                                       color: _errorRed,
@@ -1158,7 +1158,7 @@ class _ManageDevicesSheet extends StatelessWidget {
         title: Text(
           'Sign out device?',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 17.sp,
             fontWeight: FontWeight.w700,
             color: _titleDark,
@@ -1167,7 +1167,7 @@ class _ManageDevicesSheet extends StatelessWidget {
         content: Text(
           'Are you sure you want to sign out "${session.deviceName}"?',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: _subtitleGrey,
@@ -1179,7 +1179,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontWeight: FontWeight.w600,
                 color: _subtitleGrey,
               ),
@@ -1193,7 +1193,7 @@ class _ManageDevicesSheet extends StatelessWidget {
             child: Text(
               'Sign Out',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontWeight: FontWeight.w700,
                 color: _errorRed,
               ),
@@ -1370,7 +1370,7 @@ class _NumPad extends StatelessWidget {
                     : Text(
                         confirmLabel,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF1F6B45),
@@ -1407,7 +1407,7 @@ class _KeyBtn extends StatelessWidget {
             child: Text(
               '$digit',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
                 color: _titleDark,

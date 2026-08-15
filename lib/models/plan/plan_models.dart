@@ -60,7 +60,10 @@ extension PlanTypeExt on PlanType {
 
   String get rateLabel => '${dailyRoiPercent.toStringAsFixed(2)}%';
 
-  /// Fixed plan duration in days: 3M=90, 6M=180, 12M=365.
+  /// Fixed plan duration in days: 3M=90, 6M=180, 12M=360.
+  /// These are FIXED day counts, not calendar-month arithmetic — used for
+  /// all "days left" / progress calculations so a 3-month plan is always
+  /// exactly 90 days, regardless of which calendar months it spans.
   int get durationDays {
     switch (this) {
       case PlanType.threeMonth:
@@ -68,7 +71,7 @@ extension PlanTypeExt on PlanType {
       case PlanType.sixMonth:
         return 180;
       case PlanType.twelveMonth:
-        return 365;
+        return 360;
     }
   }
 
@@ -321,16 +324,30 @@ class ActivePlan {
       ((status == PlanStatus.active || status == PlanStatus.approved) &&
           DateTime.now().isAfter(maturityDate));
 
+  /// "Days Left" shown across Plan Dashboard, Plan Details, and Investment
+  /// Plans. Deliberately based on the plan's FIXED duration
+  /// (90 / 180 / 360 days) counted from the actual stored start/approval
+  /// date — NOT on [maturityDate]'s calendar-month arithmetic, and NOT an
+  /// inclusive day count. Both [startDate] and "today" are stripped to
+  /// midnight first so the time-of-day never shifts the result.
+  ///
+  /// Example: 3-month plan (90 days), approved 14 Aug 2026.
+  ///   14 Aug 2026 (day 0, elapsed = 0)  → 90 - 0  = 90 days left
+  ///   15 Aug 2026 (day 1, elapsed = 1)  → 90 - 1  = 89 days left
   int get daysUntilMaturity {
-    final d = maturityDate.difference(DateTime.now()).inDays;
-    return d < 0 ? 0 : d;
+    if (status == PlanStatus.completed) return 0;
+    final remaining = totalPlanDays - daysElapsed;
+    return remaining < 0 ? 0 : remaining;
   }
 
-  /// Total calendar days in the plan based on fixed duration:
-  /// 3M = 90 days, 6M = 180 days, 12M = 365 days.
+  /// Total fixed plan days: 3M = 90 days, 6M = 180 days, 12M = 360 days.
+  /// Fixed day counts, never derived from calendar-month differences.
   int get totalPlanDays => planType.durationDays;
 
-  /// Days elapsed since start, NOT inclusive (strips time component).
+  /// Days elapsed since the stored start date, NOT inclusive of "today".
+  /// Both dates are stripped to midnight (time component removed) before
+  /// diffing, so this is a pure calendar-day count — never an inclusive
+  /// count and never calendar-month arithmetic.
   int get daysElapsed {
     final startOnly = DateTime(startDate.year, startDate.month, startDate.day);
     final now = DateTime.now();

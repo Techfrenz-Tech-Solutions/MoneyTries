@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/plan/plan_models.dart';
@@ -199,7 +199,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           child: Text(
             'Plan Dashboard',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 17.sp,
               fontWeight: FontWeight.w700,
               color: _dark,
@@ -266,7 +266,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 child: Text(
                   _plan.status.displayLabel.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
                     color: sTxt,
@@ -277,7 +277,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 _plan.planType.displayName,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   color: _green,
@@ -289,7 +289,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             'Total Plan Value',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 12.sp,
               color: _green.withValues(alpha: 0.75),
             ),
@@ -298,7 +298,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             '₹ ${_inr(_plan.totalCommitment)}',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 34.sp,
               fontWeight: FontWeight.w800,
               color: _dark,
@@ -329,7 +329,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       Text(
         label,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 10.sp,
           color: _green.withValues(alpha: 0.75),
         ),
@@ -338,7 +338,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       Text(
         value,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 13.sp,
           fontWeight: FontWeight.w700,
           color: _dark,
@@ -428,7 +428,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: titleColor,
@@ -438,7 +438,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   body,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 13.sp,
                     color: bodyColor,
                     height: 1.5,
@@ -463,7 +463,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
         Text(
           'Plan Details',
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 15.sp,
             fontWeight: FontWeight.w700,
             color: _dark,
@@ -512,7 +512,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           note: 'Permanent — set by admin on approval',
         ),
         _divLine(),
-        // Maturity = startDate + fixed days (90/180/365)
+        // Maturity = startDate + fixed days (90/180/360)
         _detailRow(
           'Maturity Date',
           _fmtDate(_plan.maturityDate),
@@ -554,7 +554,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             '${(_plan.progressPercent * 100).toStringAsFixed(0)}% complete',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 11.sp,
               color: _grey,
             ),
@@ -569,7 +569,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       Text(
         label,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 10.5.sp,
           color: _grey,
         ),
@@ -578,7 +578,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       Text(
         value,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 14.sp,
           fontWeight: FontWeight.w800,
           color: _greenMid,
@@ -607,7 +607,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 13.sp,
                   color: _grey,
                 ),
@@ -616,7 +616,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   note,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 10.sp,
                     color: _greyLight,
                   ),
@@ -628,7 +628,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
         Text(
           value,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
             color: valueColor ?? _dark,
@@ -668,7 +668,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   'Payment Details',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: _dark,
@@ -686,7 +686,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   child: Text(
                     _plan.monthsPaid > 0 ? 'Paid' : 'Under Review',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w700,
                       color: _green,
@@ -724,7 +724,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
     child: Text(
       label,
       style: TextStyle(
-        fontFamily: GoogleFonts.inter().fontFamily,
+        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
         fontSize: 11.sp,
         fontWeight: FontWeight.w600,
         color: _greyLight,
@@ -752,7 +752,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
             child: Text(
               '₹ ${_inr(ins.amount)}',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: _dark,
@@ -764,7 +764,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
             child: Text(
               isPaid && ins.paidAt != null ? _fmtDateTime(ins.paidAt!) : '—',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 10.5.sp,
                 color: _grey,
               ),
@@ -783,7 +783,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               child: Text(
                 isPaid ? 'PAID' : 'NOT PAID',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 9.5.sp,
                   fontWeight: FontWeight.w700,
                   color: isPaid ? _green : _greyLight,
@@ -823,7 +823,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 'ROI Earnings',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -850,7 +850,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                       Text(
                         '+₹ ${daily.toStringAsFixed(2)}/day',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
                           color: _green,
@@ -866,7 +866,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             'ROI starts on approval day & credited every day automatically.',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 11.5.sp,
               color: _grey,
               height: 1.4,
@@ -947,7 +947,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     Text(
                       'AVAILABLE TO WITHDRAW',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 10.5.sp,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.6,
@@ -963,7 +963,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     Text(
                       '₹',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
                         color: _green,
@@ -973,7 +973,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     Text(
                       pending.toStringAsFixed(2),
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w800,
                         color: _dark,
@@ -988,7 +988,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   Text(
                     '₹ ${accrued.toStringAsFixed(2)} accrued  •  ₹ ${withdrawn.toStringAsFixed(2)} withdrawn',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.5.sp,
                       fontWeight: FontWeight.w500,
                       color: _green.withOpacity(0.75),
@@ -1043,7 +1043,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                                           ? 'Withdraw to Wallet'
                                           : 'Nothing to Withdraw',
                                       style: TextStyle(
-                                        fontFamily: GoogleFonts.inter().fontFamily,
+                                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.w700,
                                         color: _green,
@@ -1074,7 +1074,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   child: Text(
                     'ROI is being credited daily. Check back tomorrow.',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.sp,
                       color: _greyLight,
                     ),
@@ -1113,7 +1113,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 11.sp,
                     color: _greyLight,
                   ),
@@ -1125,7 +1125,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             value,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 15.sp,
               fontWeight: FontWeight.w800,
               color: txtColor,
@@ -1135,7 +1135,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           Text(
             sub,
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 10.sp,
               color: _greyLight,
               height: 1.3,
@@ -1168,7 +1168,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 'ROI Calculation',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -1188,7 +1188,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   child: Text(
                     _showRoiHistory ? 'Hide History' : 'View History',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF3B82F6),
@@ -1234,7 +1234,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 child: Text(
                   'Backend credits ROI daily from Start Date. Missed days auto-credited on next backend job.',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 11.sp,
                     color: _greyLight,
                     height: 1.4,
@@ -1260,7 +1260,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: GoogleFonts.inter().fontFamily,
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 12.5.sp,
             color: _grey,
           ),
@@ -1269,7 +1269,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       Text(
         value,
         style: TextStyle(
-          fontFamily: GoogleFonts.inter().fontFamily,
+          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 13.sp,
           fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
           color: color ?? _dark,
@@ -1289,7 +1289,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           child: Text(
             'No ROI history yet.',
             style: TextStyle(
-              fontFamily: GoogleFonts.inter().fontFamily,
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
               fontSize: 13.sp,
               color: _grey,
             ),
@@ -1315,7 +1315,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   'Daily ROI History',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: _dark,
@@ -1324,7 +1324,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   'Last ${displayList.length} days',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 11.sp,
                     color: _greyLight,
                   ),
@@ -1372,7 +1372,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                         child: Text(
                           _fmtDate(e.date),
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 11.5.sp,
                             color: _dark,
                           ),
@@ -1383,7 +1383,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                         child: Text(
                           '₹ ${_inr(e.principal)}',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 11.5.sp,
                             color: _grey,
                           ),
@@ -1394,7 +1394,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                         child: Text(
                           '+₹ ${e.amount.toStringAsFixed(2)}',
                           style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 11.5.sp,
                             fontWeight: FontWeight.w700,
                             color: _green,
@@ -1419,7 +1419,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   Text(
                     'Total (${history.length} days)',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w600,
                       color: _green,
@@ -1428,7 +1428,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   Text(
                     '₹ ${history.fold(0.0, (s, e) => s + e.amount).toStringAsFixed(2)}',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w800,
                       color: _green,
@@ -1478,7 +1478,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   Text(
                     'Principal Unlocked!',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF5B21B6),
@@ -1487,7 +1487,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   Text(
                     'Plan matured — locked principal is now withdrawable.',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.sp,
                       color: const Color(0xFF7C3AED),
                     ),
@@ -1510,7 +1510,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 'One-time investment (${_plan.planType.displayName})',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 12.sp,
                   color: const Color(0xFF7C3AED),
                 ),
@@ -1518,7 +1518,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 '₹ ${_inr(_plan.totalPrincipal)}',
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF5B21B6),
@@ -1537,7 +1537,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   'Withdrawable Principal',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 11.sp,
                     color: const Color(0xFF7C3AED),
                   ),
@@ -1545,7 +1545,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                 Text(
                   '₹ ${_inr(_plan.totalPrincipal)}',
                   style: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 22.sp,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF5B21B6),
@@ -1577,7 +1577,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                   child: Text(
                     'Withdraw Principal',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w700,
                       color: _white,
@@ -1668,7 +1668,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -1678,7 +1678,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
               Text(
                 subtitle,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 13.sp,
                   color: _grey,
                 ),
@@ -1696,7 +1696,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     Text(
                       'Amount',
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 14.sp,
                         color: _grey,
                       ),
@@ -1704,7 +1704,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     Text(
                       amount,
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w800,
                         color: _greenMid,
@@ -1741,7 +1741,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                     child: Text(
                       btnLabel,
                       style: TextStyle(
-                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                         color: _green,
@@ -1762,7 +1762,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       SnackBar(
         content: Text(
           msg,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily, fontSize: 13.sp),
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp),
         ),
         backgroundColor: const Color(0xFF1F6B45),
         behavior: SnackBarBehavior.floating,
@@ -1839,7 +1839,7 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
                       Text(
                         items[i].label,
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 10.sp,
                           fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
                           color: c,
@@ -1940,7 +1940,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
             Text(
               'Withdraw ROI Earnings',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
                 color: _dark,
@@ -1950,7 +1950,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
             Text(
               'Enter the amount you want to withdraw. It will be credited to your Wallet Balance.',
               style: TextStyle(
-                fontFamily: GoogleFonts.inter().fontFamily,
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.sp,
                 color: _grey,
                 height: 1.5,
@@ -1971,7 +1971,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                   Text(
                     'Available to Withdraw',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 12.sp,
                       color: _green,
                     ),
@@ -1979,7 +1979,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                   Text(
                     '₹ ${widget.maxAmount.toStringAsFixed(2)}',
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w800,
                       color: _green,
@@ -2009,7 +2009,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                 ),
                 onChanged: _onChanged,
                 style: TextStyle(
-                  fontFamily: GoogleFonts.inter().fontFamily,
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
                   color: _dark,
@@ -2017,14 +2017,14 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                 decoration: InputDecoration(
                   hintText: '0.00',
                   hintStyle: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF9CA3AF),
                   ),
                   prefixText: '₹ ',
                   prefixStyle: TextStyle(
-                    fontFamily: GoogleFonts.inter().fontFamily,
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
                     color: _dark,
@@ -2055,7 +2055,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                       child: Text(
                         'MAX',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
                           color: _green,
@@ -2081,7 +2081,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                   Text(
                     _error!,
                     style: TextStyle(
-                      fontFamily: GoogleFonts.inter().fontFamily,
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                       fontSize: 11.5.sp,
                       color: const Color(0xFFDC2626),
                     ),
@@ -2129,7 +2129,7 @@ class _RoiWithdrawSheetState extends State<_RoiWithdrawSheet> {
                             ? 'Withdraw ₹ ${_enteredAmount.toStringAsFixed(2)}'
                             : 'Withdraw Now',
                         style: TextStyle(
-                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: _green,

@@ -1,7 +1,7 @@
 ﻿// lib/views/auth/reset_password_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -144,7 +144,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   SizedBox(height: 22.h),
                                   Text(
                                     'Create New Password',
-                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 24.sp,
                                       fontWeight: FontWeight.w800,
                                       color: _titleColor,
@@ -156,7 +156,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   Text(
                                     'Your new password must be different '
                                     'from previously used passwords.',
-                                    style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                    style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                       fontSize: 13.5.sp,
                                       color: _subtitleColor,
                                       height: 1.5,
@@ -193,7 +193,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                                         Text(
                                           'New Password',
-                                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 12.5.sp,
                                             fontWeight: FontWeight.w500,
                                             color: _labelColor,
@@ -219,7 +219,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                         SizedBox(height: 6.h),
                                         Text(
                                           'At least 8 characters, with letters and numbers.',
-                                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 11.5.sp,
                                             color: _subtitleColor,
                                           ),
@@ -229,7 +229,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                                         Text(
                                           'Confirm Password',
-                                          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 12.5.sp,
                                             fontWeight: FontWeight.w500,
                                             color: _labelColor,
@@ -284,7 +284,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                                 : Text(
                                                     'Update Password',
                                                     style:
-                                                        TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                                                        TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                                       fontSize: 15.sp,
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -343,7 +343,7 @@ class _SuccessView extends StatelessWidget {
             Text(
               'Password Updated Successfully',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w800,
                 color: _titleColor,
@@ -355,7 +355,7 @@ class _SuccessView extends StatelessWidget {
               'Your password has been changed. You can now log in '
               'with your new password.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.5.sp,
                 color: _subtitleColor,
                 height: 1.5,
@@ -376,7 +376,7 @@ class _SuccessView extends StatelessWidget {
                 ),
                 child: Text(
                   'Back to Login',
-                  style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -452,7 +452,7 @@ class _StrengthMeter extends StatelessWidget {
         SizedBox(width: 10.w),
         Text(
           _label,
-          style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 11.sp,
             fontWeight: FontWeight.w600,
             color: _color,
@@ -488,7 +488,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
                 color: _errorRed,
@@ -527,14 +527,14 @@ class _PasswordField extends StatelessWidget {
       obscureText: obscure,
       obscuringCharacter: '●',
       onChanged: onChanged,
-      style: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,
+      style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
         fontSize: 14.5.sp,
         color: const Color(0xFF374151),
         letterSpacing: obscure ? 2.5 : 0,
       ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontFamily: GoogleFonts.inter().fontFamily,color: _hintColor, fontSize: 14.5.sp),
+        hintStyle: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,color: _hintColor, fontSize: 14.5.sp),
         prefixIcon: Padding(
           padding: EdgeInsets.only(left: 14.w, right: 10.w),
           child: Icon(
