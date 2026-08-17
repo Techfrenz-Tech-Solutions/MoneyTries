@@ -10,6 +10,7 @@ import '../../services/pin_lockout_service.dart';
 import '../../services/push_notification_service.dart';
 import '../../data/security/security_repository.dart';
 import '../../utils/responsive.dart';
+import 'forgot_login_pin_screen.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _bg = Color(0xFFF7F5F2);
@@ -34,7 +35,8 @@ class _AppPinScreenState extends State<AppPinScreen>
   static const int _pinLength = 4;
   // Every PIN screen shares one lockout policy (5 wrong attempts → 5 minute
   // cooldown) via PinLockoutService; 'login' keeps this scope's counter
-  // separate from the withdrawal PIN's.
+  // separate from other PIN-verification scopes (e.g. the withdrawal
+  // Login-PIN confirmation sheet).
   static const String _lockScope = 'login';
 
   bool _locked = false;
@@ -355,6 +357,20 @@ class _AppPinScreenState extends State<AppPinScreen>
     Navigator.pushReplacementNamed(context, AppRoutes.login);
   }
 
+  Future<void> _openForgotPin() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ForgotLoginPinScreen()),
+    );
+    // The new PIN (if changed) is already cached locally by the time we
+    // return here, but clear any stale entry/error from before the user
+    // navigated away so they start the unlock attempt fresh.
+    if (!mounted) return;
+    setState(() {
+      _pin.clear();
+      _error = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -568,10 +584,34 @@ class _AppPinScreenState extends State<AppPinScreen>
                         SizedBox(height: 14.h),
                         Row(
                           children: [
-                            // Empty cell keeps 0 aligned under the middle
-                            // column and backspace under the right column,
-                            // matching the 1-2-3 / 4-5-6 / 7-8-9 grid above.
-                            Expanded(child: SizedBox(height: 70.h)),
+                            // Forgot PIN sits in the cell under the 7 key,
+                            // keeping 0 aligned under the middle column and
+                            // backspace under the right column, matching the
+                            // 1-2-3 / 4-5-6 / 7-8-9 grid above.
+                            Expanded(
+                              child: _locked
+                                  ? SizedBox(height: 70.h)
+                                  : SizedBox(
+                                      height: 70.h,
+                                      child: GestureDetector(
+                                        onTap: _openForgotPin,
+                                        behavior: HitTestBehavior.opaque,
+                                        child: Center(
+                                          child: Text(
+                                            'Forgot PIN?',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontFamily: AppFonts.primary,
+                                              fontFamilyFallback: AppFonts.fallbacks,
+                                              fontSize: 13.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: _brandGreen,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                            ),
                             SizedBox(width: 14.w),
                             Expanded(
                               child: _KeyButton(

@@ -24,6 +24,8 @@ class ApiConfig {
   // Express app. Endpoint paths below already include /api, so the base must
   // stop at /v1 (using /v1/api here would create /v1/api/api/... URLs).
   static const String _defaultBaseUrl = 'https://moneytries.com/v1';
+  //  static const String _defaultBaseUrl = 'http://192.168.0.17:3000';
+
 
   /// Base URL — resolves to `--dart-define=API_BASE_URL=...` if provided,
   /// otherwise falls back to [_defaultBaseUrl]. This is the ONLY constant

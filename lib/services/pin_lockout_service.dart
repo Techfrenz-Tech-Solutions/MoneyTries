@@ -1,7 +1,7 @@
 // lib/services/pin_lockout_service.dart
 //
 // Shared brute-force protection for every PIN entry point in the app
-// (app-lock/login PIN, withdrawal PIN, and any future PIN screens).
+// (app-lock/login PIN and any future PIN screens).
 //
 // Rule: 5 wrong attempts in a row locks that PIN scope for 5 minutes.
 // The attempt count and lockout expiry are persisted in SharedPreferences
@@ -9,8 +9,9 @@
 // closing and reopening the app — the lock survives app restarts and is
 // only lifted once the real wall-clock 5 minutes has elapsed.
 //
-// Each PIN screen uses its own `scope` string (e.g. 'login', 'withdrawal')
-// so a lockout on one PIN never blocks the other.
+// Each PIN screen uses its own `scope` string (e.g. 'login',
+// 'withdrawal_login_verify') so a lockout on one screen never blocks
+// the other.
 
 import 'package:shared_preferences/shared_preferences.dart';
 

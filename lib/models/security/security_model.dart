@@ -109,26 +109,69 @@ class PasswordChangeStatus {
   }
 }
 
-/// Account-level status of the Login PIN, Withdrawal PIN, and Biometric
-/// Login setting - fetched from the backend (GET /api/security/pins/status)
-/// so any device can tell what's already configured on the account instead
-/// of assuming nothing is set just because this device has no local cache.
+/// Account-level status of the Login PIN and Biometric Login setting -
+/// fetched from the backend (GET /api/security/pins/status) so any device
+/// can tell what's already configured on the account instead of assuming
+/// nothing is set just because this device has no local cache.
 class PinSyncStatus {
   final bool loginPinSet;
-  final bool withdrawalPinSet;
   final bool biometricEnabled;
 
   const PinSyncStatus({
     this.loginPinSet = false,
-    this.withdrawalPinSet = false,
     this.biometricEnabled = false,
   });
 
   factory PinSyncStatus.fromJson(Map<String, dynamic> json) {
     return PinSyncStatus(
       loginPinSet: json['login_pin_set'] == true,
-      withdrawalPinSet: json['withdrawal_pin_set'] == true,
       biometricEnabled: json['biometric_enabled'] == true,
+    );
+  }
+}
+
+/// Result of a Forgot Login PIN OTP call — covers
+/// POST /api/security/pin/login/forgot/send-otp,
+/// POST /api/security/pin/login/forgot/verify-otp, and
+/// GET  /api/security/pin/login/forgot/status, all of which return the same
+/// shape of locked/cooldown/attempts fields.
+class ForgotLoginPinOtpResult {
+  final bool success;
+  final String message;
+  final bool locked;
+  final int lockedRemainingSeconds;
+  final int retryAfterSeconds;
+  final int remainingAttempts;
+  final int expiresInSeconds;
+  final String? email;
+
+  const ForgotLoginPinOtpResult({
+    required this.success,
+    required this.message,
+    this.locked = false,
+    this.lockedRemainingSeconds = 0,
+    this.retryAfterSeconds = 0,
+    this.remainingAttempts = 5,
+    this.expiresInSeconds = 300,
+    this.email,
+  });
+
+  factory ForgotLoginPinOtpResult.fromJson(
+    Map<String, dynamic> json, {
+    required bool success,
+    required String message,
+  }) {
+    final data = json['data'] as Map<String, dynamic>? ?? {};
+    return ForgotLoginPinOtpResult(
+      success: success,
+      message: message,
+      locked: data['locked'] == true,
+      lockedRemainingSeconds:
+          (data['remaining_seconds'] as num?)?.toInt() ?? 0,
+      retryAfterSeconds: (data['retry_after_seconds'] as num?)?.toInt() ?? 0,
+      remainingAttempts: (data['remaining_attempts'] as num?)?.toInt() ?? 5,
+      expiresInSeconds: (data['expires_in_seconds'] as num?)?.toInt() ?? 300,
+      email: data['email']?.toString(),
     );
   }
 }

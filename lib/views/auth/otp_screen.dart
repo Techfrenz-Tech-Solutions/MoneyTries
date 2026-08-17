@@ -1,4 +1,5 @@
 ﻿import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:moneytries/config/app_fonts.dart';
@@ -7,24 +8,29 @@ import '../../routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../utils/responsive.dart';
 
-// ── Premium palette (Moneytries brand green) ──────────────────────────────────
-const _bgTop = Color(0xFFF7F5F2);
-const _bgBottom = Color(0xFFF0EDE7);
-const _deepInk = Color(0xFFF7F5F2);
-const _titleColor = Color(0xFF111827);
+// ── Luxury palette (Moneytries brand, elevated with a warm gold accent) ────
+const _bgTop = Color(0xFFFAF8F4);
+const _bgBottom = Color(0xFFEFEAE1);
+const _ink = Color(0xFF0E1712);
+const _titleColor = Color(0xFF10201A);
 const _bodyColor = Color(0xFF6B7280);
-const _boldPhone = Color(0xFF111827);
-const _cardBorder = Color(0xFFE2CEBA);
-const _otpIdleBorder = Color(0xFFD9D5CF);
-const _otpFocusBorder = Color(0xFF4CAF7D);
+const _boldPhone = Color(0xFF10201A);
+const _cardBorder = Color(0xFFE6D8C1);
+const _otpIdleBorder = Color(0xFFE4E0D7);
+const _otpFocusGold = Color(0xFFB8935A);
 const _otpFill = Color(0xFFFFFFFF);
-const _otpText = Color(0xFF111827);
-const _primaryGreen = Color(0xFF4CAF7D);
+const _otpText = Color(0xFF10231A);
+const _primaryGreen = Color(0xFF3FA873);
+const _deepEmerald = Color(0xFF1F5C3F);
 const _emerald = Color(0xFF7DCB9E);
+const _gold = Color(0xFFB8935A);
+const _goldLight = Color(0xFFE7CDA0);
 const _timerGrey = Color(0xFF9CA3AF);
 const _securityGrey = Color(0xFF6B7280);
 const _errorRed = Color(0xFFDC2626);
 const _errorBg = Color(0xFFFDF3F3);
+
+const int _initialSeconds = 60;
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -35,14 +41,14 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final List<TextEditingController> _controllers = List.generate(
     6,
     (_) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
-  int _secondsLeft = 60;
+  int _secondsLeft = _initialSeconds;
   Timer? _timer;
 
   String? _otpError;
@@ -52,6 +58,8 @@ class _OtpScreenState extends State<OtpScreen>
   late final AnimationController _introController;
   late final Animation<double> _introFade;
   late final Animation<Offset> _introSlide;
+
+  late final AnimationController _bezelController;
 
   /// Raw 10-digit phone number extracted from the display string
   /// (e.g. "+91 9876543210" -> "9876543210"), for use in API calls.
@@ -66,7 +74,7 @@ class _OtpScreenState extends State<OtpScreen>
     _startTimer();
     _introController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 650),
+      duration: const Duration(milliseconds: 700),
     );
     _introFade = CurvedAnimation(
       parent: _introController,
@@ -77,6 +85,11 @@ class _OtpScreenState extends State<OtpScreen>
           CurvedAnimation(parent: _introController, curve: Curves.easeOutCubic),
         );
     _introController.forward();
+
+    _bezelController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 7),
+    )..repeat();
   }
 
   Future<void> _handleVerify() async {
@@ -121,7 +134,7 @@ class _OtpScreenState extends State<OtpScreen>
 
   void _startTimer() {
     _timer?.cancel();
-    setState(() => _secondsLeft = 60);
+    setState(() => _secondsLeft = _initialSeconds);
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (!mounted) {
         t.cancel();
@@ -169,6 +182,7 @@ class _OtpScreenState extends State<OtpScreen>
   void dispose() {
     _timer?.cancel();
     _introController.dispose();
+    _bezelController.dispose();
     for (var c in _controllers) c.dispose();
     for (var f in _focusNodes) f.dispose();
     super.dispose();
@@ -200,7 +214,7 @@ class _OtpScreenState extends State<OtpScreen>
           backgroundColor: _bgBottom,
           body: Stack(
             children: [
-              // ── Ambient gradient backdrop ─────────────────────────────────
+              // ── Ambient luxury backdrop ───────────────────────────────────
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: const BoxDecoration(
@@ -213,14 +227,24 @@ class _OtpScreenState extends State<OtpScreen>
                 ),
               ),
               Positioned(
-                top: -90,
-                right: -70,
-                child: _blurBlob(220, _primaryGreen.withOpacity(0.14)),
+                top: -100,
+                right: -80,
+                child: _blurBlob(240, _primaryGreen.withOpacity(0.14)),
               ),
               Positioned(
-                bottom: -60,
-                left: -80,
-                child: _blurBlob(200, _emerald.withOpacity(0.12)),
+                top: -30,
+                left: -60,
+                child: _blurBlob(150, _gold.withOpacity(0.10)),
+              ),
+              Positioned(
+                bottom: -70,
+                left: -90,
+                child: _blurBlob(220, _emerald.withOpacity(0.12)),
+              ),
+              Positioned(
+                bottom: 130,
+                right: -60,
+                child: _blurBlob(140, _gold.withOpacity(0.08)),
               ),
 
               SafeArea(
@@ -242,7 +266,7 @@ class _OtpScreenState extends State<OtpScreen>
                     Expanded(
                       child: SingleChildScrollView(
                         physics: const ClampingScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 0.h),
+                        padding: EdgeInsets.fromLTRB(24.w, 4.h, 24.w, 0.h),
                         child: FadeTransition(
                           opacity: _introFade,
                           child: SlideTransition(
@@ -250,16 +274,40 @@ class _OtpScreenState extends State<OtpScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 12.h),
+                                SizedBox(height: 6.h),
 
-                                // ── Signature badge: layered glow shield ──────
+                                // ── Signature badge: rotating gold bezel ──────
                                 Center(
-                                  child: _PremiumBadge(
-                                    icon: Icons.phonelink_lock_rounded,
+                                  child: AnimatedBuilder(
+                                    animation: _bezelController,
+                                    builder: (context, _) {
+                                      return _PremiumBadge(
+                                        icon: Icons.phonelink_lock_rounded,
+                                        rotation: _bezelController.value *
+                                            2 *
+                                            math.pi,
+                                      );
+                                    },
                                   ),
                                 ),
 
-                                SizedBox(height: 28.h),
+                                SizedBox(height: 22.h),
+
+                                Center(
+                                  child: Text(
+                                    'PHONE VERIFICATION',
+                                    style: TextStyle(
+                                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: _gold,
+                                      letterSpacing: 3.2,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+
+                                SizedBox(height: 10.h),
 
                                 Center(
                                   child: Text(
@@ -267,11 +315,11 @@ class _OtpScreenState extends State<OtpScreen>
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                      fontSize: 25.sp,
+                                      fontSize: 26.sp,
                                       fontWeight: FontWeight.w800,
                                       color: _titleColor,
                                       letterSpacing: -0.4,
-                                      height: 1.15,
+                                      height: 1.2,
                                     ),
                                   ),
                                 ),
@@ -279,26 +327,59 @@ class _OtpScreenState extends State<OtpScreen>
                                 SizedBox(height: 10.h),
 
                                 Center(
-                                  child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                        fontSize: 14.sp,
-                                        color: _bodyColor,
-                                        height: 1.55,
+                                  child: Text(
+                                    'A 6-digit code was sent to',
+                                    style: TextStyle(
+                                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: _bodyColor,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+
+                                SizedBox(height: 10.h),
+
+                                // ── Phone chip ─────────────────────────────────
+                                Center(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 14.w,
+                                      vertical: 8.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(30.r),
+                                      border: Border.all(
+                                        color: _cardBorder,
+                                        width: 1.r,
                                       ),
-                                      children: [
-                                        const TextSpan(
-                                          text: 'A 6-digit code was sent to\n',
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _ink.withOpacity(0.04),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 4),
                                         ),
-                                        TextSpan(
-                                          text: widget.phoneNumber,
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.phone_iphone_rounded,
+                                          size: 14.sp,
+                                          color: _gold,
+                                        ),
+                                        SizedBox(width: 6.w),
+                                        Text(
+                                          widget.phoneNumber,
                                           style: TextStyle(
                                             fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                             fontSize: 14.5.sp,
                                             fontWeight: FontWeight.w700,
                                             color: _boldPhone,
+                                            height: 1.3,
                                           ),
                                         ),
                                       ],
@@ -309,190 +390,143 @@ class _OtpScreenState extends State<OtpScreen>
                                 SizedBox(height: 30.h),
 
                                 // ── Premium card holding the OTP field ────────
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.fromLTRB(
-                                    20.w,
-                                    26.h,
-                                    20.w,
-                                    22.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(24.r),
-                                    border: Border.all(
-                                      color: _cardBorder,
-                                      width: 1.r,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: _deepInk.withOpacity(0.06),
-                                        blurRadius: 28,
-                                        offset: const Offset(0, 14),
-                                      ),
-                                    ],
-                                  ),
+                                _OtpCard(
                                   child: Column(
                                     children: [
                                       // ── 6 OTP input boxes ─────────────────
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: List.generate(
-                                          6,
-                                          (i) => _OtpBox(
-                                            controller: _controllers[i],
-                                            focusNode: _focusNodes[i],
-                                            hasError: _otpError != null,
-                                            onChanged: (val) {
-                                              if (_otpError != null)
-                                                setState(
-                                                  () => _otpError = null,
-                                                );
-                                              if (val.length == 1 && i < 5) {
-                                                _focusNodes[i + 1]
-                                                    .requestFocus();
-                                              } else if (val.isEmpty && i > 0) {
-                                                _focusNodes[i - 1]
-                                                    .requestFocus();
-                                              }
-                                            },
-                                            onBackspace: () {
-                                              if (i > 0 &&
-                                                  _controllers[i]
-                                                      .text
-                                                      .isEmpty) {
-                                                _controllers[i - 1].clear();
-                                                _focusNodes[i - 1]
-                                                    .requestFocus();
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-
-                                      if (_otpError != null) ...[
-                                        SizedBox(height: 14.h),
-                                        Container(
-                                          width: double.infinity,
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12.w,
-                                            vertical: 8.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _errorBg,
-                                            borderRadius: BorderRadius.circular(
-                                              10.r,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline_rounded,
-                                                size: 14.sp,
-                                                color: _errorRed,
-                                              ),
-                                              SizedBox(width: 6.w),
-                                              Flexible(
-                                                child: Text(
-                                                  _otpError!,
-                                                  style: TextStyle(
-                                                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                                    fontSize: 12.sp,
-                                                    color: _errorRed,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-
-                                      SizedBox(height: 22.h),
-
-                                      // ── Timer chip ─────────────────────────
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 14.w,
-                                          vertical: 8.h,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: _bgTop,
-                                          borderRadius: BorderRadius.circular(
-                                            30.r,
-                                          ),
-                                          border: Border.all(
-                                            color: _cardBorder,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.access_time_rounded,
-                                              size: 14.sp,
-                                              color: canResend
-                                                  ? _primaryGreen
-                                                  : _timerGrey,
-                                            ),
-                                            SizedBox(width: 6.w),
-                                            Text(
-                                              canResend
-                                                  ? 'Code expired'
-                                                  : 'Resend in ',
-                                              style: TextStyle(
-                                                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                                fontSize: 12.5.sp,
-                                                color: _timerGrey,
-                                                fontWeight: FontWeight.w500,
+                                        children: [
+                                          for (int i = 0; i < 6; i++) ...[
+                                            Expanded(
+                                              child: _OtpBox(
+                                                controller: _controllers[i],
+                                                focusNode: _focusNodes[i],
+                                                hasError: _otpError != null,
+                                                hasValue: _controllers[i]
+                                                    .text
+                                                    .isNotEmpty,
+                                                onChanged: (val) {
+                                                  if (_otpError != null) {
+                                                    setState(
+                                                      () => _otpError = null,
+                                                    );
+                                                  } else {
+                                                    setState(() {});
+                                                  }
+                                                  if (val.length == 1 &&
+                                                      i < 5) {
+                                                    _focusNodes[i + 1]
+                                                        .requestFocus();
+                                                  } else if (val.isEmpty &&
+                                                      i > 0) {
+                                                    _focusNodes[i - 1]
+                                                        .requestFocus();
+                                                  }
+                                                },
+                                                onBackspace: () {
+                                                  if (i > 0 &&
+                                                      _controllers[i]
+                                                          .text
+                                                          .isEmpty) {
+                                                    _controllers[i - 1]
+                                                        .clear();
+                                                    _focusNodes[i - 1]
+                                                        .requestFocus();
+                                                    setState(() {});
+                                                  }
+                                                },
                                               ),
                                             ),
-                                            if (!canResend)
-                                              Text(
-                                                _timerText,
-                                                style: TextStyle(
-                                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                                  fontSize: 12.5.sp,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: _primaryGreen,
-                                                ),
-                                              ),
+                                            if (i != 5) SizedBox(width: 10.w),
                                           ],
-                                        ),
+                                        ],
                                       ),
 
-                                      SizedBox(height: 14.h),
-
-                                      GestureDetector(
-                                        onTap: (canResend && !_isResending)
-                                            ? _resend
-                                            : null,
-                                        child: _isResending
-                                            ? SizedBox(
-                                                width: 16.w,
-                                                height: 16.h,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: _primaryGreen,
-                                                    ),
-                                              )
-                                            : Text(
-                                                'Resend via SMS',
-                                                style: TextStyle(
-                                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                                  fontSize: 13.5.sp,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: canResend
-                                                      ? _primaryGreen
-                                                      : _primaryGreen
-                                                            .withOpacity(0.35),
+                                      AnimatedSize(
+                                        duration: const Duration(
+                                          milliseconds: 220,
+                                        ),
+                                        curve: Curves.easeOut,
+                                        child: _otpError != null
+                                            ? Padding(
+                                                padding: EdgeInsets.only(
+                                                  top: 14.h,
                                                 ),
+                                                child: Container(
+                                                  width: double.infinity,
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 12.w,
+                                                    vertical: 8.h,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: _errorBg,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      10.r,
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .error_outline_rounded,
+                                                        size: 14.sp,
+                                                        color: _errorRed,
+                                                      ),
+                                                      SizedBox(width: 6.w),
+                                                      Flexible(
+                                                        child: Text(
+                                                          _otpError!,
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                AppFonts
+                                                                    .primary,
+                                                            fontFamilyFallback:
+                                                                AppFonts
+                                                                    .fallbacks,
+                                                            fontSize: 12.sp,
+                                                            color: _errorRed,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500,
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(
+                                                width: double.infinity,
                                               ),
+                                      ),
+
+                                      SizedBox(height: 24.h),
+
+                                      Text(
+                                        "Didn't receive the code?",
+                                        style: TextStyle(
+                                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                          fontSize: 13.sp,
+                                          color: _timerGrey,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(height: 12.h),
+
+                                      _CountdownRing(
+                                        secondsLeft: _secondsLeft,
+                                        initialSeconds: _initialSeconds,
+                                        canResend: canResend,
+                                        isResending: _isResending,
+                                        timerLabel: _timerText,
+                                        onTap: _resend,
                                       ),
                                     ],
                                   ),
@@ -509,10 +543,10 @@ class _OtpScreenState extends State<OtpScreen>
                     // ── Bottom: Verify button + security strip ────────────────
                     Padding(
                       padding: EdgeInsets.fromLTRB(
-                        24,
-                        8,
-                        24,
-                        mq.padding.bottom > 0 ? 12 : 22,
+                        24.w,
+                        8.h,
+                        24.w,
+                        mq.padding.bottom > 0 ? 12.h : 22.h,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -520,6 +554,7 @@ class _OtpScreenState extends State<OtpScreen>
                           _GradientButton(
                             label: 'Verify & Proceed',
                             loading: _isVerifying,
+                            enabled: true,
                             onTap: _handleVerify,
                           ),
                           SizedBox(height: 16.h),
@@ -578,7 +613,7 @@ class _GlassCircleButton extends StatelessWidget {
             border: Border.all(color: _cardBorder),
             boxShadow: [
               BoxShadow(
-                color: _deepInk.withOpacity(0.05),
+                color: _ink.withOpacity(0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -591,50 +626,144 @@ class _GlassCircleButton extends StatelessWidget {
   }
 }
 
-// ── Signature layered-glow badge ───────────────────────────────────────────────
+// ── OTP card shell with fine gold corner accents ────────────────────────────────
+class _OtpCard extends StatelessWidget {
+  final Widget child;
+  const _OtpCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(20.w, 28.h, 20.w, 24.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(26.r),
+        border: Border.all(color: _cardBorder, width: 1.r),
+        boxShadow: [
+          BoxShadow(
+            color: _ink.withOpacity(0.07),
+            blurRadius: 32,
+            offset: const Offset(0, 16),
+          ),
+          BoxShadow(
+            color: _gold.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          // ── Corner flourish, top-left ─────────────────────────────────
+          Positioned(
+            top: -1,
+            left: -1,
+            child: CustomPaint(
+              size: Size(26.w, 26.h),
+              painter: _CornerFlourishPainter(color: _gold.withOpacity(0.55)),
+            ),
+          ),
+          // ── Corner flourish, bottom-right ─────────────────────────────
+          Positioned(
+            bottom: -1,
+            right: -1,
+            child: Transform.rotate(
+              angle: math.pi,
+              child: CustomPaint(
+                size: Size(26.w, 26.h),
+                painter:
+                    _CornerFlourishPainter(color: _primaryGreen.withOpacity(0.35)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CornerFlourishPainter extends CustomPainter {
+  final Color color;
+  _CornerFlourishPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    final path = Path()
+      ..moveTo(0, size.height * 0.55)
+      ..lineTo(0, size.height * 0.12)
+      ..quadraticBezierTo(0, 0, size.width * 0.12, 0)
+      ..lineTo(size.width * 0.55, 0);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CornerFlourishPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+// ── Signature layered badge with a slow-rotating gold bezel ───────────────────
 class _PremiumBadge extends StatelessWidget {
   final IconData icon;
-  const _PremiumBadge({required this.icon});
+  final double rotation;
+  const _PremiumBadge({required this.icon, required this.rotation});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 108.w,
-      height: 108.h,
+      width: 128.w,
+      height: 128.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Outer static glow halo
           Container(
-            width: 108.w,
-            height: 108.h,
+            width: 128.w,
+            height: 128.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _primaryGreen.withOpacity(0.08),
+              color: _primaryGreen.withOpacity(0.06),
+            ),
+          ),
+          // Rotating gold sweep bezel
+          Transform.rotate(
+            angle: rotation,
+            child: CustomPaint(
+              size: Size(108.w, 108.h),
+              painter: _BezelPainter(colorA: _gold, colorB: _goldLight),
             ),
           ),
           Container(
-            width: 82.w,
-            height: 82.h,
+            width: 88.w,
+            height: 88.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _primaryGreen.withOpacity(0.14),
+              color: _primaryGreen.withOpacity(0.12),
             ),
           ),
           Container(
-            width: 64.w,
-            height: 64.h,
+            width: 68.w,
+            height: 68.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [_primaryGreen, _emerald],
+                colors: [_primaryGreen, _deepEmerald],
               ),
+              border: Border.all(color: Colors.white, width: 2.5),
               boxShadow: [
                 BoxShadow(
-                  color: _primaryGreen.withOpacity(0.35),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
+                  color: _primaryGreen.withOpacity(0.38),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -646,75 +775,308 @@ class _PremiumBadge extends StatelessWidget {
   }
 }
 
-// ── Gradient CTA button with press feedback ────────────────────────────────────
-class _GradientButton extends StatelessWidget {
-  final String label;
-  final bool loading;
+class _BezelPainter extends CustomPainter {
+  final Color colorA;
+  final Color colorB;
+  _BezelPainter({required this.colorA, required this.colorB});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = size.width / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    // Faint full track
+    final track = Paint()
+      ..color = colorA.withOpacity(0.14)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2;
+    canvas.drawCircle(center, radius, track);
+
+    // Sweeping bright arc segment
+    final sweepPaint = Paint()
+      ..shader = SweepGradient(
+        colors: [
+          colorA.withOpacity(0),
+          colorB,
+          colorA,
+          colorA.withOpacity(0),
+        ],
+        stops: const [0.0, 0.16, 0.28, 0.42],
+      ).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.6
+      ..strokeCap = StrokeCap.round;
+    canvas.drawCircle(center, radius, sweepPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _BezelPainter oldDelegate) => true;
+}
+
+// ── Circular countdown ring pairing the resend action ──────────────────────────
+class _CountdownRing extends StatelessWidget {
+  final int secondsLeft;
+  final int initialSeconds;
+  final bool canResend;
+  final bool isResending;
+  final String timerLabel;
   final VoidCallback onTap;
-  const _GradientButton({
-    required this.label,
-    required this.loading,
+
+  const _CountdownRing({
+    required this.secondsLeft,
+    required this.initialSeconds,
+    required this.canResend,
+    required this.isResending,
+    required this.timerLabel,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56.h,
-      child: Material(
-        borderRadius: BorderRadius.circular(16.r),
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16.r),
-          onTap: loading ? null : onTap,
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.r),
-              gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [_primaryGreen, _emerald],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _primaryGreen.withOpacity(0.32),
-                  blurRadius: 22,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Center(
-              child: loading
-                  ? SizedBox(
-                      width: 22.w,
-                      height: 22.h,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.4,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            letterSpacing: 0.2,
-                          ),
+    final progress = canResend
+        ? 1.0
+        : 1.0 - (secondsLeft / initialSeconds).clamp(0.0, 1.0);
+
+    return GestureDetector(
+      onTap: (canResend && !isResending) ? onTap : null,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 30.w,
+            height: 30.h,
+            child: isResending
+                ? Padding(
+                    padding: EdgeInsets.all(6.w),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      color: _primaryGreen,
+                    ),
+                  )
+                : TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: progress),
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                    builder: (context, value, _) {
+                      return CustomPaint(
+                        painter: _RingProgressPainter(
+                          progress: value,
+                          trackColor: _otpIdleBorder,
+                          progressColor:
+                              canResend ? _primaryGreen : _gold,
                         ),
-                        SizedBox(width: 8.w),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 18.sp,
-                          color: Colors.white,
+                        child: canResend
+                            ? Icon(
+                                Icons.sms_rounded,
+                                size: 14.sp,
+                                color: _primaryGreen,
+                              )
+                            : null,
+                      );
+                    },
+                  ),
+          ),
+          SizedBox(width: 9.w),
+          canResend
+              ? Text(
+                  isResending ? 'Sending…' : 'Resend via SMS',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                    fontSize: 13.5.sp,
+                    fontWeight: FontWeight.w700,
+                    color: _primaryGreen,
+                  ),
+                )
+              : Text(
+                  'Resend in $timerLabel',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w700,
+                    color: _titleColor,
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RingProgressPainter extends CustomPainter {
+  final double progress;
+  final Color trackColor;
+  final Color progressColor;
+  _RingProgressPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = size.width / 2 - 2;
+    final track = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.4;
+    canvas.drawCircle(center, radius, track);
+
+    final arc = Paint()
+      ..color = progressColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * progress,
+      false,
+      arc,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _RingProgressPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.progressColor != progressColor;
+}
+
+// ── Gradient CTA button with a slow shimmer sweep + press feedback ────────────
+class _GradientButton extends StatefulWidget {
+  final String label;
+  final bool loading;
+  final bool enabled;
+  final VoidCallback onTap;
+  const _GradientButton({
+    required this.label,
+    required this.loading,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  State<_GradientButton> createState() => _GradientButtonState();
+}
+
+class _GradientButtonState extends State<_GradientButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2200),
+  )..repeat();
+  bool _pressed = false;
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final active = widget.enabled && !widget.loading;
+    return GestureDetector(
+      onTapDown: active ? (_) => setState(() => _pressed = true) : null,
+      onTapCancel: active ? () => setState(() => _pressed = false) : null,
+      onTapUp: active ? (_) => setState(() => _pressed = false) : null,
+      onTap: active ? widget.onTap : null,
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        child: AnimatedOpacity(
+          opacity: active ? 1.0 : 0.55,
+          duration: const Duration(milliseconds: 200),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56.h,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.r),
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [_deepEmerald, _primaryGreen, _emerald],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _primaryGreen.withOpacity(0.32),
+                          blurRadius: 22,
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
+                  ),
+                  if (active)
+                    AnimatedBuilder(
+                      animation: _shimmerController,
+                      builder: (context, _) {
+                        return Positioned.fill(
+                          child: Align(
+                            alignment: Alignment(
+                              -3 + 6 * _shimmerController.value,
+                              0,
+                            ),
+                            child: Transform.rotate(
+                              angle: 0.5,
+                              child: Container(
+                                width: 46.w,
+                                color: Colors.transparent,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withOpacity(0),
+                                        Colors.white.withOpacity(0.22),
+                                        Colors.white.withOpacity(0),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  Center(
+                    child: widget.loading
+                        ? SizedBox(
+                            width: 22.w,
+                            height: 22.h,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2.4,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.label,
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 18.sp,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -732,8 +1094,12 @@ class _TrustFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.verified_user_rounded, size: 14.sp, color: _primaryGreen),
+        Padding(
+          padding: EdgeInsets.only(top: 2.h),
+          child: Icon(Icons.verified_user_rounded, size: 14.sp, color: _gold),
+        ),
         SizedBox(width: 6.w),
         Flexible(
           child: Text(
@@ -759,6 +1125,7 @@ class _OtpBox extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onBackspace;
   final bool hasError;
+  final bool hasValue;
 
   const _OtpBox({
     required this.controller,
@@ -766,15 +1133,13 @@ class _OtpBox extends StatelessWidget {
     required this.onChanged,
     required this.onBackspace,
     this.hasError = false,
+    this.hasValue = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final boxWidth = (MediaQuery.of(context).size.width - 48 - 40 - 40) / 6;
-
     return SizedBox(
-      width: boxWidth,
-      height: boxWidth * 1.2,
+      height: 62.h,
       child: KeyboardListener(
         focusNode: FocusNode(skipTraversal: true),
         onKeyEvent: (event) {
@@ -788,20 +1153,62 @@ class _OtpBox extends StatelessWidget {
           animation: focusNode,
           builder: (context, child) {
             final isFocused = focusNode.hasFocus;
-            return Container(
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
               decoration: BoxDecoration(
+                color: _otpFill,
                 borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(
+                  color: hasError
+                      ? _errorRed.withOpacity(0.5)
+                      : (isFocused ? _otpFocusGold : _otpIdleBorder),
+                  width: isFocused ? 1.6.r : 1.2.r,
+                ),
                 boxShadow: isFocused
                     ? [
                         BoxShadow(
-                          color: _otpFocusBorder.withOpacity(0.18),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          color: _otpFocusGold.withOpacity(0.22),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
                         ),
                       ]
-                    : [],
+                    : hasValue
+                        ? [
+                            BoxShadow(
+                              color: _primaryGreen.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
+                        : [],
               ),
-              child: child,
+              child: Stack(
+                children: [
+                  child!,
+                  // ── Gold accent bar: filled state indicator ─────────────
+                  Positioned(
+                    left: 10.w,
+                    right: 10.w,
+                    bottom: 7.h,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: 2.6.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.r),
+                        gradient: LinearGradient(
+                          colors: hasValue
+                              ? [_primaryGreen, _gold]
+                              : [
+                                  _otpIdleBorder.withOpacity(0.6),
+                                  _otpIdleBorder.withOpacity(0.6),
+                                ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             );
           },
           child: TextField(
@@ -809,38 +1216,23 @@ class _OtpBox extends StatelessWidget {
             focusNode: focusNode,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
             maxLength: 1,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             style: TextStyle(
               fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 20.sp,
+              fontSize: 22.sp,
               fontWeight: FontWeight.w700,
               color: _otpText,
             ),
             onChanged: onChanged,
             decoration: InputDecoration(
               counterText: '',
-              filled: true,
-              fillColor: _otpFill,
-              contentPadding: EdgeInsets.zero,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14.r),
-                borderSide: BorderSide(
-                  color: hasError ? _errorRed.withOpacity(0.5) : _otpIdleBorder,
-                  width: 1.4.r,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14.r),
-                borderSide: BorderSide(
-                  color: hasError ? _errorRed.withOpacity(0.5) : _otpIdleBorder,
-                  width: 1.4.r,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14.r),
-                borderSide: BorderSide(color: _otpFocusBorder, width: 2.r),
-              ),
+              filled: false,
+              contentPadding: EdgeInsets.only(bottom: 6.h),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
             ),
           ),
         ),

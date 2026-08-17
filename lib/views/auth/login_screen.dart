@@ -15,7 +15,8 @@ import '../../services/api_service.dart';
 import '../../services/biometric_auth_service.dart';
 import '../../services/push_notification_service.dart';
 import '../../viewmodels/auth/login_viewmodel.dart';
-import 'forgot_password_screen.dart';
+import '../../viewmodels/auth/forgot_password_viewmodel.dart';
+import 'reset_otp_screen.dart';
 import 'login_two_factor_screen.dart';
 import '../../utils/responsive.dart';
 
@@ -57,6 +58,9 @@ class _LoginContentState extends State<_LoginContent> {
   final _identifierCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
+
+  // ── Forgot password (identifier pre-check) ──────────────────────────────
+  bool _isCheckingForgotPassword = false;
 
   // ── Biometrics ────────────────────────────────────────────────────────────
   bool _biometricAvailable = false;
@@ -143,12 +147,49 @@ class _LoginContentState extends State<_LoginContent> {
   }
 
   // ── Forgot password handler ───────────────────────────────────────────────
-  void _handleForgotPassword() {
+  // The user must type their registered email/mobile into the identifier
+  // field above *before* tapping "Forgot Password?". We reuse the exact same
+  // format validation as login, then hand off to the existing
+  // ForgotPasswordViewModel.sendOtp — unchanged — which validates the
+  // identifier against the backend and issues the reset OTP. Only a
+  // successful backend response advances to the (also unchanged) OTP screen.
+  Future<void> _handleForgotPassword() async {
+    if (_isCheckingForgotPassword) return;
+
+    FocusScope.of(context).unfocus();
+    final loginVm = context.read<LoginViewModel>();
     final id = _identifierCtrl.text.trim();
+
+    final validationError = loginVm.checkIdentifierForPasswordReset(id);
+    if (validationError != null) {
+      HapticFeedback.selectionClick();
+      return;
+    }
+
+    setState(() => _isCheckingForgotPassword = true);
+    final forgotVm = ForgotPasswordViewModel();
+    final success = await forgotVm.sendOtp(id);
+
+    if (!mounted) return;
+    setState(() => _isCheckingForgotPassword = false);
+
+    if (!success) {
+      HapticFeedback.selectionClick();
+      loginVm.setIdentifierError(
+        forgotVm.errorMessage ??
+            'We could not verify that email or mobile number.',
+      );
+      return;
+    }
+
+    HapticFeedback.lightImpact();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ForgotPasswordScreen(prefillIdentifier: id),
+        builder: (_) => ChangeNotifierProvider.value(
+          value: forgotVm,
+          child: const ResetOtpScreen(),
+        ),
       ),
     );
   }
@@ -352,14 +393,63 @@ class _LoginContentState extends State<_LoginContent> {
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: _handleForgotPassword,
-                                        child: Text(
-                                          'Forgot Password?',
-                                          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                            fontSize: 12.5.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: _forgotColor,
+                                        onTap: _isCheckingForgotPassword
+                                            ? null
+                                            : _handleForgotPassword,
+                                        child: AnimatedSwitcher(
+                                          duration: const Duration(
+                                            milliseconds: 200,
                                           ),
+                                          transitionBuilder: (child, anim) =>
+                                              FadeTransition(
+                                            opacity: anim,
+                                            child: child,
+                                          ),
+                                          child: _isCheckingForgotPassword
+                                              ? Row(
+                                                  key: const ValueKey(
+                                                    'checking',
+                                                  ),
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 12.w,
+                                                      height: 12.h,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: 1.8,
+                                                        color: _forgotColor,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 6.w),
+                                                    Text(
+                                                      'Checking…',
+                                                      style: TextStyle(
+                                                        fontFamily: AppFonts
+                                                            .primary,
+                                                        fontFamilyFallback:
+                                                            AppFonts
+                                                                .fallbacks,
+                                                        fontSize: 12.5.sp,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: _forgotColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(
+                                                  'Forgot Password?',
+                                                  key: const ValueKey(
+                                                    'label',
+                                                  ),
+                                                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                                    fontSize: 12.5.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: _forgotColor,
+                                                  ),
+                                                ),
                                         ),
                                       ),
                                     ],

@@ -8,7 +8,6 @@ import '../../models/withdrawal/withdrawal_models.dart';
 import '../../viewmodels/withdrawal/withdrawal_viewmodel.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
 import '../../services/pin_lockout_service.dart';
-import '../profile/security_settings_view.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/animations/animations.dart';
 
@@ -98,74 +97,25 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
       return;
     }
 
-    // A withdrawal PIN must be set in Security Settings before any request
-    // can go through.
-    final hasWithdrawalPin = await SecurityViewModel.isWithdrawalPinSet();
-    if (!mounted) return;
-    if (!hasWithdrawalPin) {
-      _promptSetWithdrawalPin();
-      return;
-    }
-
-    // Ask for the withdrawal PIN; only proceed once it's verified correct.
-    final verified = await _showWithdrawalPinSheet();
+    // Confirm the request with the account's existing Login PIN; only
+    // proceed once it's verified correct. (Login PIN is set up during
+    // onboarding, so every account is guaranteed to have one.)
+    final verified = await _showLoginPinSheet();
     if (!mounted || verified != true) return;
 
     await vm.submitWithdrawal();
     // On success, call ProfileViewModel.fetchUserInfo() here to refresh balances
   }
 
-  // Shown when no withdrawal PIN has been set up yet — sends the user to
-  // Security Settings to set one before they can submit a request.
-  void _promptSetWithdrawalPin() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-        title: Text(
-          'Set a Withdrawal PIN',
-          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 17.sp, fontWeight: FontWeight.w700, color: _titleDark),
-        ),
-        content: Text(
-          'For your security, you need to set a 4-digit withdrawal PIN '
-          'before submitting a withdrawal request.',
-          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 14.sp, fontWeight: FontWeight.w400, color: _subtitleGrey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                    fontWeight: FontWeight.w600, color: _subtitleGrey)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SecuritySettingsView()),
-              );
-            },
-            child: Text('Set PIN Now',
-                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                    fontWeight: FontWeight.w700, color: _brandGreen)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Shows the withdrawal-PIN entry sheet and returns true only once the
-  // entered PIN has been verified as correct.
-  Future<bool?> _showWithdrawalPinSheet() {
+  // Shows the Login-PIN entry sheet and returns true only once the entered
+  // PIN has been verified as correct.
+  Future<bool?> _showLoginPinSheet() {
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       isDismissible: true,
-      builder: (_) => const _WithdrawalPinEntrySheet(),
+      builder: (_) => const _LoginPinEntrySheet(),
     );
   }
 
@@ -1227,23 +1177,23 @@ class _Row extends StatelessWidget {
   }
 }
 
-// ── Withdrawal PIN entry sheet ─────────────────────────────────────────────
+// ── Login PIN entry sheet ────────────────────────────────────────────────
 // Shown right before a withdrawal request is submitted. Pops `true` once the
-// withdrawal PIN (set in Security Settings) is entered correctly, `false`/
-// null if the user backs out.
-class _WithdrawalPinEntrySheet extends StatefulWidget {
-  const _WithdrawalPinEntrySheet();
+// account's Login PIN (the same PIN used to unlock the app) is entered
+// correctly, `false`/null if the user backs out.
+class _LoginPinEntrySheet extends StatefulWidget {
+  const _LoginPinEntrySheet();
 
   @override
-  State<_WithdrawalPinEntrySheet> createState() =>
-      _WithdrawalPinEntrySheetState();
+  State<_LoginPinEntrySheet> createState() =>
+      _LoginPinEntrySheetState();
 }
 
-class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
+class _LoginPinEntrySheetState extends State<_LoginPinEntrySheet> {
   static const int _pinLength = 4;
-  // Own lockout scope so a withdrawal-PIN lockout never blocks the app-lock
-  // login PIN (or vice versa) — see PinLockoutService.
-  static const String _lockScope = 'withdrawal';
+  // Own lockout scope so a failed-attempt lockout here never blocks the
+  // app-lock PIN screen itself (or vice versa) — see PinLockoutService.
+  static const String _lockScope = 'withdrawal_login_verify';
 
   final List<int> _pin = [];
   String? _error;
@@ -1334,7 +1284,7 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
     }
 
     setState(() => _verifying = true);
-    final ok = await SecurityViewModel.verifyWithdrawalPin(_pin.join());
+    final ok = await SecurityViewModel.verifyLoginPinForWithdrawal(_pin.join());
     if (!mounted) return;
 
     if (ok) {
@@ -1398,7 +1348,7 @@ class _WithdrawalPinEntrySheetState extends State<_WithdrawalPinEntrySheet> {
               ),
               SizedBox(height: 14.h),
               Text(
-                'Enter Withdrawal PIN',
+                'Enter Login PIN',
                 style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 18.sp, fontWeight: FontWeight.w800, color: _titleDark),
               ),
               SizedBox(height: 6.h),

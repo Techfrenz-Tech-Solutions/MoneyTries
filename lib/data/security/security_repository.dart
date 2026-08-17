@@ -182,11 +182,11 @@ class SecurityRepository {
     }
   }
 
-  // ── Account-level Login PIN / Withdrawal PIN / Biometric sync ───────────────
-  // These make Login PIN, Withdrawal PIN, and the Biometric Login preference
-  // properties of the account (backend), instead of purely per-device
-  // SharedPreferences. Any device can fetch what's already configured and
-  // any change made on one device is picked up by the others.
+  // ── Account-level Login PIN / Biometric sync ─────────────────────────────
+  // These make Login PIN and the Biometric Login preference properties of
+  // the account (backend), instead of purely per-device SharedPreferences.
+  // Any device can fetch what's already configured and any change made on
+  // one device is picked up by the others.
 
   Future<PinSyncStatus> getPinsStatus() async {
     try {
@@ -410,179 +410,121 @@ class SecurityRepository {
     }
   }
 
-  Future<String?> setWithdrawalPinRemote({
-    required String newPin,
-    String? currentPin,
-  }) async {
-    try {
-      final token = await _getToken();
-      if (token == null) return 'Session expired. Please log in again.';
+  // ── Login PIN → Forgot Login PIN (email OTP recovery) ───────────────────
+  // For a user already signed in (email/password) but locked out of the app
+  // because they forgot their Login PIN. A verified OTP opens the same
+  // backend "verified window" as verifyCurrentLoginPin above, so the
+  // existing updateLoginPin() call is reused as-is for the final "Set New
+  // PIN" step — no separate endpoint needed for that part.
 
-      final res = await sessionHttpClient
-          .post(
-            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal'),
-            headers: _authHeader(token),
-            body: jsonEncode({
-              'new_pin': newPin,
-              if (currentPin != null) 'current_pin': currentPin,
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      if (res.statusCode == 200 && body['success'] == true) {
-        return null;
-      }
-      return body['message']?.toString() ?? 'Failed to save withdrawal PIN.';
-    } on SocketException {
-      return 'No internet connection.';
-    } catch (_) {
-      return 'Something went wrong. Please try again.';
-    }
-  }
-
-  Future<bool> verifyWithdrawalPinRemote(String pin) async {
-    try {
-      final token = await _getToken();
-      if (token == null) return false;
-
-      final res = await sessionHttpClient
-          .post(
-            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/verify'),
-            headers: _authHeader(token),
-            body: jsonEncode({'pin': pin}),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      if (res.statusCode == 200 && body['success'] == true) {
-        return body['data']?['valid'] == true;
-      }
-      return false;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  // Step 1: verify the current Withdrawal PIN (server-side attempt counter,
-  // 5-attempt cap, 5-minute lockout — mirrors verifyCurrentLoginPin).
-  Future<PasswordChangeStatus> verifyCurrentWithdrawalPin(String currentPin) async {
+  /// Resumes lock/cooldown state if the user re-opens this flow after the
+  /// app was backgrounded or killed mid-lockout.
+  Future<ForgotLoginPinOtpResult> getForgotLoginPinStatus() async {
     try {
       final token = await _getToken();
       if (token == null) {
-        return const PasswordChangeStatus(
+        return const ForgotLoginPinOtpResult(
           success: false,
-          locked: false,
-          remainingSeconds: 0,
-          remainingAttempts: 5,
-          message: 'Session expired. Please log in again.',
-        );
-      }
-
-      final res = await sessionHttpClient
-          .post(
-            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/verify'),
-            headers: _authHeader(token),
-            body: jsonEncode({'current_pin': currentPin}),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      final success = res.statusCode == 200 && body['success'] == true;
-      final message = body['message']?.toString() ??
-          (success ? 'PIN verified' : 'Incorrect PIN');
-
-      return PasswordChangeStatus.fromJson(body, success: success, message: message);
-    } on SocketException {
-      return const PasswordChangeStatus(
-        success: false,
-        locked: false,
-        remainingSeconds: 0,
-        remainingAttempts: 5,
-        message: 'No internet connection.',
-      );
-    } catch (_) {
-      return const PasswordChangeStatus(
-        success: false,
-        locked: false,
-        remainingSeconds: 0,
-        remainingAttempts: 5,
-        message: 'Something went wrong. Please try again.',
-      );
-    }
-  }
-
-  // Resumes lock/attempt state if the user re-opens Change Withdrawal PIN
-  // after the app was backgrounded or killed mid-lockout.
-  Future<PasswordChangeStatus> getWithdrawalPinChangeStatus() async {
-    try {
-      final token = await _getToken();
-      if (token == null) {
-        return const PasswordChangeStatus(
-          success: false,
-          locked: false,
-          remainingSeconds: 0,
-          remainingAttempts: 5,
           message: 'Session expired. Please log in again.',
         );
       }
 
       final res = await sessionHttpClient
           .get(
-            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/status'),
+            Uri.parse('$_kBaseUrl/api/security/pin/login/forgot/status'),
             headers: _authHeader(token),
           )
           .timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       final success = res.statusCode == 200 && body['success'] == true;
-      return PasswordChangeStatus.fromJson(
+      return ForgotLoginPinOtpResult.fromJson(
         body,
         success: success,
         message: body['message']?.toString() ?? '',
       );
     } catch (_) {
-      return const PasswordChangeStatus(
-        success: true,
-        locked: false,
-        remainingSeconds: 0,
-        remainingAttempts: 5,
-        message: '',
-      );
+      return const ForgotLoginPinOtpResult(success: true, message: '');
     }
   }
 
-  // Step 2: set the new Withdrawal PIN. Only succeeds within the short
-  // window opened by a successful verifyCurrentWithdrawalPin call.
-  /// Returns null on success, error message on failure.
-  Future<String?> updateWithdrawalPin({
-    required String newPin,
-    required String confirmPin,
-  }) async {
+  /// Emails a 6-digit OTP to the account's registered address. Also powers
+  /// "Resend OTP" — the backend enforces a resend cooldown and a rolling
+  /// rate-limit window independently of this call.
+  Future<ForgotLoginPinOtpResult> sendForgotLoginPinOtp() async {
     try {
       final token = await _getToken();
-      if (token == null) return 'Session expired. Please log in again.';
+      if (token == null) {
+        return const ForgotLoginPinOtpResult(
+          success: false,
+          message: 'Session expired. Please log in again.',
+        );
+      }
 
       final res = await sessionHttpClient
           .post(
-            Uri.parse('$_kBaseUrl/api/security/pin/withdrawal/change/update'),
+            Uri.parse('$_kBaseUrl/api/security/pin/login/forgot/send-otp'),
             headers: _authHeader(token),
-            body: jsonEncode({
-              'new_pin': newPin,
-              'confirm_pin': confirmPin,
-            }),
           )
           .timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(res.body) as Map<String, dynamic>;
-      if (res.statusCode == 200 && body['success'] == true) {
-        return null;
-      }
-      return body['message']?.toString() ?? 'Failed to save Withdrawal PIN.';
+      final success = res.statusCode == 200 && body['success'] == true;
+      final message = body['message']?.toString() ??
+          (success ? 'OTP sent to your registered email address.' : 'Failed to send OTP.');
+
+      return ForgotLoginPinOtpResult.fromJson(body, success: success, message: message);
     } on SocketException {
-      return 'No internet connection.';
+      return const ForgotLoginPinOtpResult(
+        success: false,
+        message: 'No internet connection.',
+      );
     } catch (_) {
-      return 'Something went wrong. Please try again.';
+      return const ForgotLoginPinOtpResult(
+        success: false,
+        message: 'Something went wrong. Please try again.',
+      );
+    }
+  }
+
+  /// Verifies the OTP emailed by sendForgotLoginPinOtp(). On success, the
+  /// backend opens the same verified window used by the existing Change
+  /// Login PIN flow, so the caller should proceed straight to
+  /// updateLoginPin() for the "Set New PIN" / "Confirm New PIN" step.
+  Future<ForgotLoginPinOtpResult> verifyForgotLoginPinOtp(String otp) async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        return const ForgotLoginPinOtpResult(
+          success: false,
+          message: 'Session expired. Please log in again.',
+        );
+      }
+
+      final res = await sessionHttpClient
+          .post(
+            Uri.parse('$_kBaseUrl/api/security/pin/login/forgot/verify-otp'),
+            headers: _authHeader(token),
+            body: jsonEncode({'otp': otp}),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final success = res.statusCode == 200 && body['success'] == true;
+      final message = body['message']?.toString() ??
+          (success ? 'OTP verified successfully.' : 'Invalid OTP. Please try again.');
+
+      return ForgotLoginPinOtpResult.fromJson(body, success: success, message: message);
+    } on SocketException {
+      return const ForgotLoginPinOtpResult(
+        success: false,
+        message: 'No internet connection.',
+      );
+    } catch (_) {
+      return const ForgotLoginPinOtpResult(
+        success: false,
+        message: 'Something went wrong. Please try again.',
+      );
     }
   }
 

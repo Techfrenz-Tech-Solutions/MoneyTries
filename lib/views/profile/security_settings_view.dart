@@ -8,7 +8,6 @@ import '../../models/security/security_model.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
 import 'change_password_screen.dart';
 import 'change_login_pin_screen.dart';
-import 'change_withdrawal_pin_screen.dart';
 import '../../utils/responsive.dart';
 
 // -- Palette -------------------------------------------------------------------
@@ -148,18 +147,6 @@ class _SecuritySettingsBody extends StatelessWidget {
                       builder: (_) => const ChangeLoginPinScreen(),
                     ),
                   ),
-                ),
-                SizedBox(height: 12.h),
-                _actionTile(
-                  context: context,
-                  icon: Icons.password_rounded,
-                  title: vm.hasWithdrawalPin
-                      ? 'Withdrawal PIN'
-                      : 'Set Withdrawal PIN',
-                  subtitle: vm.hasWithdrawalPin
-                      ? 'Update the PIN used to confirm withdrawals'
-                      : 'Required to confirm withdrawal requests',
-                  onTap: () => _openWithdrawalPinSheet(context),
                 ),
                 SizedBox(height: 12.h),
                 _biometricTile(context, vm),
@@ -425,34 +412,6 @@ class _SecuritySettingsBody extends StatelessWidget {
   // BOTTOM SHEETS
   // --------------------------------------------------------------------------
 
-  // -- Withdrawal PIN ----------------------------------------------------
-  // If a Withdrawal PIN already exists, use the dedicated Change Withdrawal
-  // PIN flow (server-enforced current-PIN verification with a 5-attempt
-  // cap and 5-minute lockout). If none is set yet, there's no "current
-  // PIN" to verify, so first-time setup stays on the simpler bottom sheet.
-  void _openWithdrawalPinSheet(BuildContext context) {
-    final vm = context.read<SecurityViewModel>();
-    if (vm.hasWithdrawalPin) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const ChangeWithdrawalPinScreen(),
-        ),
-      );
-      return;
-    }
-    vm.resetWithdrawalPinFlow();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: vm,
-        child: const _WithdrawalPinSheet(),
-      ),
-    );
-  }
-
   // -- 2FA enable sheet ------------------------------------------------------
   void _open2faSheet(BuildContext context) {
     final vm = context.read<SecurityViewModel>()..reset2faState();
@@ -533,124 +492,6 @@ class _SecuritySettingsBody extends StatelessWidget {
       builder: (_) => ChangeNotifierProvider.value(
         value: vm,
         child: const _ManageDevicesSheet(),
-      ),
-    );
-  }
-}
-
-// ------------------------------------------------------------------------------
-// WITHDRAWAL PIN SHEET
-// ------------------------------------------------------------------------------
-class _WithdrawalPinSheet extends StatelessWidget {
-  const _WithdrawalPinSheet();
-
-  @override
-  Widget build(BuildContext context) {
-    final vm = context.watch<SecurityViewModel>();
-
-    // Auto-close when done
-    if (vm.withdrawalPinChanged) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Navigator.canPop(context)) Navigator.pop(context);
-      });
-    }
-
-    return _SheetWrapper(
-      height: 0.88.h,
-      child: Column(
-        children: [
-          _SheetHandle(),
-          SizedBox(height: 20.h),
-          // Step indicator
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(vm.withdrawalPinTotalSteps, (i) {
-              final done = i < vm.withdrawalPinStep;
-              final active = i == vm.withdrawalPinStep;
-              return Container(
-                width: active ? 24 : 8,
-                height: 8.h,
-                margin: EdgeInsets.symmetric(horizontal: 3.w),
-                decoration: BoxDecoration(
-                  color: done || active ? _brandGreen : _dotEmpty,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              );
-            }),
-          ),
-          SizedBox(height: 20.h),
-          // Lock icon
-          Container(
-            width: 64.w,
-            height: 64.h,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: _iconBg,
-            ),
-            child: Icon(
-              Icons.password_rounded,
-              size: 30.sp,
-              color: _brandGreen,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            vm.withdrawalPinTitle,
-            style: TextStyle(
-              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w800,
-              color: _titleDark,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 28.w),
-            child: Text(
-              vm.withdrawalPinSubtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 13.5.sp,
-                fontWeight: FontWeight.w400,
-                color: _subtitleGrey,
-                height: 1.5,
-              ),
-            ),
-          ),
-          SizedBox(height: 28.h),
-          // PIN dots
-          _PinDots(
-            length: SecurityViewModel.pinLength,
-            filled: vm.activeWithdrawalPinEntry.length,
-          ),
-          if (vm.withdrawalPinError != null) ...[
-            SizedBox(height: 10.h),
-            Text(
-              vm.withdrawalPinError!,
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 12.5.sp,
-                fontWeight: FontWeight.w600,
-                color: _errorRed,
-              ),
-            ),
-          ],
-          const Spacer(),
-          // Numpad
-          _NumPad(
-            onKey: vm.withdrawalPinKeyPress,
-            onDelete: vm.withdrawalPinDelete,
-            onConfirm: vm.action == SecurityAction.loading
-                ? null
-                : () => vm.withdrawalPinConfirm(),
-            confirmLabel: vm.withdrawalPinStep == vm.withdrawalPinTotalSteps - 1
-                ? 'Confirm'
-                : 'Next',
-            isLoading: vm.action == SecurityAction.loading,
-          ),
-          SizedBox(height: 20.h),
-        ],
       ),
     );
   }

@@ -70,6 +70,22 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  /// Validates the identifier field for the "Forgot Password" action and
+  /// surfaces the same inline error slot used during login — without
+  /// triggering a login attempt. Returns the validation error, if any.
+  String? checkIdentifierForPasswordReset(String identifier) {
+    _identifierError = validateIdentifier(identifier);
+    notifyListeners();
+    return _identifierError;
+  }
+
+  /// Surfaces a backend-returned message (e.g. "No account found with this
+  /// email or mobile number") in the same inline identifier error slot.
+  void setIdentifierError(String message) {
+    _identifierError = message;
+    notifyListeners();
+  }
+
   void clearPasswordError() {
     if (_passwordError != null) {
       _passwordError = null;

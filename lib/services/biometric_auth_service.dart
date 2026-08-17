@@ -8,8 +8,8 @@
 // Two separate concerns live here:
 //   1. Per-account "is biometric login turned on" flag, namespaced by
 //      userId (`security_biometrics_enabled_<userId>`) — mirrors the
-//      existing `app_pin_<userId>` / `withdrawal_pin_<userId>` pattern so
-//      each account on a shared device has its own independent setting.
+//      existing `app_pin_<userId>` pattern so each account on a shared
+//      device has its own independent setting.
 //   2. A single device-level "remembered session" (userId + auth token +
 //      display label) for whichever account most recently turned biometrics
 //      on. This is what lets the full login screen offer a real "Quick
