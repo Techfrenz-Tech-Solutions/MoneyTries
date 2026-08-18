@@ -22,11 +22,16 @@ DateTime addCalendarMonths(DateTime start, int months) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-enum PlanType { threeMonth, sixMonth, twelveMonth }
+enum PlanType { prePlan, threeMonth, sixMonth, twelveMonth }
 
 extension PlanTypeExt on PlanType {
+  /// Fixed-tenure plans are month-based; Pre Plan is day-based (user picks
+  /// 3–80 days at enrollment), so this returns 0 for it. Use [durationDays]
+  /// (and, for a real enrolled Pre Plan, [ActivePlan.totalPlanDays]) instead.
   int get months {
     switch (this) {
+      case PlanType.prePlan:
+        return 0;
       case PlanType.threeMonth:
         return 3;
       case PlanType.sixMonth:
@@ -36,19 +41,26 @@ extension PlanTypeExt on PlanType {
     }
   }
 
+  // Daily ROI rates. Must always match the backend's ROI_RATES
+  // (controllers/planController.js, historyController.js) and
+  // PLAN_ROI_LABEL (controllers/dashboardController.js).
   double get dailyRoiPercent {
     switch (this) {
+      case PlanType.prePlan:
+        return 0.20;
       case PlanType.threeMonth:
         return 0.30;
       case PlanType.sixMonth:
-        return 0.35;
+        return 0.40;
       case PlanType.twelveMonth:
-        return 0.45;
+        return 0.50;
     }
   }
 
   String get displayName {
     switch (this) {
+      case PlanType.prePlan:
+        return 'Pre Plan';
       case PlanType.threeMonth:
         return '3 Month Plan';
       case PlanType.sixMonth:
@@ -64,8 +76,16 @@ extension PlanTypeExt on PlanType {
   /// These are FIXED day counts, not calendar-month arithmetic — used for
   /// all "days left" / progress calculations so a 3-month plan is always
   /// exactly 90 days, regardless of which calendar months it spans.
+  ///
+  /// Pre Plan has NO fixed duration — the user chooses 3–80 days at
+  /// enrollment time. This getter returns a fallback (used only if no
+  /// instance-specific duration is available); the real, user-chosen value
+  /// always flows separately through the comparison/enrollment args and
+  /// [ActivePlan.customDurationDays] / [ActivePlan.totalPlanDays].
   int get durationDays {
     switch (this) {
+      case PlanType.prePlan:
+        return 30;
       case PlanType.threeMonth:
         return 90;
       case PlanType.sixMonth:
@@ -77,6 +97,8 @@ extension PlanTypeExt on PlanType {
 
   String get apiKey {
     switch (this) {
+      case PlanType.prePlan:
+        return 'pre_plan';
       case PlanType.threeMonth:
         return '3_month';
       case PlanType.sixMonth:
@@ -97,6 +119,22 @@ extension PlanTypeExt on PlanType {
       default:
         return PlanType.sixMonth;
     }
+  }
+
+  /// Robust reverse mapping from whatever the backend / route args send —
+  /// handles the existing numeric-month values ('3','6','12', 3, 6, 12) as
+  /// well as the forward-looking 'pre_plan' / 'pre' plan-type key so a real
+  /// active Pre Plan (once the backend supports it) still resolves
+  /// correctly instead of silently falling back to the 6-month plan.
+  static PlanType fromApiValue(dynamic raw) {
+    final s = raw?.toString().toLowerCase().trim() ?? '';
+    if (s == 'pre_plan' || s == 'pre' || s == 'preplan') return PlanType.prePlan;
+    final asInt = int.tryParse(s);
+    if (asInt != null) return fromMonths(asInt);
+    if (s.contains('3')) return PlanType.threeMonth;
+    if (s.contains('12')) return PlanType.twelveMonth;
+    if (s.contains('6')) return PlanType.sixMonth;
+    return PlanType.sixMonth;
   }
 }
 
@@ -280,6 +318,12 @@ class ActivePlan {
   final double? principalCreditedAmount;
   final DateTime? principalCreditedAt;
 
+  /// Only set (and only meaningful) for [PlanType.prePlan], where duration
+  /// is chosen by the user (3–80 days) at enrollment rather than fixed by
+  /// the plan type. Null for every other plan type — use [planType]'s own
+  /// [PlanTypeExt.durationDays] for those.
+  final int? customDurationDays;
+
   const ActivePlan({
     required this.id,
     required this.planType,
@@ -297,6 +341,7 @@ class ActivePlan {
     this.dailyRoiCredits = const [],
     this.principalCreditedAmount,
     this.principalCreditedAt,
+    this.customDurationDays,
   });
 
   /// True once the locked principal has actually been credited back to the
@@ -342,7 +387,9 @@ class ActivePlan {
 
   /// Total fixed plan days: 3M = 90 days, 6M = 180 days, 12M = 360 days.
   /// Fixed day counts, never derived from calendar-month differences.
-  int get totalPlanDays => planType.durationDays;
+  /// For Pre Plan, uses the user-chosen [customDurationDays] instead, since
+  /// that plan type has no fixed duration.
+  int get totalPlanDays => customDurationDays ?? planType.durationDays;
 
   /// Days elapsed since the stored start date, NOT inclusive of "today".
   /// Both dates are stripped to midnight (time component removed) before
@@ -518,10 +565,20 @@ class ActivePlan {
   // ── fromJson ───────────────────────────────────────────────────────────────
   factory ActivePlan.fromJson(Map<String, dynamic> json) {
     final rawInstalments = json['instalments'] as List<dynamic>? ?? [];
-    final planType = PlanTypeExt.fromMonths(
-      int.tryParse(json['plan_type']?.toString() ?? '6') ??
-          (json['months'] as int? ?? 6),
-    );
+    // Prefer the raw plan_type string (handles the forward-looking
+    // 'pre_plan' key once the backend supports it); falls back to the
+    // existing numeric-month resolution for 3/6/12 month plans.
+    final planType = json['plan_type'] != null
+        ? PlanTypeExt.fromApiValue(json['plan_type'])
+        : PlanTypeExt.fromMonths(json['months'] as int? ?? 6);
+    final customDurationDays = planType == PlanType.prePlan
+        ? (int.tryParse(
+                (json['duration_days'] ?? json['plan_duration_days'])
+                        ?.toString() ??
+                    '',
+              ) ??
+              int.tryParse(json['months']?.toString() ?? ''))
+        : null;
 
     // Parse instalments first so we can use them to determine the true start date
     final parsedInstalments = rawInstalments
@@ -575,11 +632,16 @@ class ActivePlan {
     // calendar-month rule only for legacy responses without maturity_date.
     final maturityDate =
         parseServerDateTime(json['maturity_date']) ??
-        addCalendarMonths(startDate, planType.months);
+        (planType == PlanType.prePlan
+            ? startDate.add(
+                Duration(days: customDurationDays ?? planType.durationDays),
+              )
+            : addCalendarMonths(startDate, planType.months));
 
     return ActivePlan(
       id: json['id']?.toString() ?? '',
       planType: planType,
+      customDurationDays: customDurationDays,
       monthlyAmount:
           int.tryParse(json['monthly_amount']?.toString() ?? '0') ?? 0,
       monthsPaid: int.tryParse(json['months_paid']?.toString() ?? '0') ?? 0,
@@ -628,17 +690,25 @@ class ActivePlan {
     List<DailyRoiCredit>? dailyRoiCredits,
     double? principalCreditedAmount,
     DateTime? principalCreditedAt,
+    int? customDurationDays,
   }) {
     final newStart = startDate ?? this.startDate;
     final newPlanType = planType ?? this.planType;
+    final newCustomDurationDays = customDurationDays ?? this.customDurationDays;
     return ActivePlan(
       id: id ?? this.id,
       planType: newPlanType,
       monthlyAmount: monthlyAmount ?? this.monthlyAmount,
       monthsPaid: monthsPaid ?? this.monthsPaid,
       startDate: newStart,
-      maturityDate:
-          maturityDate ?? addCalendarMonths(newStart, newPlanType.months),
+      maturityDate: maturityDate ??
+          (newPlanType == PlanType.prePlan
+              ? newStart.add(
+                  Duration(
+                    days: newCustomDurationDays ?? newPlanType.durationDays,
+                  ),
+                )
+              : addCalendarMonths(newStart, newPlanType.months)),
       lastPaymentDate: lastPaymentDate ?? this.lastPaymentDate,
       accruedRoi: accruedRoi ?? this.accruedRoi,
       withdrawnRoi: withdrawnRoi ?? this.withdrawnRoi,
@@ -650,6 +720,7 @@ class ActivePlan {
       principalCreditedAmount:
           principalCreditedAmount ?? this.principalCreditedAmount,
       principalCreditedAt: principalCreditedAt ?? this.principalCreditedAt,
+      customDurationDays: newCustomDurationDays,
     );
   }
 }

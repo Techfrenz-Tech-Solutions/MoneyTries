@@ -63,6 +63,10 @@ class PlanRepository {
     required int monthlyAmount,
     required String utrId,
     required String proofImageUrl,
+    // Only relevant for PlanType.prePlan (3–80 user-chosen days). Sent as
+    // 'duration_days' for a forward-looking backend that adds Pre Plan
+    // support; harmless/ignored by the current 3/6/12-month-only backend.
+    int? durationDays,
   }) async {
     try {
       final uri = Uri.parse('$_kBaseUrl/api/plans/enroll');
@@ -71,10 +75,17 @@ class PlanRepository {
             uri,
             headers: await _headers(),
             body: jsonEncode({
-              'plan_type': planType.months,
+              // planType.apiKey ('3_month' / '6_month' / '12_month' /
+              // 'pre_plan') is accepted by the existing backend's
+              // normalisePlanType() just as well as the old numeric-months
+              // value, and is required for 'pre_plan' since that has no
+              // month count.
+              'plan_type': planType.apiKey,
               'monthly_amount': monthlyAmount,
               'utr_id': utrId,
               'proof_image': proofImageUrl,
+              if (planType == PlanType.prePlan && durationDays != null)
+                'duration_days': durationDays,
             }),
           )
           .timeout(const Duration(seconds: 15));

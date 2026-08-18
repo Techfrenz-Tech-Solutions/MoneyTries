@@ -9,6 +9,13 @@ import '../../models/withdrawal/withdrawal_models.dart';
 import '../../models/plan/plan_models.dart';
 import '../../models/referral/referral_model.dart';
 
+/// Short plan label for history subtitles — 'XM Plan' for the fixed 3/6/12
+/// month tiers, or the actual day count for Pre Plan (which has no month
+/// count of its own).
+String _planLabel(ActivePlan plan) => plan.planType == PlanType.prePlan
+    ? '${plan.totalPlanDays}-Day Plan'
+    : '${plan.planType.months}M Plan';
+
 // ── Unified transaction item ──────────────────────────────────────────────────
 enum TxnType { deposit, withdrawal, roi, referral, wallet }
 
@@ -218,11 +225,11 @@ class HistoryViewModel extends ChangeNotifier {
             type:     TxnType.roi,
             title:    'Daily ROI Credit',
             subtitle: credit.creditDate != null
-                ? '${plan.planType.months}M Plan • '
+                ? '${_planLabel(plan)} • '
                     '${credit.creditDate!.day.toString().padLeft(2, '0')}/'
                     '${credit.creditDate!.month.toString().padLeft(2, '0')}/'
                     '${credit.creditDate!.year}'
-                : '${plan.planType.months}M Plan',
+                : _planLabel(plan),
             amount:   credit.amount,
             isCredit: true,
             status:   'approved',
@@ -246,7 +253,7 @@ class HistoryViewModel extends ChangeNotifier {
             id:       id,
             type:     TxnType.roi,
             title:    'ROI Withdrawn',
-            subtitle: '${plan.planType.months}M Plan • To Wallet',
+            subtitle: '${_planLabel(plan)} • To Wallet',
             amount:   wd.amount,
             isCredit: false,
             status:   'approved',
@@ -265,7 +272,7 @@ class HistoryViewModel extends ChangeNotifier {
             id:       'principal_${plan.id}',
             type:     TxnType.roi,
             title:    'Principal Credited',
-            subtitle: '${plan.planType.months}M Plan • Matured — To Wallet',
+            subtitle: '${_planLabel(plan)} • Matured — To Wallet',
             amount:   plan.principalCreditedAmount ?? plan.monthlyAmount.toDouble(),
             isCredit: true,
             status:   'approved',

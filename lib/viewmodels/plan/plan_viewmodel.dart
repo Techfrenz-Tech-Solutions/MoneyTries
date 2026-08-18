@@ -108,6 +108,7 @@ class PlanViewModel extends ChangeNotifier {
     required int monthlyAmount,
     required String utrId,
     required String proofImageUrl,
+    int? durationDays,
   }) async {
     if (monthlyAmount < AppConstants.minPlanAmount) {
       enrollError = AppConstants.minPlanAmountMessage;
@@ -133,6 +134,7 @@ class PlanViewModel extends ChangeNotifier {
         monthlyAmount: monthlyAmount,
         utrId: utrId,
         proofImageUrl: proofImageUrl,
+        durationDays: durationDays,
       );
       plans.add(enrolledPlan!);
       _recomputePlanAmountLocally();

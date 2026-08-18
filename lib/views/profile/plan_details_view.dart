@@ -970,7 +970,9 @@ class _PlanCardState extends State<_PlanCard> {
               ),
               SizedBox(height: 3.h),
               Text(
-                '${p.planType.dailyRoiPercent.toStringAsFixed(2)}% daily ROI  •  ${p.planType.months} months',
+                p.planType == PlanType.prePlan
+                    ? '${p.planType.dailyRoiPercent.toStringAsFixed(2)}% daily ROI  •  ${p.totalPlanDays} days'
+                    : '${p.planType.dailyRoiPercent.toStringAsFixed(2)}% daily ROI  •  ${p.planType.months} months',
                 style: TextStyle(
                   fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 11.5.sp,
