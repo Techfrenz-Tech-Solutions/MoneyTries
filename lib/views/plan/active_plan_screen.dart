@@ -479,16 +479,22 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _summaryGreen('Invested', '₹ ${_inr(_plan.totalCommitment)}'),
-              _vDiv(),
-              _summaryGreen(
-                'Payment Status',
-                _plan.monthsPaid > 0 ? 'Paid' : 'Under Review',
+              Expanded(
+                child: _summaryGreen('Invested', '₹ ${_inr(_plan.totalCommitment)}'),
               ),
               _vDiv(),
-              _summaryGreen(
-                'Locked Until Maturity',
-                '₹ ${_inr(_plan.paidAmount)}',
+              Expanded(
+                child: _summaryGreen(
+                  'Payment Status',
+                  _plan.monthsPaid > 0 ? 'Paid' : 'Under Review',
+                ),
+              ),
+              _vDiv(),
+              Expanded(
+                child: _summaryGreen(
+                  'Locked Until Maturity',
+                  '₹ ${_inr(_plan.paidAmount)}',
+                ),
               ),
             ],
           ),
@@ -565,9 +571,13 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
   );
 
   Widget _summaryGreen(String label, String value) => Column(
+    mainAxisSize: MainAxisSize.min,
     children: [
       Text(
         label,
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 10.5.sp,
@@ -577,6 +587,9 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
       SizedBox(height: 4.h),
       Text(
         value,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
           fontSize: 14.sp,

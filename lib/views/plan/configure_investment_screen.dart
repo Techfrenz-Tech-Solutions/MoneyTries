@@ -87,9 +87,27 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       {};
 
   int get _months => (_args['months'] as int?) ?? 6;
-  String get _rate => (_args['rate'] as String?) ?? '0.35%';
+  String get _rate => (_args['rate'] as String?) ?? '0.40%';
   String get _planTitle => (_args['title'] as String?) ?? '6 Month Plan';
-  PlanType get _planType => PlanTypeExt.fromMonths(_months);
+
+  /// Prefers the explicit `planType` name passed from the comparison
+  /// screen (robust for Pre Plan, which has no month count) and falls back
+  /// to the original months-based resolution for backward compatibility.
+  PlanType get _planType {
+    final rawName = _args['planType'] as String?;
+    if (rawName != null) {
+      return PlanType.values.firstWhere(
+        (t) => t.name == rawName,
+        orElse: () => PlanTypeExt.fromMonths(_months),
+      );
+    }
+    return PlanTypeExt.fromMonths(_months);
+  }
+
+  bool get _isPrePlan => _planType == PlanType.prePlan;
+  /// Pre Plan's chosen duration in days (3–80), passed through from the
+  /// comparison screen. Only meaningful when [_isPrePlan] is true.
+  int get _days => (_args['days'] as int?) ?? PlanType.prePlan.durationDays;
 
   int get _amount => int.tryParse(_amountText.isEmpty ? '0' : _amountText) ?? 0;
   bool get _underMin => _amount > 0 && _amount < AppConstants.minPlanAmount;
@@ -156,6 +174,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       monthlyAmount: _amount,
       utrId: utr,
       proofImageUrl: proofUrl,
+      durationDays: _isPrePlan ? _days : null,
     );
     if (!mounted) return;
     setState(() => _uploading = false);
@@ -282,7 +301,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                   SizedBox(height: 4.h),
                   Center(
                     child: Text(
-                      '$_rate Daily ROI · $_months Months',
+                      _isPrePlan
+                          ? '$_rate Daily ROI · $_days Days'
+                          : '$_rate Daily ROI · $_months Months',
                       style: TextStyle(
                         fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                         fontSize: 13.sp,
@@ -515,7 +536,10 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               SizedBox(height: 12.h),
               _confirmRow('Daily ROI', _rate),
               SizedBox(height: 12.h),
-              _confirmRow('Duration', '$_months months'),
+              _confirmRow(
+                'Duration',
+                _isPrePlan ? '$_days days' : '$_months months',
+              ),
               SizedBox(height: 12.h),
               _confirmRow('Principal', 'Locked until maturity'),
               SizedBox(height: 24.h),

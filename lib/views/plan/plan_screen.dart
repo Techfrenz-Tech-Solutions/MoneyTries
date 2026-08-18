@@ -96,12 +96,28 @@ class _PlanScreenState extends State<PlanScreen> {
     if (!ctx.mounted) return;
 
     if (kycStatus == 'approved') {
+      // Pre Plan has no fixed duration — if it's still available (i.e. not
+      // already active/under review), ask for its 3–80 day duration up
+      // front so the comparison screen can show it alongside the fixed
+      // 3/6/12 month tiers. If Pre Plan is already active, it's in
+      // excludeTypes and this is skipped entirely.
+      int? prePlanDays;
+      if (!excludeTypes.contains(PlanType.prePlan)) {
+        prePlanDays = await _askPrePlanDuration(ctx);
+        if (prePlanDays == null) return; // user cancelled
+      }
+      if (!ctx.mounted) return;
+
+      final args = <String, dynamic>{
+        if (excludeTypes.isNotEmpty)
+          'excludeTypes': excludeTypes.map((t) => t.name).toList(),
+        if (prePlanDays != null) 'prePlanDays': prePlanDays,
+      };
+
       Navigator.pushNamed(
         ctx,
         AppRoutes.investmentAmount,
-        arguments: excludeTypes.isEmpty
-            ? null
-            : {'excludeTypes': excludeTypes.map((t) => t.name).toList()},
+        arguments: args.isEmpty ? null : args,
       );
       return;
     }
@@ -202,6 +218,138 @@ class _PlanScreenState extends State<PlanScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Prompts for Pre Plan's duration (3–80 days) before showing the plan
+  /// comparison. Returns the chosen day count, or null if the user
+  /// cancelled (in which case the caller should abort navigation).
+  Future<int?> _askPrePlanDuration(BuildContext ctx) async {
+    final controller = TextEditingController();
+    String? errorText;
+
+    return showDialog<int>(
+      context: ctx,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (dialogCtx, setDialogState) {
+            void submit() {
+              final days = int.tryParse(controller.text.trim());
+              if (days == null || days < 3 || days > 80) {
+                setDialogState(() {
+                  errorText = 'Enter a number of days between 3 and 80';
+                });
+                return;
+              }
+              Navigator.pop(dialogCtx, days);
+            }
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.timelapse_rounded,
+                    color: _brandGreen,
+                    size: 22.sp,
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      'Pre Plan Duration',
+                      style: TextStyle(
+                        fontFamily: AppFonts.primary,
+                        fontFamilyFallback: AppFonts.fallbacks,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF111827),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pre Plan is available — enter how many days you\'d like to run it for (3–80 days) to see it in the comparison.',
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary,
+                      fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 13.sp,
+                      color: const Color(0xFF6B7280),
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: 14.h),
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    // Digits only — blocks letters/symbols at the input
+                    // level (not just at submit-time validation), and caps
+                    // length at 2 digits since the max valid value is 80.
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
+                    onChanged: (_) {
+                      if (errorText != null) {
+                        setDialogState(() => errorText = null);
+                      }
+                    },
+                    onSubmitted: (_) => submit(),
+                    decoration: InputDecoration(
+                      hintText: 'e.g. 30',
+                      errorText: errorText,
+                      isDense: true,
+                      suffixText: 'days',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary,
+                      fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogCtx, null),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary,
+                      fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 13.sp,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: submit,
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary,
+                      fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: _brandGreen,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -548,8 +696,8 @@ class _PlanScreenState extends State<PlanScreen> {
   Widget _roiTierOverviewCard() {
     final tiers = [
       (label: '3 Month', rate: '0.30%', sub: 'Short term'),
-      (label: '6 Month', rate: '0.35%', sub: 'Mid term'),
-      (label: '12 Month', rate: '0.45%', sub: 'Wealth preservation'),
+      (label: '6 Month', rate: '0.40%', sub: 'Mid term'),
+      (label: '12 Month', rate: '0.50%', sub: 'Wealth preservation'),
     ];
     return Container(
       width: double.infinity,

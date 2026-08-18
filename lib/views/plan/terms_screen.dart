@@ -64,7 +64,7 @@ class _TermsScreenState extends State<TermsScreen> {
   Widget build(BuildContext context) {
     final args =
         (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
-        {'title': '6 Month Plan', 'rate': '0.35%', 'months': 6};
+        {'title': '6 Month Plan', 'rate': '0.40%', 'months': 6};
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,

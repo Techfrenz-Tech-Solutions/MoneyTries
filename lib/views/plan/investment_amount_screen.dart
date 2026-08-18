@@ -39,6 +39,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
   String _amountText = '';
   static const _maxDigits = 8;
   List<String> _excludeTypes = const [];
+  int? _prePlanDays;
   bool _argsRead = false;
 
   late final AnimationController _cursorCtrl;
@@ -53,6 +54,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
       if (raw is List) {
         _excludeTypes = raw.map((e) => e.toString()).toList();
       }
+      _prePlanDays = args?['prePlanDays'] as int?;
       _argsRead = true;
     }
   }
@@ -119,6 +121,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
       arguments: {
         'amount': _amount,
         if (_excludeTypes.isNotEmpty) 'excludeTypes': _excludeTypes,
+        if (_prePlanDays != null) 'prePlanDays': _prePlanDays,
       },
     );
   }
@@ -205,7 +208,7 @@ class _InvestmentAmountScreenState extends State<InvestmentAmountScreen>
                       Center(
                         child: Text(
                           _excludeTypes.isEmpty
-                              ? 'We\'ll compare all 3 plans against this amount'
+                              ? 'We\'ll compare all available plans against this amount'
                               : 'We\'ll compare your remaining available plans against this amount',
                           textAlign: TextAlign.center,
                           style: TextStyle(

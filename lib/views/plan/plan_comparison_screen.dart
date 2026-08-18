@@ -21,6 +21,9 @@ class _PlanComparison {
   final double dailyRoiAmount;
   final double estimatedTotalRoi;
   final double estimatedTotalReturn;
+  /// Resolved duration in days — the fixed 90/180/360 for 3/6/12 month
+  /// plans, or the user-entered value (3–80) for Pre Plan.
+  final int durationDays;
 
   const _PlanComparison({
     required this.planType,
@@ -29,6 +32,7 @@ class _PlanComparison {
     required this.dailyRoiAmount,
     required this.estimatedTotalRoi,
     required this.estimatedTotalReturn,
+    required this.durationDays,
   });
 }
 
@@ -64,9 +68,11 @@ class PlanComparisonScreen extends StatelessWidget {
     return investedAmount * dailyRoiRate * totalDays;
   }
 
-  _PlanComparison _computeFor(PlanType type, int amount) {
+  _PlanComparison _computeFor(PlanType type, int amount, {int? overrideDays}) {
     final dailyRoiRate = type.dailyRoiPercent / 100;
-    final totalDays = type.durationDays;
+    // Pre Plan has no fixed duration — use the days the user entered on the
+    // previous step (falls back to the type's default only if missing).
+    final totalDays = overrideDays ?? type.durationDays;
     // One-time investment: the total invested amount IS the amount entered
     // — never multiplied by the plan's duration in months.
     final totalInvestment = amount;
@@ -86,6 +92,7 @@ class PlanComparisonScreen extends StatelessWidget {
       dailyRoiAmount: dailyRoiAmount,
       estimatedTotalRoi: estimatedTotalRoi,
       estimatedTotalReturn: totalInvestment + estimatedTotalRoi,
+      durationDays: totalDays,
     );
   }
 
@@ -124,6 +131,11 @@ class PlanComparisonScreen extends StatelessWidget {
         'rate': c.planType.rateLabel,
         'months': c.planType.months,
         'amount': c.monthlyAmount,
+        // Carried through unchanged by the Terms screen; used by Configure
+        // to resolve the exact plan type (robust for Pre Plan, which has
+        // no month count) and, for Pre Plan, the chosen day duration.
+        'planType': c.planType.name,
+        if (c.planType == PlanType.prePlan) 'days': c.durationDays,
       },
     );
   }
@@ -134,6 +146,7 @@ class PlanComparisonScreen extends StatelessWidget {
         (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
         {};
     final amount = (args['amount'] as int?) ?? 0;
+    final prePlanDays = args['prePlanDays'] as int?;
     final rawExclude = args['excludeTypes'];
     final excludeNames = rawExclude is List
         ? rawExclude.map((e) => e.toString()).toSet()
@@ -144,7 +157,13 @@ class PlanComparisonScreen extends StatelessWidget {
         .toList();
 
     final comparisons = availableTypes
-        .map((t) => _computeFor(t, amount))
+        .map(
+          (t) => _computeFor(
+            t,
+            amount,
+            overrideDays: t == PlanType.prePlan ? prePlanDays : null,
+          ),
+        )
         .toList();
 
     // Prefer the mid-tier (6M) as "recommended" when it's available; fall
@@ -386,7 +405,7 @@ class PlanComparisonScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  '${c.planType.durationDays} days total',
+                  '${c.durationDays} days total',
                   style: TextStyle(
                     fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 12.5.sp,
@@ -468,7 +487,7 @@ class PlanComparisonScreen extends StatelessWidget {
       ('Investment Amount', '₹ ${_inr(c.monthlyAmount)}'),
       ('Est. Total ROI', '₹ ${_inr(c.estimatedTotalRoi)}'),
       ('Est. Total Return', '₹ ${_inr(c.estimatedTotalReturn)}'),
-      ('Total Days', '${c.planType.durationDays} days'),
+      ('Total Days', '${c.durationDays} days'),
     ];
 
     return LayoutBuilder(
