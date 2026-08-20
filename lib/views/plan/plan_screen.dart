@@ -603,6 +603,8 @@ class _PlanScreenState extends State<PlanScreen> {
       SizedBox(height: 16.h),
       _roiTierOverviewCard(),
       SizedBox(height: 16.h),
+      _prePlanSpotlightCard(),
+      SizedBox(height: 16.h),
       _infoSectionCard(
         title: 'How it works',
         icon: Icons.timeline_rounded,
@@ -695,6 +697,7 @@ class _PlanScreenState extends State<PlanScreen> {
 
   Widget _roiTierOverviewCard() {
     final tiers = [
+      (label: 'Pre Plan', rate: '0.20%', sub: '3–80 days'),
       (label: '3 Month', rate: '0.30%', sub: 'Short term'),
       (label: '6 Month', rate: '0.40%', sub: 'Mid term'),
       (label: '12 Month', rate: '0.50%', sub: 'Wealth preservation'),
@@ -732,55 +735,105 @@ class _PlanScreenState extends State<PlanScreen> {
             ],
           ),
           SizedBox(height: 16.h),
+          // 2x2 responsive grid — keeps all four tiers (Pre Plan, 3/6/12
+          // Month) legible on narrow phones without overflowing, while
+          // still reading cleanly on tablets/wide screens.
           Row(
-            children: tiers
-                .map(
-                  (t) => Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.w),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF0FAF4),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            t.rate,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 19.sp,
-                              fontWeight: FontWeight.w800,
-                              color: _brandGreen,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            t.label,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 11.5.sp,
-                              fontWeight: FontWeight.w600,
-                              color: _titleDark,
-                            ),
-                          ),
-                          Text(
-                            t.sub,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 9.5.sp,
-                              color: _subtitleGrey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
+            children: [
+              _roiTierTile(tiers[0]),
+              SizedBox(width: 8.w),
+              _roiTierTile(tiers[1]),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              _roiTierTile(tiers[2]),
+              SizedBox(width: 8.w),
+              _roiTierTile(tiers[3]),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _roiTierTile(({String label, String rate, String sub}) t) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 6.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0FAF4),
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        child: Column(
+          children: [
+            Text(
+              t.rate,
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 19.sp,
+                fontWeight: FontWeight.w800,
+                color: _brandGreen,
+              ),
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              t.label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 11.5.sp,
+                fontWeight: FontWeight.w600,
+                color: _titleDark,
+              ),
+            ),
+            Text(
+              t.sub,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 9.5.sp,
+                color: _subtitleGrey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Pre Plan spotlight ───────────────────────────────────────────────────
+  // Dedicated call-out for the newly added Pre Plan, styled with the exact
+  // same premium card treatment as the other info sections above so it
+  // reads as a natural part of the existing plan info page.
+  Widget _prePlanSpotlightCard() {
+    return _infoSectionCard(
+      title: 'Pre Plan — flexible & fast',
+      icon: Icons.flash_on_rounded,
+      children: const [
+        (
+          icon: Icons.percent_rounded,
+          text: '0.20% Daily ROI, credited straight to your wallet.',
+        ),
+        (
+          icon: Icons.calendar_view_day_outlined,
+          text: 'Flexible duration — choose any tenure from 3 to 80 days.',
+        ),
+        (
+          icon: Icons.payments_outlined,
+          text: 'One-time investment — pay once, no recurring instalments.',
+        ),
+        (
+          icon: Icons.trending_up_rounded,
+          text: 'Daily ROI is calculated on your invested amount.',
+        ),
+        (
+          icon: Icons.lock_open_rounded,
+          text:
+              'Principal is returned automatically to your wallet after maturity.',
+        ),
+      ],
     );
   }
 
@@ -984,7 +1037,7 @@ class _PlanScreenState extends State<PlanScreen> {
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'You\'ve enrolled in all available plans (3, 6 & 12 month).',
+              'You\'ve enrolled in all available plans (Pre Plan, 3, 6 & 12 month).',
               style: TextStyle(
                 fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.5.sp,

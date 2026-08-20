@@ -410,12 +410,13 @@ class SecurityRepository {
     }
   }
 
-  // ── Login PIN → Forgot Login PIN (email OTP recovery) ───────────────────
+  // ── Login PIN → Forgot Login PIN (email or SMS OTP recovery) ─────────────
   // For a user already signed in (email/password) but locked out of the app
-  // because they forgot their Login PIN. A verified OTP opens the same
-  // backend "verified window" as verifyCurrentLoginPin above, so the
-  // existing updateLoginPin() call is reused as-is for the final "Set New
-  // PIN" step — no separate endpoint needed for that part.
+  // because they forgot their Login PIN. A verified OTP — sent via email
+  // (default) or SMS — opens the same backend "verified window" as
+  // verifyCurrentLoginPin above, so the existing updateLoginPin() call is
+  // reused as-is for the final "Set New PIN" step — no separate endpoint
+  // needed for that part.
 
   /// Resumes lock/cooldown state if the user re-opens this flow after the
   /// app was backgrounded or killed mid-lockout.
@@ -448,10 +449,15 @@ class SecurityRepository {
     }
   }
 
-  /// Emails a 6-digit OTP to the account's registered address. Also powers
-  /// "Resend OTP" — the backend enforces a resend cooldown and a rolling
-  /// rate-limit window independently of this call.
-  Future<ForgotLoginPinOtpResult> sendForgotLoginPinOtp() async {
+  /// Sends a 6-digit OTP to the account's registered email (default) or,
+  /// when [channel] is 'sms', to its registered mobile number via the
+  /// existing SMS/OTP infrastructure. Also powers "Resend OTP" /
+  /// "Send OTP via SMS" — the backend enforces a shared resend cooldown
+  /// and rolling rate-limit window across both channels independently of
+  /// this call.
+  Future<ForgotLoginPinOtpResult> sendForgotLoginPinOtp({
+    String channel = 'email',
+  }) async {
     try {
       final token = await _getToken();
       if (token == null) {
@@ -465,13 +471,18 @@ class SecurityRepository {
           .post(
             Uri.parse('$_kBaseUrl/api/security/pin/login/forgot/send-otp'),
             headers: _authHeader(token),
+            body: jsonEncode({'channel': channel}),
           )
           .timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       final success = res.statusCode == 200 && body['success'] == true;
       final message = body['message']?.toString() ??
-          (success ? 'OTP sent to your registered email address.' : 'Failed to send OTP.');
+          (success
+              ? (channel == 'sms'
+                  ? 'OTP sent to your registered mobile number.'
+                  : 'OTP sent to your registered email address.')
+              : 'Failed to send OTP.');
 
       return ForgotLoginPinOtpResult.fromJson(body, success: success, message: message);
     } on SocketException {
@@ -682,56 +693,6 @@ class SecurityRepository {
         return null;
       }
       return body['message']?.toString() ?? 'Failed to disable 2FA.';
-    } on SocketException {
-      return 'No internet connection.';
-    } catch (_) {
-      return 'Something went wrong. Please try again.';
-    }
-  }
-
-  // ── Sessions ───────────────────────────────────────────────────────────────
-  Future<List<DeviceSession>> getSessions() async {
-    try {
-      final token = await _getToken();
-      if (token == null) return [];
-
-      final res = await sessionHttpClient
-          .get(
-            Uri.parse('$_kBaseUrl/api/security/sessions'),
-            headers: _authHeader(token),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      if (res.statusCode == 200 && body['success'] == true) {
-        final list = (body['data']?['sessions'] as List<dynamic>?) ?? [];
-        return list
-            .map((e) => DeviceSession.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
-      return [];
-    } catch (_) {
-      return [];
-    }
-  }
-
-  Future<String?> revokeSession(String sessionId) async {
-    try {
-      final token = await _getToken();
-      if (token == null) return 'Session expired. Please log in again.';
-
-      final res = await sessionHttpClient
-          .delete(
-            Uri.parse('$_kBaseUrl/api/security/sessions/$sessionId'),
-            headers: _authHeader(token),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      final body = jsonDecode(res.body) as Map<String, dynamic>;
-      if (res.statusCode == 200 && body['success'] == true) {
-        return null;
-      }
-      return body['message']?.toString() ?? 'Failed to revoke session.';
     } on SocketException {
       return 'No internet connection.';
     } catch (_) {

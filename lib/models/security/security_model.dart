@@ -2,44 +2,6 @@
 
 enum SecurityAction { idle, loading, success, error }
 
-class DeviceSession {
-  final String id;
-  final String deviceName;
-  final String deviceType; // 'android' | 'ios' | 'web'
-  final String location;
-  final String lastActive;
-  final bool isCurrent;
-
-  const DeviceSession({
-    required this.id,
-    required this.deviceName,
-    required this.deviceType,
-    required this.location,
-    required this.lastActive,
-    required this.isCurrent,
-  });
-
-  factory DeviceSession.fromJson(Map<String, dynamic> json) {
-    return DeviceSession(
-      id: json['id']?.toString() ?? '',
-      deviceName: json['device_name'] ?? 'Unknown Device',
-      deviceType: json['device_type'] ?? 'android',
-      location: json['location'] ?? 'Unknown',
-      lastActive: json['last_active'] ?? 'Unknown',
-      isCurrent: json['is_current'] == true || json['is_current'] == 1,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'device_name': deviceName,
-        'device_type': deviceType,
-        'location': location,
-        'last_active': lastActive,
-        'is_current': isCurrent,
-      };
-}
-
 class LoginEvent {
   final String id;
   final String deviceName;
@@ -144,6 +106,17 @@ class ForgotLoginPinOtpResult {
   final int remainingAttempts;
   final int expiresInSeconds;
   final String? email;
+  // ── SMS OTP support ────────────────────────────────────────────────────
+  // `phone` is the masked mobile number (present on /status when the
+  // account has one on file, and on /send-otp when channel == 'sms').
+  // `smsAvailable` (from /status) tells the UI whether to show the
+  // "Send OTP via SMS" option at all. `channel` echoes which channel a
+  // given send-otp call actually used ('email' or 'sms'), and on /status
+  // it carries the channel the currently in-flight OTP (if any) was last
+  // sent through, so a resend keeps using the same channel.
+  final String? phone;
+  final bool smsAvailable;
+  final String? channel;
 
   const ForgotLoginPinOtpResult({
     required this.success,
@@ -154,6 +127,9 @@ class ForgotLoginPinOtpResult {
     this.remainingAttempts = 5,
     this.expiresInSeconds = 300,
     this.email,
+    this.phone,
+    this.smsAvailable = false,
+    this.channel,
   });
 
   factory ForgotLoginPinOtpResult.fromJson(
@@ -172,6 +148,9 @@ class ForgotLoginPinOtpResult {
       remainingAttempts: (data['remaining_attempts'] as num?)?.toInt() ?? 5,
       expiresInSeconds: (data['expires_in_seconds'] as num?)?.toInt() ?? 300,
       email: data['email']?.toString(),
+      phone: data['phone']?.toString(),
+      smsAvailable: data['sms_available'] == true,
+      channel: (data['channel'] ?? data['last_channel'])?.toString(),
     );
   }
 }
