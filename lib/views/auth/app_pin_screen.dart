@@ -8,6 +8,7 @@ import '../../routes/app_routes.dart';
 import '../../services/biometric_auth_service.dart';
 import '../../services/pin_lockout_service.dart';
 import '../../data/security/security_repository.dart';
+import 'forgot_pin_screen.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _bg = Color(0xFFECEFF5);
@@ -534,6 +535,19 @@ class _AppPinScreenState extends State<AppPinScreen>
                 ),
 
                 const SizedBox(height: 16),
+
+                TextButton(
+                  onPressed: _locked ? null : () async {
+                    final changed = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ForgotPinScreen()),
+                    );
+                    if (changed == true && mounted) {
+                      setState(() { _pin.clear(); _error = 'PIN reset successfully. Enter your new PIN.'; });
+                    }
+                  },
+                  child: const Text('Forgot PIN?'),
+                ),
 
                 // ── Keypad ────────────────────────────────────────────────
                 Expanded(
