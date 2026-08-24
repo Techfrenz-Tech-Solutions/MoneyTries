@@ -144,6 +144,9 @@ class ForgotLoginPinOtpResult {
   final int remainingAttempts;
   final int expiresInSeconds;
   final String? email;
+  final String? phone;
+  final String? channel;
+  final String? destination;
 
   const ForgotLoginPinOtpResult({
     required this.success,
@@ -154,6 +157,9 @@ class ForgotLoginPinOtpResult {
     this.remainingAttempts = 5,
     this.expiresInSeconds = 300,
     this.email,
+    this.phone,
+    this.channel,
+    this.destination,
   });
 
   factory ForgotLoginPinOtpResult.fromJson(
@@ -167,11 +173,19 @@ class ForgotLoginPinOtpResult {
       message: message,
       locked: data['locked'] == true,
       lockedRemainingSeconds:
-          (data['remaining_seconds'] as num?)?.toInt() ?? 0,
-      retryAfterSeconds: (data['retry_after_seconds'] as num?)?.toInt() ?? 0,
+          (data['remaining_seconds'] as num?)?.toInt() ??
+          (data['locked_remaining_seconds'] as num?)?.toInt() ??
+          0,
+      retryAfterSeconds:
+          (data['retry_after_seconds'] as num?)?.toInt() ??
+          (data['resend_cooldown_seconds'] as num?)?.toInt() ??
+          0,
       remainingAttempts: (data['remaining_attempts'] as num?)?.toInt() ?? 5,
       expiresInSeconds: (data['expires_in_seconds'] as num?)?.toInt() ?? 300,
       email: data['email']?.toString(),
+      phone: data['phone']?.toString(),
+      channel: data['channel']?.toString(),
+      destination: data['destination']?.toString(),
     );
   }
 }

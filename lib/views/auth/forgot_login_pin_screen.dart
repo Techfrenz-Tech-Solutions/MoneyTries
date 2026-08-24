@@ -1,11 +1,11 @@
 // lib/views/auth/forgot_login_pin_screen.dart
 //
-// Login PIN → Forgot PIN? (email OTP recovery)
+// Login PIN → Forgot PIN? (email or phone OTP recovery)
 //
 // Reached from AppPinScreen ("Enter your PIN") when the user taps
 // "Forgot PIN?". Flow:
-//   1. ForgotLoginPinScreen — an OTP is emailed to the account's registered
-//      address automatically on open (and via "Resend OTP"). The user
+//   1. ForgotLoginPinScreen — an OTP is sent to the account's registered
+//      email by default, with an option to switch to SMS. The user
 //      enters the 6-digit code; it's verified against the backend, with
 //      expiry, resend cooldown, and a 5-attempt lockout all enforced
 //      server-side (see SecurityViewModel.sendForgotLoginPinOtp /
@@ -196,7 +196,13 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                             ],
                           ),
                           child: Center(
-                            child: Icon(Icons.mark_email_read_rounded, size: 30.sp, color: Colors.white),
+                            child: Icon(
+                              vm.forgotPinChannel == 'EMAIL'
+                                  ? Icons.mark_email_read_rounded
+                                  : Icons.sms_rounded,
+                              size: 30.sp,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
 
@@ -215,7 +221,7 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Enter the 6-digit code sent to your registered email',
+                          'Enter the 6-digit code sent to your registered ${vm.forgotPinChannel == 'EMAIL' ? 'email' : 'phone'}',
                           style: TextStyle(
                             fontFamily: AppFonts.primary,
                             fontFamilyFallback: AppFonts.fallbacks,
@@ -225,7 +231,32 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                           ),
                         ),
 
-                        if (vm.forgotPinEmailMasked != null) ...[
+                        SizedBox(height: 16.h),
+                        SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(
+                              value: 'EMAIL',
+                              icon: Icon(Icons.email_outlined),
+                              label: Text('Email'),
+                            ),
+                            ButtonSegment(
+                              value: 'PHONE',
+                              icon: Icon(Icons.sms_outlined),
+                              label: Text('Phone'),
+                            ),
+                          ],
+                          selected: {vm.forgotPinChannel},
+                          onSelectionChanged: vm.isSendingForgotPinOtp || vm.isForgotPinLocked
+                              ? null
+                              : (selection) async {
+                                  final channel = selection.first;
+                                  if (channel == vm.forgotPinChannel) return;
+                                  _clearBoxes();
+                                  await vm.sendForgotLoginPinOtp(channel: channel);
+                                },
+                        ),
+
+                        if (vm.forgotPinDestinationMasked != null) ...[
                           SizedBox(height: 10.h),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
@@ -237,10 +268,16 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.mail_outline_rounded, size: 14.sp, color: _brandGreen),
+                                Icon(
+                                  vm.forgotPinChannel == 'EMAIL'
+                                      ? Icons.mail_outline_rounded
+                                      : Icons.phone_android_rounded,
+                                  size: 14.sp,
+                                  color: _brandGreen,
+                                ),
                                 SizedBox(width: 6.w),
                                 Text(
-                                  vm.forgotPinEmailMasked!,
+                                  vm.forgotPinDestinationMasked!,
                                   style: TextStyle(
                                     fontFamily: AppFonts.primary,
                                     fontFamilyFallback: AppFonts.fallbacks,
