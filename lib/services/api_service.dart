@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../core/api/api_config.dart';
 
 class ApiService {
-    //static const String baseUrl = 'http://10.0.2.2:3000';
-    static const String baseUrl = 'http://192.168.0.17:3000';
+  static const String baseUrl = ApiConfig.baseUrl;
   static Future<Map<String, dynamic>> login({
     required String identifier,
     required String password,
@@ -157,6 +157,7 @@ class ApiService {
   /// identifier before generating a new one.
   static Future<Map<String, dynamic>> sendForgotPasswordOtp({
     required String identifier,
+    required String channel,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/forgot-password/send-otp'),
@@ -165,6 +166,7 @@ class ApiService {
       },
       body: jsonEncode({
         'identifier': identifier,
+        'channel': channel,
       }),
     );
 
