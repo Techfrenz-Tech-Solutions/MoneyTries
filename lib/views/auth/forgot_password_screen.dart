@@ -48,6 +48,11 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
   void initState() {
     super.initState();
     _identifierCtrl = TextEditingController(text: widget.prefillIdentifier);
+    if (RegExp(r'^\d{10}$').hasMatch(widget.prefillIdentifier.trim())) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.read<ForgotPasswordViewModel>().selectChannel('PHONE');
+      });
+    }
   }
 
   @override
@@ -208,8 +213,21 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                                       const SizedBox(height: 16),
                                     ],
 
+                                    SegmentedButton<String>(
+                                      segments: const [
+                                        ButtonSegment(value: 'EMAIL', icon: Icon(Icons.email_outlined), label: Text('Email')),
+                                        ButtonSegment(value: 'PHONE', icon: Icon(Icons.sms_outlined), label: Text('Phone')),
+                                      ],
+                                      selected: {vm.channel},
+                                      onSelectionChanged: (value) {
+                                        vm.selectChannel(value.first);
+                                        _identifierCtrl.clear();
+                                      },
+                                    ),
+                                    const SizedBox(height: 18),
+
                                     Text(
-                                      'Email or Mobile Number',
+                                      vm.channel == 'EMAIL' ? 'Email Address' : 'Mobile Number',
                                       style: GoogleFonts.poppins(
                                         fontSize: 12.5,
                                         fontWeight: FontWeight.w500,
@@ -220,15 +238,16 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                                     TextField(
                                       controller: _identifierCtrl,
                                       keyboardType:
-                                          TextInputType.emailAddress,
+                                          vm.channel == 'EMAIL' ? TextInputType.emailAddress : TextInputType.phone,
                                       onChanged: (_) => vm.clearError(),
                                       style: GoogleFonts.poppins(
                                         fontSize: 14.5,
                                         color: const Color(0xFF374151),
                                       ),
                                       decoration: InputDecoration(
-                                        hintText:
-                                            'Enter your email or 10-digit mobile',
+                                        hintText: vm.channel == 'EMAIL'
+                                            ? 'Enter your registered email'
+                                            : 'Enter your 10-digit mobile number',
                                         hintStyle: GoogleFonts.poppins(
                                           color: _hintColor,
                                           fontSize: 14.5,
