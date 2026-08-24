@@ -23,6 +23,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
   /// so a client can never skip straight from "enter identifier" to
   /// "set new password" without actually verifying an OTP.
   String? _resetToken;
+  String _channel = 'EMAIL';
 
   /// Seconds remaining before the currently-issued OTP expires (server sends
   /// this; defaults to 5 minutes == 300 seconds).
@@ -34,6 +35,13 @@ class ForgotPasswordViewModel extends ChangeNotifier {
   String? get identifier => _identifier;
   String? get resetToken => _resetToken;
   int get otpExpirySeconds => _otpExpirySeconds;
+  String get channel => _channel;
+
+  void selectChannel(String channel) {
+    _channel = channel;
+    _errorMessage = null;
+    notifyListeners();
+  }
 
   // ── Validation ───────────────────────────────────────────────────────────
 
@@ -91,6 +99,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     try {
       final response = await ApiService.sendForgotPasswordOtp(
         identifier: identifier.trim(),
+        channel: _channel,
       );
 
       if (response['success'] == true) {
