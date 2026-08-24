@@ -92,19 +92,26 @@ class ForgotPasswordViewModel extends ChangeNotifier {
       return false;
     }
 
+    // The identifier is authoritative. This prevents a stale/default EMAIL
+    // selection from being sent with a valid phone number (and vice versa).
+    final normalizedIdentifier = identifier.trim();
+    _channel = RegExp(r'^\d{10}$').hasMatch(normalizedIdentifier)
+        ? 'PHONE'
+        : 'EMAIL';
+
     _status = ForgotPasswordStatus.loading;
     _errorMessage = null;
     notifyListeners();
 
     try {
       final response = await ApiService.sendForgotPasswordOtp(
-        identifier: identifier.trim(),
+        identifier: normalizedIdentifier,
         channel: _channel,
       );
 
       if (response['success'] == true) {
         _identifier = response['data']?['identifier'] as String? ??
-            identifier.trim();
+            normalizedIdentifier;
         _otpExpirySeconds =
             response['data']?['expires_in_seconds'] as int? ?? 300;
         _status = ForgotPasswordStatus.success;

@@ -235,7 +235,18 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                                       controller: _identifierCtrl,
                                       keyboardType:
                                           vm.channel == 'EMAIL' ? TextInputType.emailAddress : TextInputType.phone,
-                                      onChanged: (_) => vm.clearError(),
+                                      onChanged: (value) {
+                                        vm.clearError();
+                                        final normalized = value.trim();
+                                        final inferred = RegExp(r'^\d{10}$').hasMatch(normalized)
+                                            ? 'PHONE'
+                                            : RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)
+                                                ? 'EMAIL'
+                                                : null;
+                                        if (inferred != null && inferred != vm.channel) {
+                                          vm.selectChannel(inferred);
+                                        }
+                                      },
                                       style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                                         fontSize: 14.5.sp,
                                         color: const Color(0xFF374151),
