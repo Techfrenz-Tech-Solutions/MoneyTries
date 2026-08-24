@@ -448,10 +448,10 @@ class SecurityRepository {
     }
   }
 
-  /// Emails a 6-digit OTP to the account's registered address. Also powers
-  /// "Resend OTP" — the backend enforces a resend cooldown and a rolling
-  /// rate-limit window independently of this call.
-  Future<ForgotLoginPinOtpResult> sendForgotLoginPinOtp() async {
+  /// Sends a 6-digit OTP to the account's registered email address or phone.
+  /// Also powers resend and channel switching; the backend owns cooldown and
+  /// rolling rate-limit enforcement.
+  Future<ForgotLoginPinOtpResult> sendForgotLoginPinOtp(String channel) async {
     try {
       final token = await _getToken();
       if (token == null) {
@@ -465,13 +465,14 @@ class SecurityRepository {
           .post(
             Uri.parse('$_kBaseUrl/api/security/pin/login/forgot/send-otp'),
             headers: _authHeader(token),
+            body: jsonEncode({'channel': channel}),
           )
           .timeout(const Duration(seconds: 15));
 
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       final success = res.statusCode == 200 && body['success'] == true;
       final message = body['message']?.toString() ??
-          (success ? 'OTP sent to your registered email address.' : 'Failed to send OTP.');
+          (success ? 'OTP sent successfully.' : 'Failed to send OTP.');
 
       return ForgotLoginPinOtpResult.fromJson(body, success: success, message: message);
     } on SocketException {
@@ -487,7 +488,7 @@ class SecurityRepository {
     }
   }
 
-  /// Verifies the OTP emailed by sendForgotLoginPinOtp(). On success, the
+  /// Verifies the OTP delivered by sendForgotLoginPinOtp(). On success, the
   /// backend opens the same verified window used by the existing Change
   /// Login PIN flow, so the caller should proceed straight to
   /// updateLoginPin() for the "Set New PIN" / "Confirm New PIN" step.

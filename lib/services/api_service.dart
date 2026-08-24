@@ -4,7 +4,7 @@ import '../core/network/session_http_client.dart';
 import '../core/api/api_config.dart';
 
 class ApiService {
-    static const String baseUrl = ApiConfig.baseUrl;
+  static const String baseUrl = ApiConfig.baseUrl;
   static Future<Map<String, dynamic>> login({
     required String identifier,
     required String password,
@@ -179,6 +179,7 @@ class ApiService {
   /// identifier before generating a new one.
   static Future<Map<String, dynamic>> sendForgotPasswordOtp({
     required String identifier,
+    required String channel,
   }) async {
     final response = await sessionHttpClient.post(
       Uri.parse('$baseUrl/api/auth/forgot-password/send-otp'),
@@ -187,6 +188,7 @@ class ApiService {
       },
       body: jsonEncode({
         'identifier': identifier,
+        'channel': channel,
       }),
     );
 

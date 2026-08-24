@@ -171,6 +171,12 @@ class SecurityViewModel extends ChangeNotifier {
   String? _forgotPinEmailMasked;
   String? get forgotPinEmailMasked => _forgotPinEmailMasked;
 
+  String _forgotPinChannel = 'EMAIL';
+  String get forgotPinChannel => _forgotPinChannel;
+
+  String? _forgotPinDestinationMasked;
+  String? get forgotPinDestinationMasked => _forgotPinDestinationMasked;
+
   int _forgotPinOtpExpirySeconds = 300;
   int get forgotPinOtpExpirySeconds => _forgotPinOtpExpirySeconds;
 
@@ -542,6 +548,8 @@ class SecurityViewModel extends ChangeNotifier {
     _isVerifyingForgotPinOtp = false;
     _forgotPinError = null;
     _forgotPinEmailMasked = null;
+    _forgotPinChannel = 'EMAIL';
+    _forgotPinDestinationMasked = null;
     _forgotPinOtpExpirySeconds = 300;
     _forgotPinOtpVerified = false;
     _isForgotPinLocked = false;
@@ -557,6 +565,10 @@ class SecurityViewModel extends ChangeNotifier {
   Future<void> loadForgotLoginPinStatus() async {
     final status = await _repo.getForgotLoginPinStatus();
     _forgotPinEmailMasked = status.email ?? _forgotPinEmailMasked;
+    _forgotPinChannel = status.channel ?? _forgotPinChannel;
+    _forgotPinDestinationMasked = status.destination ??
+        (_forgotPinChannel == 'PHONE' ? status.phone : status.email) ??
+        _forgotPinDestinationMasked;
     if (status.locked && status.lockedRemainingSeconds > 0) {
       _startForgotPinLockCountdown(status.lockedRemainingSeconds);
     } else if (status.retryAfterSeconds > 0) {
@@ -595,12 +607,15 @@ class SecurityViewModel extends ChangeNotifier {
     });
   }
 
-  /// Emails a 6-digit OTP to the account's registered address. Also used
-  /// for "Resend OTP" — the backend enforces the resend cooldown / rate
-  /// limit regardless, but canResendForgotPinOtp lets the UI disable the
-  /// button proactively too. Returns true if the OTP was sent.
-  Future<bool> sendForgotLoginPinOtp() async {
-    if (_isForgotPinLocked || !canResendForgotPinOtp || _isSendingForgotPinOtp) {
+  /// Sends a 6-digit OTP over the selected channel. Switching channels is
+  /// allowed during the resend cooldown because the backend invalidates the
+  /// previous code and explicitly permits that transition.
+  Future<bool> sendForgotLoginPinOtp({String? channel}) async {
+    final requestedChannel = channel ?? _forgotPinChannel;
+    final switchingChannel = requestedChannel != _forgotPinChannel;
+    if (_isForgotPinLocked ||
+        (!switchingChannel && !canResendForgotPinOtp) ||
+        _isSendingForgotPinOtp) {
       return false;
     }
 
@@ -608,11 +623,15 @@ class SecurityViewModel extends ChangeNotifier {
     _forgotPinError = null;
     notifyListeners();
 
-    final result = await _repo.sendForgotLoginPinOtp();
+    final result = await _repo.sendForgotLoginPinOtp(requestedChannel);
     _isSendingForgotPinOtp = false;
 
     if (result.success) {
       _forgotPinEmailMasked = result.email ?? _forgotPinEmailMasked;
+      _forgotPinChannel = result.channel ?? requestedChannel;
+      _forgotPinDestinationMasked = result.destination ??
+          (_forgotPinChannel == 'PHONE' ? result.phone : result.email) ??
+          _forgotPinDestinationMasked;
       _forgotPinOtpExpirySeconds = result.expiresInSeconds;
       _forgotPinOtpEntry.clear();
       _forgotPinError = null;
