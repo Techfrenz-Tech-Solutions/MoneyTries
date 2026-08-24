@@ -7,8 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/security/security_model.dart';
 import '../../services/biometric_auth_service.dart';
+import '../../core/api/api_config.dart';
 
-const String _kBaseUrl = 'http://192.168.0.17:3000';
+const String _kBaseUrl = ApiConfig.baseUrl;
 
 class SecurityRepository {
   // ── Token ──────────────────────────────────────────────────────────────────
@@ -339,6 +340,41 @@ class SecurityRepository {
           .timeout(const Duration(seconds: 10));
     } catch (_) {
       // Fire-and-forget; non-critical
+    }
+  }
+
+  Future<Map<String, dynamic>> sendForgotLoginPinOtp(String channel) async {
+    return _forgotPinPost('/api/security/pin/login/forgot/send-otp', {'channel': channel});
+  }
+
+  Future<Map<String, dynamic>> verifyForgotLoginPinOtp(String otp) async {
+    return _forgotPinPost('/api/security/pin/login/forgot/verify-otp', {'otp': otp});
+  }
+
+  Future<Map<String, dynamic>> updateForgottenLoginPin(String pin) async {
+    return _forgotPinPost('/api/security/pin/login/change/update', {
+      'new_pin': pin,
+      'confirm_pin': pin,
+    });
+  }
+
+  Future<Map<String, dynamic>> _forgotPinPost(
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      final token = await _getToken();
+      if (token == null) return {'success': false, 'message': 'Session expired. Please log in again.'};
+      final res = await http.post(
+        Uri.parse('$_kBaseUrl$path'),
+        headers: _authHeader(token),
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+      return jsonDecode(res.body) as Map<String, dynamic>;
+    } on SocketException {
+      return {'success': false, 'message': 'No internet connection.'};
+    } catch (_) {
+      return {'success': false, 'message': 'Something went wrong. Please try again.'};
     }
   }
 }
