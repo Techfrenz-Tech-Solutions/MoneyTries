@@ -1,17 +1,13 @@
-﻿import 'dart:convert';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/animations/animations.dart';
 import '../../widgets/premium/premium.dart';
-import '../../core/api/api_config.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const _bgColor = Color(0xFFF7F5F2);
@@ -63,161 +59,38 @@ class _PlanScreenState extends State<PlanScreen> {
     });
   }
 
-  // ── KYC gate ──────────────────────────────────────────────────────────────
-  Future<String> _fetchKycStatus() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token') ?? '';
-      if (token.isEmpty) return 'not_submitted';
-      const baseUrl = ApiConfig.baseUrl;
-      final res = await http
-          .get(
-            Uri.parse('$baseUrl/api/kyc/status'),
-            headers: {'Authorization': 'Bearer $token'},
-          )
-          .timeout(const Duration(seconds: 10));
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        return (body['data']?['status'] as String?) ?? 'not_submitted';
-      }
-    } catch (_) {}
-    return 'not_submitted';
-  }
-
-  /// Navigates into the "enter amount → compare plans" flow, gated behind
-  /// KYC approval. [excludeTypes] carries the plan types the user already
-  /// holds (active/approved/under review) so the comparison screen only
-  /// shows the plans still available to them.
-  Future<void> _navigateToInvestWithKycCheck(
+  /// Navigates into the "enter amount → compare plans" flow. Plans can be
+  /// viewed and enrolled in without KYC verification — KYC is required only
+  /// for Deposit and Withdrawal (see depositController.js /
+  /// withdrawalController.js on the backend). [excludeTypes] carries the
+  /// plan types the user already holds (active/approved/under review) so
+  /// the comparison screen only shows the plans still available to them.
+  Future<void> _navigateToInvest(
     BuildContext ctx, {
     List<PlanType> excludeTypes = const [],
   }) async {
-    final kycStatus = await _fetchKycStatus();
+    // Pre Plan has no fixed duration — if it's still available (i.e. not
+    // already active/under review), ask for its 3–80 day duration up
+    // front so the comparison screen can show it alongside the fixed
+    // 3/6/12 month tiers. If Pre Plan is already active, it's in
+    // excludeTypes and this is skipped entirely.
+    int? prePlanDays;
+    if (!excludeTypes.contains(PlanType.prePlan)) {
+      prePlanDays = await _askPrePlanDuration(ctx);
+      if (prePlanDays == null) return; // user cancelled
+    }
     if (!ctx.mounted) return;
 
-    if (kycStatus == 'approved') {
-      // Pre Plan has no fixed duration — if it's still available (i.e. not
-      // already active/under review), ask for its 3–80 day duration up
-      // front so the comparison screen can show it alongside the fixed
-      // 3/6/12 month tiers. If Pre Plan is already active, it's in
-      // excludeTypes and this is skipped entirely.
-      int? prePlanDays;
-      if (!excludeTypes.contains(PlanType.prePlan)) {
-        prePlanDays = await _askPrePlanDuration(ctx);
-        if (prePlanDays == null) return; // user cancelled
-      }
-      if (!ctx.mounted) return;
+    final args = <String, dynamic>{
+      if (excludeTypes.isNotEmpty)
+        'excludeTypes': excludeTypes.map((t) => t.name).toList(),
+      if (prePlanDays != null) 'prePlanDays': prePlanDays,
+    };
 
-      final args = <String, dynamic>{
-        if (excludeTypes.isNotEmpty)
-          'excludeTypes': excludeTypes.map((t) => t.name).toList(),
-        if (prePlanDays != null) 'prePlanDays': prePlanDays,
-      };
-
-      Navigator.pushNamed(
-        ctx,
-        AppRoutes.investmentAmount,
-        arguments: args.isEmpty ? null : args,
-      );
-      return;
-    }
-
-    String dlgTitle;
-    String dlgMessage;
-    String actionLabel;
-    VoidCallback onAction;
-
-    if (kycStatus == 'pending') {
-      dlgTitle = 'KYC Under Review';
-      dlgMessage =
-          'Your KYC documents are being reviewed. You can start investing once they are approved.';
-      actionLabel = 'OK';
-      onAction = () => Navigator.pop(ctx);
-    } else if (kycStatus == 'rejected') {
-      dlgTitle = 'KYC Rejected';
-      dlgMessage =
-          'Your KYC was rejected. Please resubmit your documents to start investing.';
-      actionLabel = 'Resubmit KYC';
-      onAction = () {
-        Navigator.pop(ctx);
-        Navigator.pushNamed(ctx, AppRoutes.kyc);
-      };
-    } else {
-      dlgTitle = 'KYC Required';
-      dlgMessage =
-          'Please complete your KYC verification before enrolling in a plan.';
-      actionLabel = 'Complete KYC';
-      onAction = () {
-        Navigator.pop(ctx);
-        Navigator.pushNamed(ctx, AppRoutes.kyc);
-      };
-    }
-
-    showDialog(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              kycStatus == 'pending'
-                  ? Icons.hourglass_top_rounded
-                  : Icons.verified_user_outlined,
-              color: kycStatus == 'pending' ? _accentBrownDeep : _brandGreen,
-              size: 22.sp,
-            ),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: Text(
-                dlgTitle,
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF111827),
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          dlgMessage,
-          style: TextStyle(
-            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-            fontSize: 13.sp,
-            color: const Color(0xFF6B7280),
-            height: 1.5,
-          ),
-        ),
-        actions: [
-          if (kycStatus != 'pending')
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 13.sp,
-                  color: const Color(0xFF9CA3AF),
-                ),
-              ),
-            ),
-          TextButton(
-            onPressed: onAction,
-            child: Text(
-              actionLabel,
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w700,
-                color: _brandGreen,
-              ),
-            ),
-          ),
-        ],
-      ),
+    Navigator.pushNamed(
+      ctx,
+      AppRoutes.investmentAmount,
+      arguments: args.isEmpty ? null : args,
     );
   }
 
@@ -431,7 +304,7 @@ class _PlanScreenState extends State<PlanScreen> {
                               child: Center(
                                 child: _continueButton(
                                   label: 'Continue Another Plan',
-                                  onTap: () => _navigateToInvestWithKycCheck(
+                                  onTap: () => _navigateToInvest(
                                     context,
                                     excludeTypes: activeTypes.toList(),
                                   ),
@@ -592,7 +465,7 @@ class _PlanScreenState extends State<PlanScreen> {
           ),
           (
             icon: Icons.calendar_month_outlined,
-            text: 'Flexible tenures — 3, 6 or 12 months to match your goals.',
+            text: 'Flexible tenures — 3, 6, 12 months, or a 3–80 day Pre Plan.',
           ),
           (
             icon: Icons.support_agent_outlined,
@@ -609,7 +482,7 @@ class _PlanScreenState extends State<PlanScreen> {
         children: const [
           (
             icon: Icons.payments_outlined,
-            text: 'Pay your investment amount once via UPI or bank transfer.',
+            text: 'Pay your investment amount once from your wallet balance.',
           ),
           (
             icon: Icons.fact_check_outlined,
@@ -639,7 +512,7 @@ class _PlanScreenState extends State<PlanScreen> {
       SizedBox(height: 24.h),
       _continueButton(
         label: 'Continue',
-        onTap: () => _navigateToInvestWithKycCheck(context),
+        onTap: () => _navigateToInvest(context),
       ),
     ];
   }
@@ -694,7 +567,7 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   Widget _roiTierOverviewCard() {
-    final tiers = [
+    final fixedTiers = [
       (label: '3 Month', rate: '0.30%', sub: 'Short term'),
       (label: '6 Month', rate: '0.40%', sub: 'Mid term'),
       (label: '12 Month', rate: '0.50%', sub: 'Wealth preservation'),
@@ -721,7 +594,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Icon(Icons.bar_chart_rounded, size: 20.sp, color: _brandGreen),
               SizedBox(width: 10.w),
               Text(
-                'Daily ROI by tenure',
+                'Daily ROI by plan',
                 style: TextStyle(
                   fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 16.5.sp,
@@ -732,52 +605,164 @@ class _PlanScreenState extends State<PlanScreen> {
             ],
           ),
           SizedBox(height: 16.h),
+          // Pre Plan is flexible-duration (not a fixed tenure like the 3
+          // tiles below), so it gets its own "hero" row — a round rate
+          // badge instead of a bare number, a NEW tag, and a proper
+          // subtitle line — rather than being squeezed into the grid.
+          _prePlanHeroTile(),
+          SizedBox(height: 12.h),
           Row(
-            children: tiers
-                .map(
-                  (t) => Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.w),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF0FAF4),
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            t.rate,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 19.sp,
-                              fontWeight: FontWeight.w800,
-                              color: _brandGreen,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            t.label,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 11.5.sp,
-                              fontWeight: FontWeight.w600,
-                              color: _titleDark,
-                            ),
-                          ),
-                          Text(
-                            t.sub,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 9.5.sp,
-                              color: _subtitleGrey,
-                            ),
-                          ),
-                        ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int i = 0; i < fixedTiers.length; i++) ...[
+                if (i > 0) SizedBox(width: 10.w),
+                Expanded(child: _roiTierTile(fixedTiers[i])),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _prePlanHeroTile() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_vaultGreen, _vaultGreen.withValues(alpha: 0.55)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: _brandGreen.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52.w,
+            height: 52.w,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _brandGreen,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              '0.20%',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w800,
+                color: _white,
+                height: 1.1,
+              ),
+            ),
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Pre Plan',
+                      style: TextStyle(
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                        fontSize: 14.5.sp,
+                        fontWeight: FontWeight.w800,
+                        color: _titleDark,
                       ),
                     ),
+                    SizedBox(width: 6.w),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.w,
+                        vertical: 2.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _brandGreen,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      child: Text(
+                        'NEW',
+                        style: TextStyle(
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                          fontSize: 8.5.sp,
+                          fontWeight: FontWeight.w800,
+                          color: _white,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  'Flexible 3–80 days · One-time investment',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                    fontSize: 11.sp,
+                    color: _brandGreenDeep,
+                    fontWeight: FontWeight.w500,
                   ),
-                )
-                .toList(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _roiTierTile(({String label, String rate, String sub}) t) {
+    return Container(
+      width: double.infinity,
+      constraints: BoxConstraints(minHeight: 96.h),
+      padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 8.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0FAF4),
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            t.rate,
+            style: TextStyle(
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w800,
+              color: _brandGreen,
+            ),
+          ),
+          SizedBox(height: 3.h),
+          Text(
+            t.label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+              fontSize: 11.5.sp,
+              fontWeight: FontWeight.w600,
+              color: _titleDark,
+            ),
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            t.sub,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+              fontSize: 9.sp,
+              color: _subtitleGrey,
+              height: 1.25,
+            ),
           ),
         ],
       ),
@@ -790,6 +775,7 @@ class _PlanScreenState extends State<PlanScreen> {
       'The payment requires admin approval before the plan becomes active.',
       'Principal is locked for the selected tenure and returned in full on maturity.',
       'Start Date is fixed at admin approval and never changes for the life of the plan.',
+      'Pre Plan duration is flexible — choose any term from 3 to 80 days at enrollment.',
     ];
     return Container(
       width: double.infinity,
@@ -984,7 +970,7 @@ class _PlanScreenState extends State<PlanScreen> {
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'You\'ve enrolled in all available plans (3, 6 & 12 month).',
+              'You\'ve enrolled in all available plans (Pre Plan, 3, 6 & 12 month).',
               style: TextStyle(
                 fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                 fontSize: 12.5.sp,

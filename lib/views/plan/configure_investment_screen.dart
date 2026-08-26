@@ -1,10 +1,12 @@
-﻿import 'dart:io';
+﻿import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/app_constants.dart';
+import '../../core/api/api_config.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
@@ -18,6 +20,7 @@ const _green = Color(0xFF1F6B45); // banner dark green
 const _greenMid = Color(0xFF9AE0BC); // banner gradient end
 const _grey = Color(0xFF6B7280);
 const _greyL = Color(0xFF9CA3AF);
+const _red = Color(0xFFDC2626);
 
 const _heroGrad = LinearGradient(
   colors: [Color(0xFFDCF3E5), Color(0xFF9AE0BC)],
@@ -37,16 +40,12 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
   String _amountText = '';
   static const _maxDigits = 8;
 
-  // Payment phase: null = amount entry, 'upi' = UPI phase.
-  // UPI / bank transfer (with admin approval) is the only supported payment
-  // method for starting an investment plan — wallet-based plan payments
-  // have been removed.
-  String? _paymentMethod; // always 'upi' once payment phase starts
+  // Payment phase: false = amount entry, true = wallet confirm-and-pay
+  // phase. Investment plans are now funded ONLY from the user's wallet
+  // balance — UPI / bank-transfer + payment-screenshot + UTR has been
+  // removed entirely.
   bool _paymentPhase = false;
-
-  final _utrCtrl = TextEditingController();
-  File? _screenshot;
-  bool _uploading = false;
+  bool _submitting = false;
 
   late final AnimationController _cursorCtrl;
 
@@ -72,13 +71,18 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
           _amountText.isEmpty) {
         setState(() => _amountText = presetAmount.toString());
       }
+      // Fetch the real wallet balance up front so the confirm sheet /
+      // wallet phase can show an accurate figure and gate submission
+      // without waiting on a round trip once the user taps through.
+      if (mounted) {
+        context.read<PlanViewModel>().loadWalletBalance();
+      }
     });
   }
 
   @override
   void dispose() {
     _cursorCtrl.dispose();
-    _utrCtrl.dispose();
     super.dispose();
   }
 
@@ -129,6 +133,8 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     return '${buf.toString()},$last3';
   }
 
+  String _inrDouble(double n) => _inr(n.round());
+
   // Sound + haptic feedback for each tap now lives in PremiumKeypadKey
   // (fired before this handler runs), so this only mutates the amount.
   void _onKeyTap(String key) {
@@ -148,36 +154,22 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     });
   }
 
-  Future<void> _pickScreenshot() async {
-    final xfile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (xfile != null) setState(() => _screenshot = File(xfile.path));
-  }
-
-  // ── Submit via UPI ─────────────────────────────────────────────────────────
-  Future<void> _submitUpiPayment() async {
-    final utr = _utrCtrl.text.trim();
-    if (utr.isEmpty || utr.length < 6) {
-      _toast('Please enter a valid UTR / Transaction ID');
-      return;
-    }
-    if (_screenshot == null) {
-      _toast('Please upload payment screenshot');
-      return;
-    }
-    setState(() => _uploading = true);
+  // ── Submit: locks the amount from the wallet balance and submits the
+  // plan through the existing admin approval flow. ──────────────────────────
+  Future<void> _submitWalletPayment() async {
     final vm = context.read<PlanViewModel>();
-    final bytes = await _screenshot!.readAsBytes();
-    final filename = 'plan_proof_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final proofUrl = await vm.uploadProof(bytes.toList(), filename) ?? '';
+    if (!vm.hasSufficientBalance(_amount)) {
+      _toast('Insufficient wallet balance');
+      return;
+    }
+    setState(() => _submitting = true);
     await vm.enrollPlan(
       planType: _planType,
       monthlyAmount: _amount,
-      utrId: utr,
-      proofImageUrl: proofUrl,
       durationDays: _isPrePlan ? _days : null,
     );
     if (!mounted) return;
-    setState(() => _uploading = false);
+    setState(() => _submitting = false);
     if (vm.enrollState == PlanVmState.success) {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -188,6 +180,186 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     } else {
       _toast(vm.enrollError ?? 'Submission failed. Please try again.');
     }
+  }
+
+  // Fetches whether the current user's KYC is approved. Used only to gate
+  // the "Add Money" action from the insufficient-wallet-balance dialog —
+  // Plan viewing/purchase itself never requires KYC.
+  Future<bool> _isKycApproved() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token') ?? '';
+      if (token.isEmpty) return false;
+      final res = await http
+          .get(
+            Uri.parse('${ApiConfig.baseUrl}/api/kyc/status'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        final status = (body['data']?['status'] as String?) ?? 'not_submitted';
+        return status == 'approved';
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  // Handles the "Add Money" tap from the insufficient-wallet-balance dialog.
+  // KYC-gated: approved users go straight to Deposit; everyone else sees a
+  // "Complete KYC" prompt with a link to the KYC Verification screen instead.
+  Future<void> _onAddMoneyFromInsufficientDialog() async {
+    final approved = await _isKycApproved();
+    if (!mounted) return;
+    if (approved) {
+      Navigator.pushNamed(context, AppRoutes.deposit);
+    } else {
+      _showKycRequiredForDepositDialog();
+    }
+  }
+
+  void _showKycRequiredForDepositDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.r),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.verified_user_outlined, size: 22.sp, color: _green),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Text(
+                'KYC Verification Required',
+                style: TextStyle(
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                  color: _dark,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Please complete your KYC verification before adding money.',
+          style: TextStyle(
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+            fontSize: 13.5.sp,
+            color: _grey,
+            height: 1.4,
+          ),
+        ),
+        actionsPadding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 13.5.sp,
+                fontWeight: FontWeight.w600,
+                color: _grey,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.pushNamed(context, AppRoutes.kyc);
+            },
+            child: Text(
+              'Go to KYC Verification',
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 13.5.sp,
+                fontWeight: FontWeight.w700,
+                color: _green,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Blocking warning dialog shown when the entered amount is higher than
+  // the user's available wallet balance at the moment they tap
+  // "Proceed to Pay". Keeps the user on the amount/confirm step instead of
+  // silently letting them fall through to the payment phase.
+  void _showInsufficientBalanceWarning(int amount, double walletBalance) {
+    final shortfall = (amount - walletBalance).clamp(0, double.infinity);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.r),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.error_outline, size: 22.sp, color: _red),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Text(
+                'Insufficient Wallet Balance',
+                style: TextStyle(
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                  color: _dark,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'The amount you entered (₹ ${_inr(amount)}) is higher than your '
+          'available wallet balance (₹ ${_inrDouble(walletBalance)}). '
+          'You need ₹ ${_inrDouble(shortfall.toDouble())} more to proceed '
+          'with this payment.',
+          style: TextStyle(
+            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+            fontSize: 13.5.sp,
+            color: _grey,
+            height: 1.4,
+          ),
+        ),
+        actionsPadding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Edit Amount',
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 13.5.sp,
+                fontWeight: FontWeight.w600,
+                color: _grey,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _onAddMoneyFromInsufficientDialog();
+            },
+            child: Text(
+              'Add Money',
+              style: TextStyle(
+                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 13.5.sp,
+                fontWeight: FontWeight.w700,
+                color: _green,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _toast(String msg) {
@@ -219,8 +391,8 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: _bg,
-        body: _paymentPhase && _paymentMethod == 'upi'
-            ? _buildUpiPaymentPhase(topPad, botPad)
+        body: _paymentPhase
+            ? _buildWalletPaymentPhase(topPad, botPad)
             : _buildAmountPhase(topPad, botPad),
       ),
     );
@@ -261,6 +433,7 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                           ),
                         ),
                       ),
+                      _walletRefreshButton(),
                     ],
                   ),
                   SizedBox(height: 24.h),
@@ -311,6 +484,8 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                       ),
                     ),
                   ),
+                  SizedBox(height: 16.h),
+                  Center(child: _walletBalancePill()),
                   SizedBox(height: 28.h),
                   _buildAmountDisplay(),
                 ],
@@ -393,6 +568,95 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
           ),
         ),
       ],
+    );
+  }
+
+  // ── Wallet balance refresh button (top-right of header) ───────────────────
+  // Re-fetches the real wallet balance from the backend on tap, so the user
+  // can confirm the figure is current right before confirming the plan
+  // (e.g. after just adding money via Deposit).
+  Widget _walletRefreshButton() {
+    return Consumer<PlanViewModel>(
+      builder: (context, vm, _) {
+        return GestureDetector(
+          onTap: vm.walletBalanceLoading
+              ? null
+              : () async {
+                  await vm.loadWalletBalance();
+                  if (!mounted) return;
+                  _toast('Wallet balance updated');
+                },
+          child: Container(
+            width: 36.w,
+            height: 36.h,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: vm.walletBalanceLoading
+                ? SizedBox(
+                    width: 16.w,
+                    height: 16.h,
+                    child: CircularProgressIndicator(
+                      color: _green,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Icon(Icons.refresh_rounded, size: 18.sp, color: _green),
+          ),
+        );
+      },
+    );
+  }
+
+  // Small pill showing the live wallet balance underneath the plan title,
+  // so the user knows upfront whether they can afford this plan.
+  Widget _walletBalancePill() {
+    return Consumer<PlanViewModel>(
+      builder: (context, vm, _) {
+        final insufficient = _amount > 0 && !vm.hasSufficientBalance(_amount);
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          decoration: BoxDecoration(
+            color: insufficient ? const Color(0xFFFDECEC) : const Color(0xFFF0FAF4),
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(
+              color: insufficient ? _red.withValues(alpha: 0.3) : const Color(0xFF9FDAB9),
+              width: 1.r,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 14.sp,
+                color: insufficient ? _red : _green,
+              ),
+              SizedBox(width: 6.w),
+              Text(
+                vm.walletBalanceLoading
+                    ? 'Loading wallet balance…'
+                    : 'Wallet Balance: ₹${_inrDouble(vm.walletBalance)}',
+                style: TextStyle(
+                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: insufficient ? _red : _green,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -482,8 +746,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     );
   }
 
-  // ── Confirm Sheet → Payment Method Selection ───────────────────────────────
+  // ── Confirm Sheet → Wallet Payment ─────────────────────────────────────────
   void _showConfirmSheet(int amount, int total) {
+    final vm = context.read<PlanViewModel>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -542,14 +807,18 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
               ),
               SizedBox(height: 12.h),
               _confirmRow('Principal', 'Locked until maturity'),
+              SizedBox(height: 12.h),
+              _confirmRow('Pay From', 'Wallet Balance'),
               SizedBox(height: 24.h),
               GestureDetector(
                 onTap: () {
+                  if (!vm.hasSufficientBalance(amount)) {
+                    Navigator.pop(ctx);
+                    _showInsufficientBalanceWarning(amount, vm.walletBalance);
+                    return;
+                  }
                   Navigator.pop(ctx);
-                  setState(() {
-                    _paymentMethod = 'upi';
-                    _paymentPhase = true;
-                  });
+                  setState(() => _paymentPhase = true);
                 },
                 child: Container(
                   width: double.infinity,
@@ -589,8 +858,8 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     );
   }
 
-  // ── Phase 2: UPI Payment ───────────────────────────────────────────────────
-  Widget _buildUpiPaymentPhase(double topPad, double botPad) {
+  // ── Phase 2: Wallet Payment (confirm & pay from wallet balance) ───────────
+  Widget _buildWalletPaymentPhase(double topPad, double botPad) {
     return Column(
       children: [
         Container(
@@ -599,16 +868,13 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
           child: Row(
             children: [
               GestureDetector(
-                onTap: () => setState(() {
-                  _paymentPhase = false;
-                  _paymentMethod = null;
-                }),
+                onTap: () => setState(() => _paymentPhase = false),
                 child: Icon(Icons.arrow_back, size: 22.sp, color: _dark),
               ),
               SizedBox(width: 14.w),
               Expanded(
                 child: Text(
-                  'Complete Payment',
+                  'Confirm Payment',
                   style: TextStyle(
                     fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 18.sp,
@@ -624,205 +890,94 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(20.w),
-                  decoration: BoxDecoration(
-                    gradient: _heroGrad,
-                    borderRadius: BorderRadius.circular(18.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9AE0BC).withValues(alpha: 0.4),
-                        blurRadius: 18,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'One-Time Investment',
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 12.sp,
-                              color: _green.withValues(alpha: 0.75),
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            '₹ ${_inr(_amount)}',
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 28.sp,
-                              fontWeight: FontWeight.w800,
-                              color: _dark,
-                            ),
+            child: Consumer<PlanViewModel>(
+              builder: (context, vm, _) {
+                final insufficient = !vm.hasSufficientBalance(_amount);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        gradient: _heroGrad,
+                        borderRadius: BorderRadius.circular(18.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF9AE0BC).withValues(alpha: 0.4),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            _planTitle,
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
-                              color: _green,
-                            ),
-                          ),
-                          Text(
-                            '$_rate Daily ROI',
-                            style: TextStyle(
-                              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                              fontSize: 12.sp,
-                              color: _green.withValues(alpha: 0.75),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                _PaymentDetailsCard(amount: _amount, inr: _inr),
-                SizedBox(height: 20.h),
-                Text(
-                  'Transaction Reference (UTR)',
-                  style: TextStyle(
-                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                    color: _grey,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Container(
-                  decoration: BoxDecoration(
-                    color: _white,
-                    borderRadius: BorderRadius.circular(14.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _utrCtrl,
-                    style: TextStyle(
-                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: _dark,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Enter UTR / Transaction ID',
-                      hintStyle: TextStyle(
-                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                        fontSize: 14.sp,
-                        color: _greyL,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.tag_rounded,
-                        color: _greenMid,
-                        size: 20.sp,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 16.h,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Text(
-                  'Payment Screenshot',
-                  style: TextStyle(
-                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                    color: _grey,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                GestureDetector(
-                  onTap: _pickScreenshot,
-                  child: Container(
-                    width: double.infinity,
-                    height: _screenshot != null ? 180 : 100,
-                    decoration: BoxDecoration(
-                      color: _white,
-                      borderRadius: BorderRadius.circular(14.r),
-                      border: Border.all(
-                        color: _greenMid.withValues(alpha: 0.3),
-                        width: 1.5.r,
-                      ),
-                    ),
-                    child: _screenshot != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(14.r),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Image.file(_screenshot!, fit: BoxFit.cover),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: GestureDetector(
-                                    onTap: () =>
-                                        setState(() => _screenshot = null),
-                                    child: Container(
-                                      width: 28.w,
-                                      height: 28.h,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.close,
-                                        color: _white,
-                                        size: 16.sp,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.upload_rounded,
-                                size: 32.sp,
-                                color: _greenMid.withValues(alpha: 0.7),
-                              ),
-                              SizedBox(height: 8.h),
                               Text(
-                                'Tap to upload screenshot',
+                                'One-Time Investment',
                                 style: TextStyle(
                                   fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                                  fontSize: 13.sp,
-                                  color: _grey,
+                                  fontSize: 12.sp,
+                                  color: _green.withValues(alpha: 0.75),
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                '₹ ${_inr(_amount)}',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                  fontSize: 28.sp,
+                                  fontWeight: FontWeight.w800,
+                                  color: _dark,
                                 ),
                               ),
                             ],
                           ),
-                  ),
-                ),
-                SizedBox(height: 32.h),
-              ],
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                _planTitle,
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: _green,
+                                ),
+                              ),
+                              Text(
+                                '$_rate Daily ROI',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                                  fontSize: 12.sp,
+                                  color: _green.withValues(alpha: 0.75),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    _WalletPaymentCard(
+                      amount: _amount,
+                      walletBalance: vm.walletBalance,
+                      loading: vm.walletBalanceLoading,
+                      insufficient: insufficient,
+                      inr: _inr,
+                      inrDouble: _inrDouble,
+                    ),
+                    if (insufficient) ...[
+                      SizedBox(height: 16.h),
+                      _insufficientBalanceBanner(),
+                    ],
+                    SizedBox(height: 32.h),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -834,8 +989,12 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
             20.w,
             botPad > 0 ? botPad : 20.h,
           ),
-          child: _uploading
-              ? Container(
+          child: Consumer<PlanViewModel>(
+            builder: (context, vm, _) {
+              final insufficient = !vm.hasSufficientBalance(_amount);
+              final disabled = insufficient || _submitting;
+              if (_submitting) {
+                return Container(
                   width: double.infinity,
                   height: 56.h,
                   decoration: BoxDecoration(
@@ -859,9 +1018,13 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                       ),
                     ),
                   ),
-                )
-              : GestureDetector(
-                  onTap: _submitUpiPayment,
+                );
+              }
+              return AnimatedOpacity(
+                opacity: disabled ? 0.5 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                child: GestureDetector(
+                  onTap: disabled ? null : _submitWalletPayment,
                   child: Container(
                     width: double.infinity,
                     height: 56.h,
@@ -884,7 +1047,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Confirm & Submit',
+                          insufficient
+                              ? 'Insufficient Wallet Balance'
+                              : 'Confirm & Pay from Wallet',
                           style: TextStyle(
                             fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                             fontSize: 16.sp,
@@ -894,7 +1059,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                         ),
                         SizedBox(width: 10.w),
                         Icon(
-                          Icons.check_circle_outline,
+                          insufficient
+                              ? Icons.error_outline
+                              : Icons.check_circle_outline,
                           size: 20.sp,
                           color: _green,
                         ),
@@ -902,8 +1069,81 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
                     ),
                   ),
                 ),
+              );
+            },
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _insufficientBalanceBanner() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFDECEC),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: _red.withValues(alpha: 0.3), width: 1.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.error_outline, size: 18.sp, color: _red),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'Insufficient wallet balance',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: _red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            'Your wallet balance is lower than this plan\'s investment amount. Add funds to your wallet to continue.',
+            style: TextStyle(
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+              fontSize: 12.5.sp,
+              color: _red.withValues(alpha: 0.85),
+            ),
+          ),
+          SizedBox(height: 12.h),
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.deposit),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: _red,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add_circle_outline, size: 15.sp, color: _white),
+                  SizedBox(width: 6.w),
+                  Text(
+                    'Add Money to Wallet',
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: _white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -959,39 +1199,30 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
   }
 }
 
-// ── Payment Details Card ──────────────────────────────────────────────────────
-class _PaymentDetailsCard extends StatefulWidget {
+// ── Wallet Payment Card ────────────────────────────────────────────────────
+// Replaces the old UPI/Bank-Transfer details card. Shows the investment
+// amount, the user's current wallet balance, and the balance remaining
+// after this plan is paid for (only when sufficient).
+class _WalletPaymentCard extends StatelessWidget {
   final int amount;
+  final double walletBalance;
+  final bool loading;
+  final bool insufficient;
   final String Function(int) inr;
-  const _PaymentDetailsCard({required this.amount, required this.inr});
-  @override
-  State<_PaymentDetailsCard> createState() => _PaymentDetailsCardState();
-}
+  final String Function(double) inrDouble;
 
-class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
-  bool _showBank = false;
-  static const _upiId = 'MONEYMINING@KVB';
-  static const _acName = 'Moneytries Investments';
-  static const _acNo = '1234567890';
-  static const _ifsc = 'KVB0001234';
-
-  void _copy(String val) {
-    Clipboard.setData(ClipboardData(text: val));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Copied!',
-          style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp),
-        ),
-        backgroundColor: const Color(0xFF4CAF7D),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
+  const _WalletPaymentCard({
+    required this.amount,
+    required this.walletBalance,
+    required this.loading,
+    required this.insufficient,
+    required this.inr,
+    required this.inrDouble,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final remaining = (walletBalance - amount).clamp(0, double.infinity);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1004,159 +1235,71 @@ class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Row(
+      child: Padding(
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                _tabBtn(
-                  'UPI',
-                  !_showBank,
-                  () => setState(() => _showBank = false),
+                Icon(
+                  Icons.account_balance_wallet_rounded,
+                  size: 18.sp,
+                  color: _green,
                 ),
-                SizedBox(width: 10.w),
-                _tabBtn(
-                  'Bank Transfer',
-                  _showBank,
-                  () => setState(() => _showBank = true),
+                SizedBox(width: 8.w),
+                Text(
+                  'Pay from Wallet Balance',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: _dark,
+                  ),
                 ),
               ],
             ),
-          ),
-          Divider(height: 1.h, color: Color(0xFFF0F0F0)),
-          Padding(
-            padding: EdgeInsets.all(20.w),
-            child: _showBank ? _bankDetails() : _upiDetails(),
-          ),
-        ],
+            SizedBox(height: 16.h),
+            _row('Available Wallet Balance', loading ? '…' : '₹ ${inrDouble(walletBalance)}'),
+            SizedBox(height: 10.h),
+            _row('Investment Amount', '₹ ${inr(amount)}'),
+            Divider(height: 24.h, color: const Color(0xFFF0F0F0)),
+            _row(
+              insufficient ? 'Shortfall' : 'Balance After Payment',
+              insufficient
+                  ? '₹ ${inrDouble(amount - walletBalance)}'
+                  : '₹ ${inrDouble(remaining.toDouble())}',
+              valueColor: insufficient ? _red : _green,
+              bold: true,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _tabBtn(String label, bool sel, VoidCallback onTap) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: sel ? const Color(0xFF4CAF7D) : const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w600,
-          color: sel ? Colors.white : const Color(0xFF6B7280),
-        ),
-      ),
-    ),
-  );
-
-  Widget _upiDetails() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _copyRow('UPI ID', _upiId),
-      SizedBox(height: 12.h),
-      _amountRow(),
-    ],
-  );
-
-  Widget _bankDetails() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _copyRow('Account Name', _acName),
-      SizedBox(height: 8.h),
-      _copyRow('Account Number', _acNo),
-      SizedBox(height: 8.h),
-      _copyRow('IFSC Code', _ifsc),
-      SizedBox(height: 12.h),
-      _amountRow(),
-    ],
-  );
-
-  Widget _copyRow(String label, String value) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 11.sp,
-              color: const Color(0xFF9CA3AF),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0D1F14),
-            ),
-          ),
-        ],
-      ),
-      GestureDetector(
-        onTap: () => _copy(value),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F5EE),
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.copy_rounded, size: 14.sp, color: Color(0xFF4CAF7D)),
-              SizedBox(width: 4.w),
-              Text(
-                'Copy',
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF4CAF7D),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget _amountRow() => Container(
-    padding: EdgeInsets.all(12.w),
-    decoration: BoxDecoration(
-      color: const Color(0xFFF0FAF4),
-      borderRadius: BorderRadius.circular(10.r),
-      border: Border.all(color: const Color(0xFF9FDAB9), width: 1.r),
-    ),
-    child: Row(
+  Widget _row(String label, String value, {Color? valueColor, bool bold = false}) {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Amount to Pay',
+          label,
           style: TextStyle(
             fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
             fontSize: 13.sp,
-            color: const Color(0xFF4CAF7D),
+            color: _grey,
           ),
         ),
         Text(
-          '₹ ${widget.inr(widget.amount)}',
+          value,
           style: TextStyle(
             fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF4CAF7D),
+            fontSize: bold ? 16.sp : 14.sp,
+            fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
+            color: valueColor ?? _dark,
           ),
         ),
       ],
-    ),
-  );
+    );
+  }
 }

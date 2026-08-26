@@ -194,9 +194,17 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (_) {}
   }
 
-  /// Returns true if KYC is approved and the caller may proceed.
-  /// If not approved, shows the KYC gate bottom-sheet and returns false.
-  bool _requireKyc() {
+  /// Re-fetches the latest KYC status from the backend and returns true if
+  /// approved, letting the caller proceed. If not approved, shows the KYC
+  /// gate bottom-sheet and returns false.
+  ///
+  /// Always re-fetches fresh rather than trusting `_kycStatus` as loaded in
+  /// initState — that value can go stale if an admin approves KYC while
+  /// this screen is already open, which used to leave Deposit/Withdraw
+  /// gated even after approval.
+  Future<bool> _requireKyc() async {
+    await _fetchKycStatus();
+    if (!mounted) return false;
     if (_kycStatus == 'approved') return true;
     _showKycGateSheet();
     return false;
@@ -265,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? 'Your KYC documents are being reviewed.\nThis usually takes 24–48 hours.'
                   : isRejected
                   ? 'Your KYC was rejected. Please re-submit\nyour documents to access this feature.'
-                  : 'You need to complete KYC verification\nbefore you can use Deposit, Withdraw,\nor Investment Plans.',
+                  : 'You need to complete KYC verification\nbefore you can use Deposit or Withdraw.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
@@ -445,16 +453,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           balanceLoading: _balanceLoading,
                           balanceError: _balanceError,
                           formatINR: _formatINR,
-                          onDeposit: () {
-                            if (_requireKyc()) {
+                          onDeposit: () async {
+                            if (await _requireKyc()) {
                               Navigator.pushNamed(
                                 context,
                                 AppRoutes.deposit,
                               ).then((_) => _fetchBalance());
                             }
                           },
-                          onWithdraw: () {
-                            if (_requireKyc()) {
+                          onWithdraw: () async {
+                            if (await _requireKyc()) {
                               Navigator.pushNamed(
                                 context,
                                 AppRoutes.withdrawal,
@@ -759,7 +767,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (action.label == 'History') {
           Navigator.pushNamed(context, AppRoutes.history);
         } else if (action.label == 'Plan') {
-          if (_requireKyc()) Navigator.pushNamed(context, AppRoutes.plan);
+          Navigator.pushNamed(context, AppRoutes.plan);
         } else if (action.label == 'Support') {
           Navigator.pushNamed(context, AppRoutes.support);
         } else if (action.label == 'KYC') {
@@ -1060,11 +1068,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (i == _selectedNavIndex) return;
     switch (i) {
       case 1:
-        if (_requireKyc())
-          Navigator.pushNamed(
-            context,
-            AppRoutes.plan,
-          ).then((_) => _fetchKycStatus());
+        Navigator.pushNamed(context, AppRoutes.plan);
         break;
       case 2:
         Navigator.pushNamed(context, AppRoutes.history);
