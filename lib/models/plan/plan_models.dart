@@ -318,6 +318,14 @@ class ActivePlan {
   final double? principalCreditedAmount;
   final DateTime? principalCreditedAt;
 
+  /// One-time investment model: any ROI that accrued but was never manually
+  /// withdrawn is auto-settled to the wallet alongside the principal at
+  /// maturity (see maturePlanIfDue() on the server). Null until the plan
+  /// matures, and null forever if the user had already withdrawn every
+  /// last paisa of ROI before maturity — there was nothing left to settle.
+  final double? roiSettledAmount;
+  final DateTime? roiSettledAt;
+
   /// Only set (and only meaningful) for [PlanType.prePlan], where duration
   /// is chosen by the user (3–80 days) at enrollment rather than fixed by
   /// the plan type. Null for every other plan type — use [planType]'s own
@@ -341,12 +349,19 @@ class ActivePlan {
     this.dailyRoiCredits = const [],
     this.principalCreditedAmount,
     this.principalCreditedAt,
+    this.roiSettledAmount,
+    this.roiSettledAt,
     this.customDurationDays,
   });
 
   /// True once the locked principal has actually been credited back to the
   /// wallet at maturity (the one-time investment model's terminal event).
   bool get isPrincipalCredited => principalCreditedAt != null;
+
+  /// True once the remaining unpaid ROI has actually been settled to the
+  /// wallet at maturity. Stays false forever if the user had already
+  /// withdrawn all ROI before maturity (nothing was left to settle).
+  bool get isRoiSettled => roiSettledAt != null;
 
   // ── Basic computed ─────────────────────────────────────────────────────────
   int get totalMonths => planType.months;
@@ -469,7 +484,16 @@ class ActivePlan {
     if (tiers.isEmpty) return 0.0;
 
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final rawToday = DateTime(now.year, now.month, now.day);
+    // Never earn ROI on/after maturity_date itself — that day is settlement
+    // (principal + remaining ROI credited to wallet by the backend), not an
+    // earning day. Mirrors accrueRoiForPlan()'s lastEarningDayUtc cap on the
+    // server so this client-side estimate never overstates ROI for an
+    // already-matured (or matured-today) plan.
+    final maturityOnly =
+        DateTime(maturityDate.year, maturityDate.month, maturityDate.day);
+    final lastEarningDay = maturityOnly.subtract(const Duration(days: 1));
+    final today = rawToday.isAfter(lastEarningDay) ? lastEarningDay : rawToday;
     if (today.isBefore(tiers.first.from)) return 0.0;
 
     double total = 0;
@@ -547,7 +571,12 @@ class ActivePlan {
     for (int day = 0; ; day++) {
       final dateOnly = startOnly.add(Duration(days: day));
       if (dateOnly.isAfter(todayOnly)) break;
-      if (dateOnly.isAfter(maturityOnly)) break;
+      // Stop BEFORE the maturity date itself — it's a settlement day
+      // (principal + remaining ROI credited by the backend), never an
+      // earning day. Previously this only broke when the date was AFTER
+      // maturity, which included the maturity date as one extra ROI day —
+      // the same off-by-one this whole fix addresses on the backend.
+      if (!dateOnly.isBefore(maturityOnly)) break;
 
       while (tierIdx + 1 < tiers.length &&
           !dateOnly.isBefore(tiers[tierIdx + 1].from)) {
@@ -669,6 +698,12 @@ class ActivePlan {
       principalCreditedAt: json['principal_credited_at'] != null
           ? DateTime.tryParse(json['principal_credited_at'].toString())
           : null,
+      roiSettledAmount: json['roi_settled_amount'] != null
+          ? double.tryParse(json['roi_settled_amount'].toString())
+          : null,
+      roiSettledAt: json['roi_settled_at'] != null
+          ? DateTime.tryParse(json['roi_settled_at'].toString())
+          : null,
     );
   }
 
@@ -690,6 +725,8 @@ class ActivePlan {
     List<DailyRoiCredit>? dailyRoiCredits,
     double? principalCreditedAmount,
     DateTime? principalCreditedAt,
+    double? roiSettledAmount,
+    DateTime? roiSettledAt,
     int? customDurationDays,
   }) {
     final newStart = startDate ?? this.startDate;
@@ -720,6 +757,8 @@ class ActivePlan {
       principalCreditedAmount:
           principalCreditedAmount ?? this.principalCreditedAmount,
       principalCreditedAt: principalCreditedAt ?? this.principalCreditedAt,
+      roiSettledAmount: roiSettledAmount ?? this.roiSettledAmount,
+      roiSettledAt: roiSettledAt ?? this.roiSettledAt,
       customDurationDays: newCustomDurationDays,
     );
   }

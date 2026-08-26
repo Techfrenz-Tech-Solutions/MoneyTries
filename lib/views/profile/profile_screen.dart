@@ -73,11 +73,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final vm = context.read<PlanViewModel>();
-      if (vm.plans.isEmpty) {
-        vm.loadPlans();
-      } else {
-        vm.loadPlanAmount();
-      }
+      // Always refresh on mount — Plan Balance must reflect the server's
+      // current plan/maturity state every time this screen is opened, not
+      // just the first time this session. A plan may have matured (its
+      // principal auto-credited to the wallet, see maturePlanIfDue() on the
+      // server) since the last time this screen — or the shared
+      // PlanViewModel — was touched, and loadPlans() is what reconciles
+      // planAmount against the server's authoritative figure (see its
+      // implementation in plan_viewmodel.dart).
+      vm.loadPlans();
     });
     _loadUserName();
   }

@@ -152,7 +152,10 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Theme(
-        data: ThemeData(brightness: Brightness.light, scaffoldBackgroundColor: _bg),
+        data: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: _bg,
+        ),
         child: Scaffold(
           backgroundColor: _bg,
           body: SafeArea(
@@ -163,7 +166,11 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                   padding: EdgeInsets.fromLTRB(12.w, 12.h, 0.w, 0.h),
                   child: IconButton(
                     onPressed: () => Navigator.of(context).maybePop(),
-                    icon: Icon(Icons.arrow_back_rounded, color: _titleColor, size: 22.sp),
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      color: _titleColor,
+                      size: 22.sp,
+                    ),
                     splashRadius: 22,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -197,7 +204,7 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                           ),
                           child: Center(
                             child: Icon(
-                              vm.forgotPinChannel == 'EMAIL'
+                              vm.forgotPinChannel == 'email'
                                   ? Icons.mark_email_read_rounded
                                   : Icons.sms_rounded,
                               size: 30.sp,
@@ -221,7 +228,7 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Enter the 6-digit code sent to your registered ${vm.forgotPinChannel == 'EMAIL' ? 'email' : 'phone'}',
+                          'Enter the 6-digit code sent to your registered ${vm.forgotPinChannel == 'email' ? 'email' : 'phone'}',
                           style: TextStyle(
                             fontFamily: AppFonts.primary,
                             fontFamilyFallback: AppFonts.fallbacks,
@@ -235,41 +242,50 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                         SegmentedButton<String>(
                           segments: const [
                             ButtonSegment(
-                              value: 'EMAIL',
+                              value: 'email',
                               icon: Icon(Icons.email_outlined),
                               label: Text('Email'),
                             ),
                             ButtonSegment(
-                              value: 'PHONE',
+                              value: 'sms',
                               icon: Icon(Icons.sms_outlined),
                               label: Text('Phone'),
                             ),
                           ],
                           selected: {vm.forgotPinChannel},
-                          onSelectionChanged: vm.isSendingForgotPinOtp || vm.isForgotPinLocked
+                          onSelectionChanged:
+                              vm.isSendingForgotPinOtp || vm.isForgotPinLocked
                               ? null
                               : (selection) async {
                                   final channel = selection.first;
                                   if (channel == vm.forgotPinChannel) return;
                                   _clearBoxes();
-                                  await vm.sendForgotLoginPinOtp(channel: channel);
+                                  await vm.sendForgotLoginPinOtp(
+                                    channel: channel,
+                                  );
                                 },
                         ),
 
                         if (vm.forgotPinDestinationMasked != null) ...[
                           SizedBox(height: 10.h),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 14.w,
+                              vertical: 8.h,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30.r),
-                              border: Border.all(color: _cardBorder, width: 1.r),
+                              border: Border.all(
+                                color: _cardBorder,
+                                width: 1.r,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  vm.forgotPinChannel == 'EMAIL'
+                                  vm.forgotPinChannel == 'email'
                                       ? Icons.mail_outline_rounded
                                       : Icons.phone_android_rounded,
                                   size: 14.sp,
@@ -294,39 +310,58 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                         SizedBox(height: 30.h),
 
                         if (vm.isForgotPinLocked)
-                          _LockedNotice(secondsLeft: vm.forgotPinLockSecondsLeft)
+                          _LockedNotice(
+                            secondsLeft: vm.forgotPinLockSecondsLeft,
+                          )
                         else ...[
                           Row(
                             children: [
-                              for (int i = 0; i < SecurityViewModel.forgotPinOtpLength; i++) ...[
+                              for (
+                                int i = 0;
+                                i < SecurityViewModel.forgotPinOtpLength;
+                                i++
+                              ) ...[
                                 Expanded(
                                   child: _OtpBox(
                                     controller: _controllers[i],
                                     focusNode: _focusNodes[i],
                                     hasError: vm.forgotPinError != null,
                                     onChanged: (val) {
-                                      if (val.length == 1 && i < SecurityViewModel.forgotPinOtpLength - 1) {
+                                      if (val.length == 1 &&
+                                          i <
+                                              SecurityViewModel
+                                                      .forgotPinOtpLength -
+                                                  1) {
                                         _focusNodes[i + 1].requestFocus();
                                       } else if (val.isEmpty && i > 0) {
                                         _focusNodes[i - 1].requestFocus();
                                       }
-                                      final joined = _controllers.map((c) => c.text).join();
+                                      final joined = _controllers
+                                          .map((c) => c.text)
+                                          .join();
                                       vm.forgotPinOtpChanged(joined);
-                                      if (joined.length == SecurityViewModel.forgotPinOtpLength) {
+                                      if (joined.length ==
+                                          SecurityViewModel
+                                              .forgotPinOtpLength) {
                                         _handleVerify(vm);
                                       }
                                     },
                                     onBackspace: () {
-                                      if (i > 0 && _controllers[i].text.isEmpty) {
+                                      if (i > 0 &&
+                                          _controllers[i].text.isEmpty) {
                                         _controllers[i - 1].clear();
                                         _focusNodes[i - 1].requestFocus();
-                                        final joined = _controllers.map((c) => c.text).join();
+                                        final joined = _controllers
+                                            .map((c) => c.text)
+                                            .join();
                                         vm.forgotPinOtpChanged(joined);
                                       }
                                     },
                                   ),
                                 ),
-                                if (i != SecurityViewModel.forgotPinOtpLength - 1) SizedBox(width: 8.w),
+                                if (i !=
+                                    SecurityViewModel.forgotPinOtpLength - 1)
+                                  SizedBox(width: 8.w),
                               ],
                             ],
                           ),
@@ -335,7 +370,10 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                             SizedBox(height: 12.h),
                             Container(
                               width: double.infinity,
-                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 8.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: _errorBg,
                                 borderRadius: BorderRadius.circular(10.r),
@@ -343,7 +381,11 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.error_outline_rounded, size: 13.sp, color: _errorRed),
+                                  Icon(
+                                    Icons.error_outline_rounded,
+                                    size: 13.sp,
+                                    color: _errorRed,
+                                  ),
                                   SizedBox(width: 4.w),
                                   Flexible(
                                     child: Text(
@@ -370,10 +412,15 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                                 ? SizedBox(
                                     width: 18.w,
                                     height: 18.h,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: _brandGreen),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: _brandGreen,
+                                    ),
                                   )
                                 : GestureDetector(
-                                    onTap: canResend ? () => vm.sendForgotLoginPinOtp() : null,
+                                    onTap: canResend
+                                        ? () => vm.sendForgotLoginPinOtp()
+                                        : null,
                                     child: Text(
                                       canResend
                                           ? 'Resend OTP'
@@ -383,7 +430,9 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                                         fontFamilyFallback: AppFonts.fallbacks,
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.w700,
-                                        color: canResend ? _deepEmerald : _timerGrey,
+                                        color: canResend
+                                            ? _deepEmerald
+                                            : _timerGrey,
                                       ),
                                     ),
                                   ),
@@ -401,19 +450,26 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                       width: double.infinity,
                       height: 54.h,
                       child: ElevatedButton(
-                        onPressed: vm.isVerifyingForgotPinOtp ? null : () => _handleVerify(vm),
+                        onPressed: vm.isVerifyingForgotPinOtp
+                            ? null
+                            : () => _handleVerify(vm),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _brandGreen,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
                         ),
                         child: vm.isVerifyingForgotPinOtp
                             ? SizedBox(
                                 width: 22.w,
                                 height: 22.h,
-                                child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.4,
+                                  color: Colors.white,
+                                ),
                               )
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -430,7 +486,11 @@ class _ForgotLoginPinBodyState extends State<_ForgotLoginPinBody> {
                                     ),
                                   ),
                                   SizedBox(width: 8.w),
-                                  Icon(Icons.arrow_forward_rounded, size: 18.sp, color: Colors.white),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 18.sp,
+                                    color: Colors.white,
+                                  ),
                                 ],
                               ),
                       ),
@@ -540,11 +600,17 @@ class _OtpBox extends StatelessWidget {
             fillColor: hasError ? _errorBg : _otpFill,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: hasError ? _errorRed : _otpIdleBorder, width: 1.5.r),
+              borderSide: BorderSide(
+                color: hasError ? _errorRed : _otpIdleBorder,
+                width: 1.5.r,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(color: hasError ? _errorRed : _otpIdleBorder, width: 1.5.r),
+              borderSide: BorderSide(
+                color: hasError ? _errorRed : _otpIdleBorder,
+                width: 1.5.r,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),

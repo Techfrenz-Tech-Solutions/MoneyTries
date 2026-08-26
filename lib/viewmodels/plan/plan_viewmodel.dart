@@ -17,10 +17,18 @@ class PlanViewModel extends ChangeNotifier {
   PlanVmState listState = PlanVmState.idle;
   String? listError;
 
+  // ── Wallet balance (plans are funded exclusively from this) ───────────────
+  double walletBalance = 0;
+  bool walletBalanceLoading = false;
+
   // ── Enroll / first payment ─────────────────────────────────────────────────
   PlanVmState enrollState = PlanVmState.idle;
   String? enrollError;
   ActivePlan? enrolledPlan;
+  // True specifically when the last enroll attempt failed because the
+  // wallet balance was too low, so the UI can show a persistent
+  // "Insufficient wallet balance" state instead of a one-off toast.
+  bool insufficientBalance = false;
 
   // ── ROI withdrawal ─────────────────────────────────────────────────────────
   PlanVmState roiState = PlanVmState.idle;
@@ -43,6 +51,10 @@ class PlanViewModel extends ChangeNotifier {
 
     try {
       plans = await _repo.fetchMyPlans();
+      // Instant, best-effort figure from the plans list that was just
+      // fetched (which already carries each plan's up-to-date status and
+      // principal_credited_at from the server) — shown immediately while
+      // the authoritative sum below is still in flight.
       _recomputePlanAmountLocally();
       listState = PlanVmState.success;
     } catch (e) {
@@ -50,7 +62,33 @@ class PlanViewModel extends ChangeNotifier {
       listState = PlanVmState.error;
     }
     notifyListeners();
+
+    // Reconcile against the server's own SUM(plan_amount) — the true
+    // source of truth, since it reads plan_amount directly (zeroed the
+    // instant maturePlanIfDue() runs) rather than the client's derived
+    // totalPrincipal figure. Runs after the list above so a freshly loaded
+    // Profile page — or any other screen calling loadPlans() — never keeps
+    // showing a matured plan's principal past this refresh.
+    if (listState == PlanVmState.success) {
+      await loadPlanAmount();
+    }
   }
+
+  // ── Wallet balance ─────────────────────────────────────────────────────────
+  Future<void> loadWalletBalance() async {
+    walletBalanceLoading = true;
+    notifyListeners();
+    try {
+      walletBalance = await _repo.fetchWalletBalance();
+    } catch (_) {
+      // Leave the last known value in place on failure.
+    }
+    walletBalanceLoading = false;
+    notifyListeners();
+  }
+
+  /// Whether the current wallet balance covers the given plan amount.
+  bool hasSufficientBalance(int amount) => walletBalance >= amount;
 
   // ── Profile plan amount ────────────────────────────────────────────────────
   Future<void> loadPlanAmount() async {
@@ -62,12 +100,20 @@ class PlanViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Profile plan amount ────────────────────────────────────────────────────
+  // "Plan Balance" = principal still locked in a currently active/not-yet-
+  // matured plan. The moment a plan matures, maturePlanIfDue() on the server
+  // auto-credits its principal to the wallet and marks the plan 'completed'
+  // — from that instant its principal must stop counting here. Both signals
+  // (status == completed, and isPrincipalCredited — set the moment the
+  // credit actually lands) are checked so this stays correct even in the
+  // brief edge case where one has updated but the other hasn't yet.
   void _recomputePlanAmountLocally() {
     double total = 0;
     for (final p in plans) {
-      if (p.status == PlanStatus.active ||
-          p.status == PlanStatus.approved ||
-          p.status == PlanStatus.completed) {
+      final isMatured = p.status == PlanStatus.completed || p.isPrincipalCredited;
+      if (isMatured) continue; // matured — principal already left this pool
+      if (p.status == PlanStatus.active || p.status == PlanStatus.approved) {
         total += p.totalPrincipal;
       }
     }
@@ -102,29 +148,41 @@ class PlanViewModel extends ChangeNotifier {
   List<ActivePlan> getPlansForType(PlanType type) =>
       plans.where((p) => p.planType == type).toList();
 
-  // ── Enroll via UPI (first payment, requires admin approval) ───────────────
+  // ── Enroll, paid from wallet balance (requires admin approval) ────────────
   Future<void> enrollPlan({
     required PlanType planType,
     required int monthlyAmount,
-    required String utrId,
-    required String proofImageUrl,
     int? durationDays,
   }) async {
     if (monthlyAmount < AppConstants.minPlanAmount) {
       enrollError = AppConstants.minPlanAmountMessage;
       enrollState = PlanVmState.error;
+      insufficientBalance = false;
       notifyListeners();
       return;
     }
     if (monthlyAmount > AppConstants.maxTransactionAmount) {
       enrollError = AppConstants.maxTransactionAmountMessage;
       enrollState = PlanVmState.error;
+      insufficientBalance = false;
+      notifyListeners();
+      return;
+    }
+    // Client-side pre-check for a snappy "Insufficient wallet balance"
+    // message — the backend re-checks the up-to-the-millisecond balance
+    // and is the authoritative guard, this just avoids a round trip when
+    // it's obviously not going to work.
+    if (!hasSufficientBalance(monthlyAmount)) {
+      enrollError = 'Insufficient wallet balance';
+      enrollState = PlanVmState.error;
+      insufficientBalance = true;
       notifyListeners();
       return;
     }
 
     enrollState = PlanVmState.loading;
     enrollError = null;
+    insufficientBalance = false;
     enrolledPlan = null;
     notifyListeners();
 
@@ -132,17 +190,26 @@ class PlanViewModel extends ChangeNotifier {
       enrolledPlan = await _repo.enrollPlan(
         planType: planType,
         monthlyAmount: monthlyAmount,
-        utrId: utrId,
-        proofImageUrl: proofImageUrl,
         durationDays: durationDays,
       );
       plans.add(enrolledPlan!);
       _recomputePlanAmountLocally();
+      // The amount was just locked from the wallet — refresh the balance
+      // so any screen reading it (this one included) shows the new figure.
+      walletBalance = (walletBalance - monthlyAmount).clamp(0, double.infinity);
       enrollState = PlanVmState.success;
       InteractionFeedback.planActivated();
     } catch (e) {
-      enrollError = e.toString().replaceFirst('Exception: ', '');
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      enrollError = msg;
+      insufficientBalance = msg.toLowerCase().contains('insufficient wallet balance');
       enrollState = PlanVmState.error;
+      // The backend is the source of truth on balance — resync in case our
+      // local optimistic figure had drifted (e.g. another device spent
+      // from the wallet in the meantime).
+      if (insufficientBalance) {
+        await loadWalletBalance();
+      }
     }
     notifyListeners();
   }
@@ -188,20 +255,12 @@ class PlanViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Upload proof ───────────────────────────────────────────────────────────
-  Future<String?> uploadProof(List<int> bytes, String filename) async {
-    try {
-      return await _repo.uploadProof(bytes, filename);
-    } catch (_) {
-      return null;
-    }
-  }
-
   // ── Resets ─────────────────────────────────────────────────────────────────
   void resetEnroll() {
     enrollState = PlanVmState.idle;
     enrollError = null;
     enrolledPlan = null;
+    insufficientBalance = false;
     notifyListeners();
   }
 

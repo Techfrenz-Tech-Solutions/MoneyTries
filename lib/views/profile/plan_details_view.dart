@@ -1,16 +1,12 @@
-﻿import 'dart:convert';
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
 import '../../utils/responsive.dart';
-import '../../core/api/api_config.dart';
 
 // ── Premium Fintech Palette — light green / light brown / beige / white ────
 // Deliberately NO dark/deep green anywhere in this file.
@@ -491,145 +487,14 @@ class _PlanDetailsViewState extends State<PlanDetailsView>
     );
   }
 
-  // ── KYC gate ──────────────────────────────────────────────────────────────
-  Future<String> _fetchKycStatus() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token') ?? '';
-      if (token.isEmpty) return 'not_submitted';
-      const baseUrl = ApiConfig.baseUrl;
-      final res = await http
-          .get(
-            Uri.parse('$baseUrl/api/kyc/status'),
-            headers: {'Authorization': 'Bearer $token'},
-          )
-          .timeout(const Duration(seconds: 10));
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        return (body['data']?['status'] as String?) ?? 'not_submitted';
-      }
-    } catch (_) {}
-    return 'not_submitted';
-  }
-
-  Future<void> _onStartPlan() async {
-    final kycStatus = await _fetchKycStatus();
-    if (!mounted) return;
-
-    if (kycStatus == 'approved') {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.plan,
-        (r) => r.settings.name == AppRoutes.home,
-      );
-      return;
-    }
-
-    String title;
-    String message;
-    String actionLabel;
-    VoidCallback onAction;
-
-    if (kycStatus == 'pending') {
-      title = 'KYC Under Review';
-      message =
-          'Your KYC documents are being reviewed. You can start investing once they are approved.';
-      actionLabel = 'OK';
-      onAction = () => Navigator.pop(context);
-    } else if (kycStatus == 'rejected') {
-      title = 'KYC Rejected';
-      message =
-          'Your KYC was rejected. Please resubmit your documents to start investing.';
-      actionLabel = 'Resubmit KYC';
-      onAction = () {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, AppRoutes.kyc);
-      };
-    } else {
-      title = 'KYC Required';
-      message =
-          'You need to complete KYC verification before starting an investment plan.';
-      actionLabel = 'Complete KYC';
-      onAction = () {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, AppRoutes.kyc);
-      };
-    }
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22.r),
-        ),
-        backgroundColor: _white,
-        title: Row(
-          children: [
-            Container(
-              width: 36.w,
-              height: 36.h,
-              decoration: BoxDecoration(
-                color: kycStatus == 'pending' ? _brownSurface : _greenSurface,
-                borderRadius: BorderRadius.circular(11.r),
-              ),
-              child: Icon(
-                kycStatus == 'pending'
-                    ? Icons.hourglass_top_rounded
-                    : Icons.verified_user_outlined,
-                color: kycStatus == 'pending' ? _brownText : _greenText,
-                size: 20.sp,
-              ),
-            ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w800,
-                  color: _dark,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          message,
-          style: TextStyle(
-            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-            fontSize: 13.sp,
-            color: _grey,
-            height: 1.5,
-          ),
-        ),
-        actions: [
-          if (kycStatus != 'pending')
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 13.sp,
-                  color: _greyLight,
-                ),
-              ),
-            ),
-          TextButton(
-            onPressed: onAction,
-            child: Text(
-              actionLabel,
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w700,
-                color: _greenText,
-              ),
-            ),
-          ),
-        ],
-      ),
+  /// Navigates to Investment Plans. Plans can be viewed and started without
+  /// KYC verification — KYC is required only for Deposit and Withdrawal
+  /// (see depositController.js / withdrawalController.js on the backend).
+  void _onStartPlan() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.plan,
+      (r) => r.settings.name == AppRoutes.home,
     );
   }
 

@@ -543,6 +543,15 @@ class _ActivePlanScreenState extends State<ActivePlanScreen> {
             valueColor: _green,
           ),
         ],
+        if (_plan.isRoiSettled) ...[
+          _divLine(),
+          _detailRow(
+            'ROI Settled',
+            '₹ ${_inr((_plan.roiSettledAmount ?? 0).round())}',
+            note: 'Remaining unpaid ROI auto-credited at maturity',
+            valueColor: _green,
+          ),
+        ],
         if (_plan.status == PlanStatus.active) ...[
           SizedBox(height: 14.h),
           ClipRRect(

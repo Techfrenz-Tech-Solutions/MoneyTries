@@ -4,6 +4,7 @@ import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_constants.dart';
+import '../../routes/app_routes.dart';
 import '../../models/withdrawal/withdrawal_models.dart';
 import '../../viewmodels/withdrawal/withdrawal_viewmodel.dart';
 import '../../viewmodels/security/security_viewmodel.dart';
@@ -555,15 +556,37 @@ class _WithdrawalScreenContentState extends State<_WithdrawalScreenContent> {
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: const Color(0xFFFDE68A)),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.warning_amber_rounded, size: 20.sp, color: _warningAmber),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Text(
-              'KYC verification required. Please complete KYC to enable withdrawals.',
-              style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w500, color: const Color(0xFF92400E), height: 1.45),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.warning_amber_rounded, size: 20.sp, color: _warningAmber),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Text(
+                  'KYC verification required. Please complete KYC to enable withdrawals.',
+                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,fontSize: 13.sp, fontWeight: FontWeight.w500, color: const Color(0xFF92400E), height: 1.45),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.kyc),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF92400E),
+                side: const BorderSide(color: Color(0xFF92400E)),
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+              ),
+              child: Text(
+                'Complete KYC',
+                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp, fontWeight: FontWeight.w700),
+              ),
             ),
           ),
         ],

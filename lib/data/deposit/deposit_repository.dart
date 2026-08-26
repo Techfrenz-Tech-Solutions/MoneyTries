@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/deposit/deposit_models.dart';
+import '../../models/withdrawal/withdrawal_models.dart' show KycStatus;
 import '../../core/api/api_config.dart';
 
 const String _kBaseUrl = ApiConfig.baseUrl;
@@ -162,5 +163,27 @@ class DepositRepository {
       return result.data.first;
     }
     return null;
+  }
+
+  // ── KYC status ─────────────────────────────────────────────────────────────
+  /// Deposit requires approved KYC — fetches whether the current user's KYC
+  /// is approved so the Deposit screen can block submission and prompt the
+  /// user to complete KYC, the same way the Withdrawal screen already does.
+  Future<KycStatus> fetchKycStatus() async {
+    final token = await _getToken();
+    final uri   = Uri.parse('$_kBaseUrl/api/deposit/kyc-status');
+    final response = await _client.get(uri, headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type':  'application/json',
+    });
+
+    Map<String, dynamic> json = {};
+    try { json = jsonDecode(response.body) as Map<String, dynamic>; } catch (_) {}
+
+    if (response.statusCode != 200) {
+      throw Exception(json['message'] ?? 'KYC fetch failed (${response.statusCode}).');
+    }
+
+    return KycStatus.fromJson(json['data'] ?? json);
   }
 }

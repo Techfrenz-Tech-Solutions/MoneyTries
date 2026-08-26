@@ -279,6 +279,30 @@ class HistoryViewModel extends ChangeNotifier {
             date:     plan.principalCreditedAt,
           ));
         }
+
+        // One-time investment model's other terminal event: any ROI that
+        // accrued but was never manually withdrawn is auto-settled to the
+        // wallet alongside the principal at maturity (see maturePlanIfDue()
+        // on the server). Only appears once per plan, and only when there
+        // was actually something left unpaid — a plan the user had already
+        // withdrawn every last paisa of ROI from before maturity settles
+        // ₹0 and never gets this entry. Counted into totalWithdrawn too,
+        // since it permanently moves the amount out of the pending ROI
+        // pool exactly like a manual withdrawal does.
+        if (plan.isRoiSettled) {
+          final settledAmount = plan.roiSettledAmount ?? 0;
+          roiList.add(HistoryTxn(
+            id:       'roi_settled_${plan.id}',
+            type:     TxnType.roi,
+            title:    'ROI Settled',
+            subtitle: '${_planLabel(plan)} • Matured — To Wallet',
+            amount:   settledAmount,
+            isCredit: true,
+            status:   'approved',
+            date:     plan.roiSettledAt,
+          ));
+          totalWithdrawn += settledAmount;
+        }
       }
 
       // Sort newest first

@@ -49,14 +49,8 @@ class SecurityViewModel extends ChangeNotifier {
   String? _message;
   String? get message => _message;
 
-  bool _isLoadingSessions = false;
-  bool get isLoadingSessions => _isLoadingSessions;
-
   bool _isLoadingHistory = false;
   bool get isLoadingHistory => _isLoadingHistory;
-
-  List<DeviceSession> _sessions = [];
-  List<DeviceSession> get sessions => _sessions;
 
   List<LoginEvent> _loginHistory = [];
   List<LoginEvent> get loginHistory => _loginHistory;
@@ -171,11 +165,25 @@ class SecurityViewModel extends ChangeNotifier {
   String? _forgotPinEmailMasked;
   String? get forgotPinEmailMasked => _forgotPinEmailMasked;
 
-  String _forgotPinChannel = 'EMAIL';
-  String get forgotPinChannel => _forgotPinChannel;
+  // ── SMS OTP option ────────────────────────────────────────────────────
+  String? _forgotPinPhoneMasked;
+  String? get forgotPinPhoneMasked => _forgotPinPhoneMasked;
 
-  String? _forgotPinDestinationMasked;
-  String? get forgotPinDestinationMasked => _forgotPinDestinationMasked;
+  bool _forgotPinSmsAvailable = false;
+  bool get forgotPinSmsAvailable => _forgotPinSmsAvailable;
+
+  // Which channel the current/most-recent OTP was sent through. Drives
+  // both the "sent to ..." copy and which channel a plain "Resend OTP"
+  // repeats.
+  String _forgotPinChannel = 'email';
+  String get forgotPinChannel => _forgotPinChannel;
+  bool get isForgotPinChannelSms => _forgotPinChannel == 'sms';
+
+  // True only while the SMS-specific button's own send is in flight, so the
+  // "Resend OTP" and "Send OTP via SMS" controls can show independent
+  // loading states even though both share isSendingForgotPinOtp.
+  bool _isSendingForgotPinSmsOtp = false;
+  bool get isSendingForgotPinSmsOtp => _isSendingForgotPinSmsOtp;
 
   int _forgotPinOtpExpirySeconds = 300;
   int get forgotPinOtpExpirySeconds => _forgotPinOtpExpirySeconds;
@@ -197,16 +205,18 @@ class SecurityViewModel extends ChangeNotifier {
   bool get canResendForgotPinOtp =>
       !_isForgotPinLocked && _forgotPinResendCooldownLeft == 0;
 
+  /// Returns the masked destination (email or phone) for the active channel.
+  String? get forgotPinDestinationMasked => _forgotPinChannel == 'sms'
+      ? _forgotPinPhoneMasked
+      : _forgotPinEmailMasked;
+
   // ── Init ──────────────────────────────────────────────────────────────────
   SecurityViewModel() {
     _init();
   }
 
   Future<void> _init() async {
-    await Future.wait([
-      _checkBiometrics(),
-      _loadPreferences(),
-    ]);
+    await Future.wait([_checkBiometrics(), _loadPreferences()]);
   }
 
   Future<void> _checkBiometrics() async {
@@ -227,7 +237,9 @@ class SecurityViewModel extends ChangeNotifier {
     // because it has no local cache.
     final pinStatus = await _repo.getPinsStatus();
 
-    if (!_biometricsEnabled && pinStatus.biometricEnabled && _biometricsAvailable) {
+    if (!_biometricsEnabled &&
+        pinStatus.biometricEnabled &&
+        _biometricsAvailable) {
       // The account has biometric login turned on from another device.
       // Mirror the toggle state locally so Security Settings reflects it —
       // actually unlocking with biometrics on this device still requires
@@ -548,8 +560,10 @@ class SecurityViewModel extends ChangeNotifier {
     _isVerifyingForgotPinOtp = false;
     _forgotPinError = null;
     _forgotPinEmailMasked = null;
-    _forgotPinChannel = 'EMAIL';
-    _forgotPinDestinationMasked = null;
+    _forgotPinPhoneMasked = null;
+    _forgotPinSmsAvailable = false;
+    _forgotPinChannel = 'email';
+    _isSendingForgotPinSmsOtp = false;
     _forgotPinOtpExpirySeconds = 300;
     _forgotPinOtpVerified = false;
     _isForgotPinLocked = false;
@@ -565,10 +579,11 @@ class SecurityViewModel extends ChangeNotifier {
   Future<void> loadForgotLoginPinStatus() async {
     final status = await _repo.getForgotLoginPinStatus();
     _forgotPinEmailMasked = status.email ?? _forgotPinEmailMasked;
-    _forgotPinChannel = status.channel ?? _forgotPinChannel;
-    _forgotPinDestinationMasked = status.destination ??
-        (_forgotPinChannel == 'PHONE' ? status.phone : status.email) ??
-        _forgotPinDestinationMasked;
+    _forgotPinPhoneMasked = status.phone ?? _forgotPinPhoneMasked;
+    _forgotPinSmsAvailable = status.smsAvailable;
+    if (status.channel == 'email' || status.channel == 'sms') {
+      _forgotPinChannel = status.channel!;
+    }
     if (status.locked && status.lockedRemainingSeconds > 0) {
       _startForgotPinLockCountdown(status.lockedRemainingSeconds);
     } else if (status.retryAfterSeconds > 0) {
@@ -607,31 +622,39 @@ class SecurityViewModel extends ChangeNotifier {
     });
   }
 
-  /// Sends a 6-digit OTP over the selected channel. Switching channels is
-  /// allowed during the resend cooldown because the backend invalidates the
-  /// previous code and explicitly permits that transition.
+  /// Sends a 6-digit OTP via [channel] ('email', the default, or 'sms').
+  /// Also used for "Resend OTP" — called with no arguments, it repeats
+  /// whichever channel was last used (_forgotPinChannel) — and for
+  /// "Send OTP via SMS", which passes channel: 'sms' explicitly. The
+  /// backend enforces the resend cooldown / rate limit regardless (shared
+  /// across both channels), but canResendForgotPinOtp lets the UI disable
+  /// the buttons proactively too. Returns true if the OTP was sent.
   Future<bool> sendForgotLoginPinOtp({String? channel}) async {
-    final requestedChannel = channel ?? _forgotPinChannel;
-    final switchingChannel = requestedChannel != _forgotPinChannel;
     if (_isForgotPinLocked ||
-        (!switchingChannel && !canResendForgotPinOtp) ||
+        !canResendForgotPinOtp ||
         _isSendingForgotPinOtp) {
       return false;
     }
 
+    final effectiveChannel = channel ?? _forgotPinChannel;
+    final isSms = effectiveChannel == 'sms';
+
     _isSendingForgotPinOtp = true;
+    if (isSms) _isSendingForgotPinSmsOtp = true;
     _forgotPinError = null;
     notifyListeners();
 
-    final result = await _repo.sendForgotLoginPinOtp(requestedChannel);
+    final result = await _repo.sendForgotLoginPinOtp(channel: effectiveChannel);
     _isSendingForgotPinOtp = false;
+    _isSendingForgotPinSmsOtp = false;
 
     if (result.success) {
-      _forgotPinEmailMasked = result.email ?? _forgotPinEmailMasked;
-      _forgotPinChannel = result.channel ?? requestedChannel;
-      _forgotPinDestinationMasked = result.destination ??
-          (_forgotPinChannel == 'PHONE' ? result.phone : result.email) ??
-          _forgotPinDestinationMasked;
+      _forgotPinChannel = result.channel ?? effectiveChannel;
+      if (isSms) {
+        _forgotPinPhoneMasked = result.phone ?? _forgotPinPhoneMasked;
+      } else {
+        _forgotPinEmailMasked = result.email ?? _forgotPinEmailMasked;
+      }
       _forgotPinOtpExpirySeconds = result.expiresInSeconds;
       _forgotPinOtpEntry.clear();
       _forgotPinError = null;
@@ -650,6 +673,26 @@ class SecurityViewModel extends ChangeNotifier {
     _forgotPinError = result.message;
     notifyListeners();
     return false;
+  }
+
+  /// Convenience wrapper for the "Send OTP via SMS" button.
+  Future<bool> sendForgotLoginPinOtpViaSms() =>
+      sendForgotLoginPinOtp(channel: 'sms');
+
+  /// Convenience wrapper for the "Send OTP to Email" button (used both for
+  /// the initial method-choice step and for switching back to email from
+  /// the SMS OTP screen).
+  Future<bool> sendForgotLoginPinOtpViaEmail() =>
+      sendForgotLoginPinOtp(channel: 'email');
+
+  /// Clears any entered OTP digits and error without touching lock/cooldown
+  /// timers or the masked email/phone/channel state — used when the user
+  /// navigates back from the OTP step to the method-choice step so the
+  /// resend cooldown (already running server-side) keeps ticking correctly.
+  void clearForgotPinOtpInput() {
+    _forgotPinOtpEntry.clear();
+    _forgotPinError = null;
+    notifyListeners();
   }
 
   void forgotPinOtpKeyPress(int digit) {
@@ -845,34 +888,6 @@ class SecurityViewModel extends ChangeNotifier {
 
   void clearChangePasswordError() {
     _changePasswordError = null;
-    notifyListeners();
-  }
-
-  // ── Sessions ──────────────────────────────────────────────────────────────
-  Future<void> loadSessions() async {
-    _isLoadingSessions = true;
-    notifyListeners();
-
-    _sessions = await _repo.getSessions();
-
-    _isLoadingSessions = false;
-    notifyListeners();
-  }
-
-  Future<void> revokeSession(String sessionId) async {
-    _action = SecurityAction.loading;
-    notifyListeners();
-
-    final error = await _repo.revokeSession(sessionId);
-
-    if (error == null) {
-      _sessions = await _repo.getSessions();
-      _action = SecurityAction.idle;
-      _message = 'Device signed out successfully.';
-    } else {
-      _action = SecurityAction.error;
-      _message = error;
-    }
     notifyListeners();
   }
 

@@ -57,12 +57,14 @@ class PlanRepository {
     }
   }
 
-  // ── Enroll (first month payment + plan creation) via UPI ──────────────────
+  // ── Enroll (one-time investment, paid exclusively from wallet balance) ────
+  // The old UPI/bank-transfer + payment-screenshot + UTR flow has been
+  // removed. The backend deducts/locks `monthlyAmount` from the user's
+  // wallet balance (users.balance) at submission time and returns
+  // 'Insufficient wallet balance' (422) if the balance is too low.
   Future<ActivePlan> enrollPlan({
     required PlanType planType,
     required int monthlyAmount,
-    required String utrId,
-    required String proofImageUrl,
     // Only relevant for PlanType.prePlan (3–80 user-chosen days). Sent as
     // 'duration_days' for a forward-looking backend that adds Pre Plan
     // support; harmless/ignored by the current 3/6/12-month-only backend.
@@ -82,8 +84,6 @@ class PlanRepository {
               // month count.
               'plan_type': planType.apiKey,
               'monthly_amount': monthlyAmount,
-              'utr_id': utrId,
-              'proof_image': proofImageUrl,
               if (planType == PlanType.prePlan && durationDays != null)
                 'duration_days': durationDays,
             }),
@@ -164,36 +164,31 @@ class PlanRepository {
     return PrincipalWithdrawalResponse.fromJson(json);
   }
 
-  // ── Upload proof image ────────────────────────────────────────────────────
-  Future<String> uploadProof(List<int> fileBytes, String filename) async {
-    final token = await _getToken();
-    final uri = Uri.parse('$_kBaseUrl/api/deposit/upload');
+  // ── Wallet balance (for pre-submit sufficiency check) ──────────────────────
+  // Reuses the existing GET /api/withdrawal/balances endpoint (already used
+  // by the Withdrawal screen) instead of adding a new plan-specific route.
+  Future<double> fetchWalletBalance() async {
+    try {
+      final uri = Uri.parse('$_kBaseUrl/api/withdrawal/balances');
+      final response = await _client
+          .get(uri, headers: await _headers())
+          .timeout(const Duration(seconds: 10));
 
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(
-        http.MultipartFile.fromBytes('file', fileBytes, filename: filename),
-      );
-
-    final streamed = await _client.send(request);
-    final body = await streamed.stream.bytesToString();
-
-    if (streamed.statusCode != 200 && streamed.statusCode != 201) {
-      Map<String, dynamic> errJson = {};
+      Map<String, dynamic> json = {};
       try {
-        errJson = jsonDecode(body) as Map<String, dynamic>;
+        json = jsonDecode(response.body) as Map<String, dynamic>;
       } catch (_) {}
-      throw Exception(
-        errJson['message'] ?? 'Image upload failed (${streamed.statusCode})',
-      );
-    }
 
-    final json = jsonDecode(body) as Map<String, dynamic>;
-    final data = json['data'] ?? json;
-    return (data as Map<String, dynamic>)['proof_image']?.toString() ??
-        data['url']?.toString() ??
-        data['image_url']?.toString() ??
-        '';
+      if (response.statusCode != 200) return 0;
+
+      final data = json['data'] ?? json;
+      return double.tryParse(
+            (data as Map<String, dynamic>)['wallet_balance']?.toString() ?? '0',
+          ) ??
+          0.0;
+    } catch (_) {
+      return 0;
+    }
   }
 
   // ── Profile: plan amount ──────────────────────────────────────────────────
