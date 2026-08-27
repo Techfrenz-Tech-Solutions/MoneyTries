@@ -21,8 +21,9 @@ class _PlanComparison {
   final double dailyRoiAmount;
   final double estimatedTotalRoi;
   final double estimatedTotalReturn;
-  /// Resolved duration in days — the fixed 90/180/360 for 3/6/12 month
-  /// plans, or the user-entered value (3–80) for Pre Plan.
+  /// Resolved duration in days for this comparison — the fixed 90/180/360
+  /// for 3/6/12 month plans, or the currently selected value (from the
+  /// Pre Plan card's +/- day selector, minimum 1) for Pre Plan.
   final int durationDays;
 
   const _PlanComparison({
@@ -40,18 +41,49 @@ class _PlanComparison {
 ///   Enter Investment Amount → Show Plan Comparison → Select Plan → T&C →
 ///   Submit Request → Admin Approval → First Payment → Active Plan.
 ///
-/// Renders the plan tiers (3M / 6M / 12M) side-by-side as comparison cards,
-/// with every figure computed dynamically from the amount entered on the
-/// previous screen, so the user can compare potential profit before picking
-/// a plan. Selecting a plan continues into the existing, unchanged flow
-/// (Terms & Conditions → Configure/Submit → Admin Approval → Active Plan).
+/// Renders the plan tiers (Pre Plan / 3M / 6M / 12M) side-by-side as
+/// comparison cards, with every figure computed dynamically from the amount
+/// entered on the previous screen, so the user can compare potential profit
+/// before picking a plan. Selecting a plan continues into the existing,
+/// unchanged flow (Terms & Conditions → Configure/Submit → Admin Approval →
+/// Active Plan).
+///
+/// Pre Plan's card additionally carries a +/- day selector (defaults to 7
+/// days, decreasable to a minimum of 1 day, capped at a maximum of 100
+/// days) — the only plan whose duration isn't fixed. Changing it
+/// live-recalculates that card's Daily ROI Amount, Estimated Total ROI,
+/// Estimated Total Return, and Total Days; the 3/6/12 month cards are
+/// unaffected and stay fixed at 90/180/360 days.
 ///
 /// Optionally receives `excludeTypes` (a `List<String>` of `PlanType.name`
 /// values) via route arguments — plan types the user already holds are
 /// never shown here again, so only the plans still available to them are
-/// compared. When omitted, all 3 plans are compared as before.
-class PlanComparisonScreen extends StatelessWidget {
+/// compared. When omitted, all 4 plans are compared as before.
+class PlanComparisonScreen extends StatefulWidget {
   const PlanComparisonScreen({super.key});
+
+  @override
+  State<PlanComparisonScreen> createState() => _PlanComparisonScreenState();
+}
+
+class _PlanComparisonScreenState extends State<PlanComparisonScreen> {
+  /// Pre Plan's currently selected duration, controlled by the +/- selector
+  /// on its card. Defaults to 7 days; the user can decrease it down to the
+  /// minimum of 1, or increase it up to the maximum of 100.
+  int _prePlanDays = 7;
+
+  static const _prePlanMinDays = 1;
+  static const _prePlanMaxDays = 100;
+
+  void _incrementPrePlanDays() {
+    if (_prePlanDays >= _prePlanMaxDays) return;
+    setState(() => _prePlanDays++);
+  }
+
+  void _decrementPrePlanDays() {
+    if (_prePlanDays <= _prePlanMinDays) return;
+    setState(() => _prePlanDays--);
+  }
 
   /// Estimated total ROI over the life of the plan.
   ///
@@ -68,11 +100,14 @@ class PlanComparisonScreen extends StatelessWidget {
     return investedAmount * dailyRoiRate * totalDays;
   }
 
-  _PlanComparison _computeFor(PlanType type, int amount, {int? overrideDays}) {
+  _PlanComparison _computeFor(PlanType type, int amount) {
     final dailyRoiRate = type.dailyRoiPercent / 100;
-    // Pre Plan has no fixed duration — use the days the user entered on the
-    // previous step (falls back to the type's default only if missing).
-    final totalDays = overrideDays ?? type.durationDays;
+    // Pre Plan's duration comes from the day selector's current state;
+    // every other plan type has a fixed duration (3/6/12 month tiers =
+    // 90/180/360 days).
+    final totalDays = type == PlanType.prePlan
+        ? _prePlanDays
+        : type.durationDays;
     // One-time investment: the total invested amount IS the amount entered
     // — never multiplied by the plan's duration in months.
     final totalInvestment = amount;
@@ -133,8 +168,12 @@ class PlanComparisonScreen extends StatelessWidget {
         'amount': c.monthlyAmount,
         // Carried through unchanged by the Terms screen; used by Configure
         // to resolve the exact plan type (robust for Pre Plan, which has
-        // no month count) and, for Pre Plan, the chosen day duration.
+        // no month count).
         'planType': c.planType.name,
+        // The Pre Plan duration currently selected via this card's +/- day
+        // selector, so it's used consistently through Terms → Configure →
+        // enrollment. Omitted for every other plan type, whose duration is
+        // fixed by planType.
         if (c.planType == PlanType.prePlan) 'days': c.durationDays,
       },
     );
@@ -146,7 +185,6 @@ class PlanComparisonScreen extends StatelessWidget {
         (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
         {};
     final amount = (args['amount'] as int?) ?? 0;
-    final prePlanDays = args['prePlanDays'] as int?;
     final rawExclude = args['excludeTypes'];
     final excludeNames = rawExclude is List
         ? rawExclude.map((e) => e.toString()).toSet()
@@ -157,13 +195,7 @@ class PlanComparisonScreen extends StatelessWidget {
         .toList();
 
     final comparisons = availableTypes
-        .map(
-          (t) => _computeFor(
-            t,
-            amount,
-            overrideDays: t == PlanType.prePlan ? prePlanDays : null,
-          ),
-        )
+        .map((t) => _computeFor(t, amount))
         .toList();
 
     // Prefer the mid-tier (6M) as "recommended" when it's available; fall
@@ -415,6 +447,10 @@ class PlanComparisonScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16.h),
                 _statGrid(c),
+                if (c.planType == PlanType.prePlan) ...[
+                  SizedBox(height: 16.h),
+                  _prePlanDaySelector(),
+                ],
                 SizedBox(height: 18.h),
                 SizedBox(
                   width: double.infinity,
@@ -480,6 +516,97 @@ class PlanComparisonScreen extends StatelessWidget {
     );
   }
 
+  /// Pre Plan's premium duration selector — a self-contained gradient
+  /// "dial" card with comfortable +/- controls flanking a prominent day
+  /// readout. Bounded to [_prePlanMinDays]–[_prePlanMaxDays]; the − button
+  /// dims and disables at the floor, the + button dims and disables at the
+  /// ceiling.
+  Widget _prePlanDaySelector() {
+    final atMin = _prePlanDays <= _prePlanMinDays;
+    final atMax = _prePlanDays >= _prePlanMaxDays;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 10.h),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            _brandGreen.withValues(alpha: 0.06),
+            _brandGreen.withValues(alpha: 0.02),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: _brandGreen.withValues(alpha: 0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'SELECT DURATION',
+            style: TextStyle(
+              fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+              fontSize: 9.sp,
+              fontWeight: FontWeight.w700,
+              color: _brandGreen.withValues(alpha: 0.75),
+              letterSpacing: 1.0,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Row(
+            children: [
+              _PrePlanDayStepButton(
+                icon: Icons.remove_rounded,
+                enabled: !atMin,
+                onTap: _decrementPrePlanDays,
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      transitionBuilder: (child, animation) =>
+                          ScaleTransition(scale: animation, child: child),
+                      child: Text(
+                        '$_prePlanDays',
+                        key: ValueKey<int>(_prePlanDays),
+                        style: TextStyle(
+                          fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.w800,
+                          color: _brandGreen,
+                          letterSpacing: -0.5,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    Text(
+                      _prePlanDays == 1 ? 'DAY' : 'DAYS',
+                      style: TextStyle(
+                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w600,
+                        color: _subtitleGrey,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _PrePlanDayStepButton(
+                icon: Icons.add_rounded,
+                enabled: !atMax,
+                onTap: _incrementPrePlanDays,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _statGrid(_PlanComparison c) {
     final stats = [
       ('Daily ROI', '${c.planType.dailyRoiPercent.toStringAsFixed(2)}%'),
@@ -535,6 +662,85 @@ class PlanComparisonScreen extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+}
+
+/// Large, comfortable-to-tap +/- control used by the Pre Plan duration
+/// selector. Self-contained so it can own its own press-scale animation
+/// (a subtle "premium" squash on tap-down that springs back on release)
+/// without adding animation state to the parent screen.
+class _PrePlanDayStepButton extends StatefulWidget {
+  const _PrePlanDayStepButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  State<_PrePlanDayStepButton> createState() => _PrePlanDayStepButtonState();
+}
+
+class _PrePlanDayStepButtonState extends State<_PrePlanDayStepButton> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (!widget.enabled) return;
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = widget.enabled;
+    return GestureDetector(
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: enabled
+          ? () {
+              HapticFeedback.selectionClick();
+              widget.onTap();
+            }
+          : null,
+      child: AnimatedScale(
+        scale: _pressed ? 0.90 : 1.0,
+        duration: const Duration(milliseconds: 110),
+        curve: Curves.easeOut,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 34.w,
+          height: 34.h,
+          decoration: BoxDecoration(
+            gradient: enabled
+                ? const LinearGradient(
+                    colors: [Color(0xFFDCF3E5), Color(0xFF9AE0BC)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: enabled ? null : const Color(0xFFEDEFEC),
+            shape: BoxShape.circle,
+            boxShadow: enabled && !_pressed
+                ? [
+                    BoxShadow(
+                      color: _brandGreen.withValues(alpha: 0.18),
+                      blurRadius: 7,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Icon(
+            widget.icon,
+            size: 16.sp,
+            color: enabled ? _brandGreen : const Color(0xFFB4BAB6),
+          ),
+        ),
+      ),
     );
   }
 }

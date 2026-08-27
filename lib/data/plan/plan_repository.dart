@@ -65,9 +65,8 @@ class PlanRepository {
   Future<ActivePlan> enrollPlan({
     required PlanType planType,
     required int monthlyAmount,
-    // Only relevant for PlanType.prePlan (3–80 user-chosen days). Sent as
-    // 'duration_days' for a forward-looking backend that adds Pre Plan
-    // support; harmless/ignored by the current 3/6/12-month-only backend.
+    // Only relevant for PlanType.prePlan (user-selected days, minimum 1).
+    // Sent as 'duration_days' to the backend.
     int? durationDays,
   }) async {
     try {

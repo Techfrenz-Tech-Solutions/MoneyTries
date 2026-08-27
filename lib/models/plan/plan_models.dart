@@ -26,8 +26,9 @@ enum PlanType { prePlan, threeMonth, sixMonth, twelveMonth }
 
 extension PlanTypeExt on PlanType {
   /// Fixed-tenure plans are month-based; Pre Plan is day-based (user picks
-  /// 3–80 days at enrollment), so this returns 0 for it. Use [durationDays]
-  /// (and, for a real enrolled Pre Plan, [ActivePlan.totalPlanDays]) instead.
+  /// the number of days via a +/- selector on the comparison screen), so
+  /// this returns 0 for it. Use [durationDays] (and, for a real enrolled
+  /// Pre Plan, [ActivePlan.totalPlanDays]) instead.
   int get months {
     switch (this) {
       case PlanType.prePlan:
@@ -72,20 +73,18 @@ extension PlanTypeExt on PlanType {
 
   String get rateLabel => '${dailyRoiPercent.toStringAsFixed(2)}%';
 
-  /// Fixed plan duration in days: 3M=90, 6M=180, 12M=360.
-  /// These are FIXED day counts, not calendar-month arithmetic — used for
-  /// all "days left" / progress calculations so a 3-month plan is always
-  /// exactly 90 days, regardless of which calendar months it spans.
-  ///
-  /// Pre Plan has NO fixed duration — the user chooses 3–80 days at
-  /// enrollment time. This getter returns a fallback (used only if no
-  /// instance-specific duration is available); the real, user-chosen value
-  /// always flows separately through the comparison/enrollment args and
-  /// [ActivePlan.customDurationDays] / [ActivePlan.totalPlanDays].
+  /// Default/fixed plan duration in days: 3M=90, 6M=180, 12M=360. For Pre
+  /// Plan this is the minimum and default (1 day) — the user can increase
+  /// it via the day selector on the comparison screen; the actual chosen
+  /// value flows separately through that screen's state and
+  /// [ActivePlan.customDurationDays] / [ActivePlan.totalPlanDays] once
+  /// enrolled. These are FIXED day counts, not calendar-month arithmetic —
+  /// used for all "days left" / progress calculations so a 3-month plan is
+  /// always exactly 90 days, regardless of which calendar months it spans.
   int get durationDays {
     switch (this) {
       case PlanType.prePlan:
-        return 30;
+        return 1;
       case PlanType.threeMonth:
         return 90;
       case PlanType.sixMonth:
@@ -327,9 +326,9 @@ class ActivePlan {
   final DateTime? roiSettledAt;
 
   /// Only set (and only meaningful) for [PlanType.prePlan], where duration
-  /// is chosen by the user (3–80 days) at enrollment rather than fixed by
-  /// the plan type. Null for every other plan type — use [planType]'s own
-  /// [PlanTypeExt.durationDays] for those.
+  /// is chosen by the user (via a +/- day selector, minimum 1 day) at
+  /// enrollment rather than fixed by the plan type. Null for every other
+  /// plan type — use [planType]'s own [PlanTypeExt.durationDays] for those.
   final int? customDurationDays;
 
   const ActivePlan({
