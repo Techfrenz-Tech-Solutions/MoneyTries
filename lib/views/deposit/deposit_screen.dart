@@ -209,10 +209,6 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (!vm.isLoadingKyc && !vm.kycVerified) ...[
-                              _buildKycWarning(context),
-                              SizedBox(height: 20.h),
-                            ],
                             _buildAmountInput(vm),
                             SizedBox(height: 28.h),
                             _buildQuickSelect(vm),
@@ -672,8 +668,7 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
     // its full brand color while the spinner is showing, matching the
     // in-flight look used by CRED/GPay-style submit buttons, rather than
     // dimming to the disabled color during a request that will succeed.
-    final formValid = vm.kycVerified &&
-        vm.amount >= AppConstants.minDepositAmount &&
+    final formValid = vm.amount >= AppConstants.minDepositAmount &&
         vm.amount <= AppConstants.maxTransactionAmount &&
         vm.utrId.isNotEmpty &&
         vm.screenshot != null;
@@ -701,55 +696,6 @@ class _DepositScreenContentState extends State<_DepositScreenContent> {
           ),
         ),
       ],
-    );
-  }
-
-  /// Shown when the user's KYC isn't approved — Deposit requires approved
-  /// KYC, mirroring the Withdrawal screen's equivalent warning.
-  Widget _buildKycWarning(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: _amberBg,
-        borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: _amberBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.warning_amber_rounded, size: 20.sp, color: _amber),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Text(
-                  'KYC verification required. Please complete KYC to enable deposits.',
-                  style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp, fontWeight: FontWeight.w500, color: const Color(0xFF92400E), height: 1.45),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.h),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.kyc),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF92400E),
-                side: const BorderSide(color: Color(0xFF92400E)),
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-              ),
-              child: Text(
-                'Complete KYC',
-                style: TextStyle(fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks, fontSize: 13.sp, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

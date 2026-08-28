@@ -1,12 +1,8 @@
-﻿import 'dart:convert';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/app_constants.dart';
-import '../../core/api/api_config.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
@@ -109,8 +105,9 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
   }
 
   bool get _isPrePlan => _planType == PlanType.prePlan;
-  /// Pre Plan's chosen duration in days (3–80), passed through from the
-  /// comparison screen. Only meaningful when [_isPrePlan] is true.
+  /// Pre Plan's duration in days, as chosen by the user on the comparison
+  /// screen's +/- day selector and carried through via route arguments.
+  /// Only meaningful when [_isPrePlan] is true.
   int get _days => (_args['days'] as int?) ?? PlanType.prePlan.durationDays;
 
   int get _amount => int.tryParse(_amountText.isEmpty ? '0' : _amountText) ?? 0;
@@ -182,108 +179,13 @@ class _ConfigureInvestmentScreenState extends State<ConfigureInvestmentScreen>
     }
   }
 
-  // Fetches whether the current user's KYC is approved. Used only to gate
-  // the "Add Money" action from the insufficient-wallet-balance dialog —
-  // Plan viewing/purchase itself never requires KYC.
-  Future<bool> _isKycApproved() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token') ?? '';
-      if (token.isEmpty) return false;
-      final res = await http
-          .get(
-            Uri.parse('${ApiConfig.baseUrl}/api/kyc/status'),
-            headers: {'Authorization': 'Bearer $token'},
-          )
-          .timeout(const Duration(seconds: 10));
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        final status = (body['data']?['status'] as String?) ?? 'not_submitted';
-        return status == 'approved';
-      }
-    } catch (_) {}
-    return false;
-  }
-
   // Handles the "Add Money" tap from the insufficient-wallet-balance dialog.
-  // KYC-gated: approved users go straight to Deposit; everyone else sees a
-  // "Complete KYC" prompt with a link to the KYC Verification screen instead.
+  // Deposit no longer requires KYC approval — open it directly, no gate,
+  // no "Complete KYC" prompt. (Plan viewing/purchase itself never required
+  // KYC either.)
   Future<void> _onAddMoneyFromInsufficientDialog() async {
-    final approved = await _isKycApproved();
     if (!mounted) return;
-    if (approved) {
-      Navigator.pushNamed(context, AppRoutes.deposit);
-    } else {
-      _showKycRequiredForDepositDialog();
-    }
-  }
-
-  void _showKycRequiredForDepositDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: _white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.r),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.verified_user_outlined, size: 22.sp, color: _green),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: Text(
-                'KYC Verification Required',
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: _dark,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          'Please complete your KYC verification before adding money.',
-          style: TextStyle(
-            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-            fontSize: 13.5.sp,
-            color: _grey,
-            height: 1.4,
-          ),
-        ),
-        actionsPadding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 13.5.sp,
-                fontWeight: FontWeight.w600,
-                color: _grey,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pushNamed(context, AppRoutes.kyc);
-            },
-            child: Text(
-              'Go to KYC Verification',
-              style: TextStyle(
-                fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                fontSize: 13.5.sp,
-                fontWeight: FontWeight.w700,
-                color: _green,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    Navigator.pushNamed(context, AppRoutes.deposit);
   }
 
   // Blocking warning dialog shown when the entered amount is higher than

@@ -273,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? 'Your KYC documents are being reviewed.\nThis usually takes 24–48 hours.'
                   : isRejected
                   ? 'Your KYC was rejected. Please re-submit\nyour documents to access this feature.'
-                  : 'You need to complete KYC verification\nbefore you can use Deposit or Withdraw.',
+                  : 'You need to complete KYC verification\nbefore you can withdraw.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
@@ -453,13 +453,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           balanceLoading: _balanceLoading,
                           balanceError: _balanceError,
                           formatINR: _formatINR,
-                          onDeposit: () async {
-                            if (await _requireKyc()) {
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.deposit,
-                              ).then((_) => _fetchBalance());
-                            }
+                          onDeposit: () {
+                            // Deposit no longer requires KYC approval — open
+                            // it directly, no gate, no "Complete KYC First"
+                            // popup. KYC protection stays on Withdrawal only
+                            // (see onWithdraw below).
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.deposit,
+                            ).then((_) => _fetchBalance());
                           },
                           onWithdraw: () async {
                             if (await _requireKyc()) {

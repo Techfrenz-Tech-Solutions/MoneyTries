@@ -2,6 +2,7 @@
 import 'package:moneytries/config/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../config/app_constants.dart';
 import '../../models/plan/plan_models.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/plan/plan_viewmodel.dart';
@@ -33,10 +34,10 @@ const _noticeBrownBorder = Color(0xFFE0CBA8);
 
 /// Redesigned Investment Plan flow:
 ///
-///  • No active plan  → Plan Info (benefits / ROI / features / rules) with a
-///    single "Continue" button → Enter Investment Amount → Compare ALL plans
-///    (3M / 6M / 12M) → Select Plan → T&C → Submit Request → Admin Approval →
-///    Payment → Active Plan.
+///  • No active plan  → Plan ROI details (Pre Plan / 3 / 6 / 12 month daily
+///    ROI) with the Investment Amount input directly below it on the same
+///    page → Compare ALL plans (3M / 6M / 12M) → Select Plan → T&C → Submit
+///    Request → Admin Approval → Payment → Active Plan.
 ///
 ///  • Has active plan(s) → show ONLY the current plan's details (ROI,
 ///    Invested Amount, Accrued ROI, Maturity Progress, Claim ROI, ...) for
@@ -51,6 +52,11 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
+  // ── Investment Amount input (shown inline on the Plan page, directly
+  // below the ROI details, when the user has no active plan) ─────────────
+  final TextEditingController _amountCtrl = TextEditingController();
+  String? _amountError;
+
   @override
   void initState() {
     super.initState();
@@ -59,170 +65,63 @@ class _PlanScreenState extends State<PlanScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    super.dispose();
+  }
+
+  int? get _enteredAmount => int.tryParse(_amountCtrl.text.trim());
+
+  /// Validates the amount typed into the inline Investment Amount input and,
+  /// if valid, continues directly into the existing plan-selection/
+  /// comparison flow (opens [AppRoutes.planComparison] with the entered
+  /// amount) — the same next step the old "Continue" button used to lead
+  /// to. Pre Plan's duration is now a fixed 1 day, so there's nothing to
+  /// ask the user for here.
+  Future<void> _submitInlineAmount(BuildContext ctx) async {
+    final amount = _enteredAmount;
+    if (amount == null || amount < AppConstants.minPlanAmount) {
+      setState(() => _amountError = AppConstants.minPlanAmountMessage);
+      return;
+    }
+    if (amount > AppConstants.maxTransactionAmount) {
+      setState(() => _amountError = AppConstants.maxTransactionAmountMessage);
+      return;
+    }
+    setState(() => _amountError = null);
+
+    Navigator.pushNamed(
+      ctx,
+      AppRoutes.planComparison,
+      arguments: {
+        'amount': amount,
+      },
+    );
+  }
+
   /// Navigates into the "enter amount → compare plans" flow. Plans can be
   /// viewed and enrolled in without KYC verification — KYC is required only
   /// for Deposit and Withdrawal (see depositController.js /
   /// withdrawalController.js on the backend). [excludeTypes] carries the
   /// plan types the user already holds (active/approved/under review) so
   /// the comparison screen only shows the plans still available to them.
+  /// Pre Plan's duration is fixed at 1 day, so no duration prompt is shown.
   Future<void> _navigateToInvest(
     BuildContext ctx, {
     List<PlanType> excludeTypes = const [],
   }) async {
-    // Pre Plan has no fixed duration — if it's still available (i.e. not
-    // already active/under review), ask for its 3–80 day duration up
-    // front so the comparison screen can show it alongside the fixed
-    // 3/6/12 month tiers. If Pre Plan is already active, it's in
-    // excludeTypes and this is skipped entirely.
-    int? prePlanDays;
-    if (!excludeTypes.contains(PlanType.prePlan)) {
-      prePlanDays = await _askPrePlanDuration(ctx);
-      if (prePlanDays == null) return; // user cancelled
-    }
-    if (!ctx.mounted) return;
-
+    // Pre Plan's duration is now a fixed 1 day, so there's nothing to ask
+    // the user for before showing the comparison screen.
     final args = <String, dynamic>{
       if (excludeTypes.isNotEmpty)
         'excludeTypes': excludeTypes.map((t) => t.name).toList(),
-      if (prePlanDays != null) 'prePlanDays': prePlanDays,
     };
 
     Navigator.pushNamed(
       ctx,
       AppRoutes.investmentAmount,
       arguments: args.isEmpty ? null : args,
-    );
-  }
-
-  /// Prompts for Pre Plan's duration (3–80 days) before showing the plan
-  /// comparison. Returns the chosen day count, or null if the user
-  /// cancelled (in which case the caller should abort navigation).
-  Future<int?> _askPrePlanDuration(BuildContext ctx) async {
-    final controller = TextEditingController();
-    String? errorText;
-
-    return showDialog<int>(
-      context: ctx,
-      builder: (dialogCtx) {
-        return StatefulBuilder(
-          builder: (dialogCtx, setDialogState) {
-            void submit() {
-              final days = int.tryParse(controller.text.trim());
-              if (days == null || days < 3 || days > 80) {
-                setDialogState(() {
-                  errorText = 'Enter a number of days between 3 and 80';
-                });
-                return;
-              }
-              Navigator.pop(dialogCtx, days);
-            }
-
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              title: Row(
-                children: [
-                  Icon(
-                    Icons.timelapse_rounded,
-                    color: _brandGreen,
-                    size: 22.sp,
-                  ),
-                  SizedBox(width: 8.w),
-                  Expanded(
-                    child: Text(
-                      'Pre Plan Duration',
-                      style: TextStyle(
-                        fontFamily: AppFonts.primary,
-                        fontFamilyFallback: AppFonts.fallbacks,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Pre Plan is available — enter how many days you\'d like to run it for (3–80 days) to see it in the comparison.',
-                    style: TextStyle(
-                      fontFamily: AppFonts.primary,
-                      fontFamilyFallback: AppFonts.fallbacks,
-                      fontSize: 13.sp,
-                      color: const Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  SizedBox(height: 14.h),
-                  TextField(
-                    controller: controller,
-                    autofocus: true,
-                    keyboardType: TextInputType.number,
-                    // Digits only — blocks letters/symbols at the input
-                    // level (not just at submit-time validation), and caps
-                    // length at 2 digits since the max valid value is 80.
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(2),
-                    ],
-                    onChanged: (_) {
-                      if (errorText != null) {
-                        setDialogState(() => errorText = null);
-                      }
-                    },
-                    onSubmitted: (_) => submit(),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. 30',
-                      errorText: errorText,
-                      isDense: true,
-                      suffixText: 'days',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    style: TextStyle(
-                      fontFamily: AppFonts.primary,
-                      fontFamilyFallback: AppFonts.fallbacks,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogCtx, null),
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontFamily: AppFonts.primary,
-                      fontFamilyFallback: AppFonts.fallbacks,
-                      fontSize: 13.sp,
-                      color: const Color(0xFF9CA3AF),
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: submit,
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontFamily: AppFonts.primary,
-                      fontFamilyFallback: AppFonts.fallbacks,
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w700,
-                      color: _brandGreen,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 
@@ -447,81 +346,22 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // NO ACTIVE PLAN → Plan Info (benefits / ROI / features / rules) + Continue
+  // NO ACTIVE PLAN → Plan ROI details + inline Investment Amount input
   // ═══════════════════════════════════════════════════════════════════════════
   List<Widget> _buildPlanInfoFlow(BuildContext context) {
     return [
-      _infoSectionCard(
-        title: 'Why invest with Moneytries',
-        icon: Icons.workspace_premium_rounded,
-        children: const [
-          (
-            icon: Icons.trending_up_rounded,
-            text: 'Daily ROI credited straight to your wallet — no waiting.',
-          ),
-          (
-            icon: Icons.shield_outlined,
-            text: 'Your principal is secured and fully returned on maturity.',
-          ),
-          (
-            icon: Icons.calendar_month_outlined,
-            text: 'Flexible tenures — 3, 6, 12 months, or a 3–80 day Pre Plan.',
-          ),
-          (
-            icon: Icons.support_agent_outlined,
-            text: 'Priority support and dedicated relationship assistance.',
-          ),
-        ],
-      ),
-      SizedBox(height: 16.h),
       _roiTierOverviewCard(),
       SizedBox(height: 16.h),
-      _infoSectionCard(
-        title: 'How it works',
-        icon: Icons.timeline_rounded,
-        children: const [
-          (
-            icon: Icons.payments_outlined,
-            text: 'Pay your investment amount once from your wallet balance.',
-          ),
-          (
-            icon: Icons.fact_check_outlined,
-            text: 'Your payment is reviewed and approved by our admin team.',
-          ),
-          (
-            icon: Icons.bolt_rounded,
-            text: 'Once approved, daily ROI starts accruing automatically.',
-          ),
-          (
-            icon: Icons.account_balance_wallet_outlined,
-            text: 'Withdraw accrued ROI to your wallet anytime.',
-          ),
-          (
-            icon: Icons.lock_outline_rounded,
-            text: 'Your invested amount stays locked until the plan matures.',
-          ),
-          (
-            icon: Icons.lock_open_rounded,
-            text:
-                'At maturity, your locked amount is credited back to your wallet automatically.',
-          ),
-        ],
-      ),
-      SizedBox(height: 16.h),
-      _rulesCard(),
-      SizedBox(height: 24.h),
-      _continueButton(
-        label: 'Continue',
-        onTap: () => _navigateToInvest(context),
-      ),
+      _inlineAmountInputCard(context),
     ];
   }
 
-  Widget _infoSectionCard({
-    required String title,
-    required IconData icon,
-    required List<({IconData icon, String text})> children,
-  }) {
+  /// The Investment Amount input, shown directly below the plan ROI
+  /// details. Submitting a valid amount continues into the existing
+  /// plan-selection/comparison flow unchanged.
+  Widget _inlineAmountInputCard(BuildContext context) {
+    final hasAmount =
+        _enteredAmount != null && _enteredAmount! >= AppConstants.minPlanAmount;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
@@ -541,12 +381,17 @@ class _PlanScreenState extends State<PlanScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20.sp, color: _brandGreen),
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 20.sp,
+                color: _brandGreen,
+              ),
               SizedBox(width: 10.w),
               Text(
-                title,
+                'Investment Amount',
                 style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
+                  fontFamily: AppFonts.primary,
+                  fontFamilyFallback: AppFonts.fallbacks,
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.w700,
                   color: _titleDark,
@@ -555,10 +400,90 @@ class _PlanScreenState extends State<PlanScreen> {
             ],
           ),
           SizedBox(height: 16.h),
-          ...children.map(
-            (f) => Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: _featureRow(icon: f.icon, text: f.text),
+          Container(
+            decoration: BoxDecoration(
+              color: _ledgerPaper,
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(
+                color: _amountError != null ? _accentBrown : _ledgerHairline,
+                width: 1.5.r,
+              ),
+            ),
+            child: TextField(
+              controller: _amountCtrl,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onChanged: (_) {
+                if (_amountError != null) {
+                  setState(() => _amountError = null);
+                }
+              },
+              onSubmitted: (_) => _submitInlineAmount(context),
+              style: TextStyle(
+                fontFamily: AppFonts.primary,
+                fontFamilyFallback: AppFonts.fallbacks,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w700,
+                color: _titleDark,
+              ),
+              decoration: InputDecoration(
+                hintText: '0',
+                hintStyle: TextStyle(
+                  fontFamily: AppFonts.primary,
+                  fontFamilyFallback: AppFonts.fallbacks,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w400,
+                  color: _subtitleGrey,
+                ),
+                prefixText: '₹ ',
+                prefixStyle: TextStyle(
+                  fontFamily: AppFonts.primary,
+                  fontFamilyFallback: AppFonts.fallbacks,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w700,
+                  color: _titleDark,
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 14.h,
+                ),
+              ),
+            ),
+          ),
+          if (_amountError != null) ...[
+            SizedBox(height: 6.h),
+            Row(
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 13.sp,
+                  color: _accentBrown,
+                ),
+                SizedBox(width: 5.w),
+                Expanded(
+                  child: Text(
+                    _amountError!,
+                    style: TextStyle(
+                      fontFamily: AppFonts.primary,
+                      fontFamilyFallback: AppFonts.fallbacks,
+                      fontSize: 11.5.sp,
+                      color: _accentBrown,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          SizedBox(height: 20.h),
+          Center(
+            child: AnimatedOpacity(
+              opacity: hasAmount ? 1.0 : 0.5,
+              duration: const Duration(milliseconds: 200),
+              child: _continueButton(
+                label: 'Compare Plans',
+                onTap: () => _submitInlineAmount(context),
+              ),
             ),
           ),
         ],
@@ -701,7 +626,7 @@ class _PlanScreenState extends State<PlanScreen> {
                 ),
                 SizedBox(height: 3.h),
                 Text(
-                  'Flexible 3–80 days · One-time investment',
+                  '1 Day · One-time investment',
                   style: TextStyle(
                     fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
                     fontSize: 11.sp,
@@ -762,85 +687,6 @@ class _PlanScreenState extends State<PlanScreen> {
               fontSize: 9.sp,
               color: _subtitleGrey,
               height: 1.25,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _rulesCard() {
-    final rules = [
-      'Your investment is a single one-time payment made at the start of the plan.',
-      'The payment requires admin approval before the plan becomes active.',
-      'Principal is locked for the selected tenure and returned in full on maturity.',
-      'Start Date is fixed at admin approval and never changes for the life of the plan.',
-      'Pre Plan duration is flexible — choose any term from 3 to 80 days at enrollment.',
-    ];
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 20.h),
-      decoration: BoxDecoration(
-        color: _cardBg,
-        borderRadius: BorderRadius.circular(22.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.rule_folder_outlined, size: 20.sp, color: _brandGreen),
-              SizedBox(width: 10.w),
-              Text(
-                'Plan rules',
-                style: TextStyle(
-                  fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                  fontSize: 16.5.sp,
-                  fontWeight: FontWeight.w700,
-                  color: _titleDark,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 14.h),
-          ...rules.map(
-            (r) => Padding(
-              padding: EdgeInsets.only(bottom: 10.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 6.h),
-                    child: Container(
-                      width: 5.w,
-                      height: 5.h,
-                      decoration: const BoxDecoration(
-                        color: _brandGreen,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Text(
-                      r,
-                      style: TextStyle(
-                        fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-                        fontSize: 13.sp,
-                        color: const Color(0xFF374151),
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
@@ -1393,26 +1239,6 @@ class _PlanScreenState extends State<PlanScreen> {
     }
     return '${buf.toString()},$last3';
   }
-
-  Widget _featureRow({required IconData icon, required String text}) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Icon(icon, size: 18.sp, color: _brandGreen.withValues(alpha: 0.7)),
-      SizedBox(width: 10.w),
-      Expanded(
-        child: Text(
-          text,
-          style: TextStyle(
-            fontFamily: AppFonts.primary, fontFamilyFallback: AppFonts.fallbacks,
-            fontSize: 13.5.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF374151),
-            height: 1.5,
-          ),
-        ),
-      ),
-    ],
-  );
 
   // ── Bottom nav ─────────────────────────────────────────────────────────────
   void _onNavTap(int i) {

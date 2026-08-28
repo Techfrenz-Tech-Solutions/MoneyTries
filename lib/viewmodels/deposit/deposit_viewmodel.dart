@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import '../../config/app_constants.dart';
 import '../../data/deposit/deposit_repository.dart';
 import '../../models/deposit/deposit_models.dart';
-import '../../models/withdrawal/withdrawal_models.dart' show KycStatus;
 import '../../services/audio/interaction_feedback.dart';
 
 enum DepositState { idle, loading, success, error, checkingPending }
@@ -16,7 +15,6 @@ class DepositViewModel extends ChangeNotifier {
   DepositViewModel({DepositRepository? repository})
       : _repo = repository ?? DepositRepository() {
     _checkPendingDeposit();
-    fetchKycStatus();
   }
 
   // ── Form state ─────────────────────────────────────────────────────────────
@@ -24,28 +22,6 @@ class DepositViewModel extends ChangeNotifier {
   int amount = 0;
   String utrId = '';
   File? screenshot;
-
-  // ── KYC ────────────────────────────────────────────────────────────────────
-  // Deposit requires approved KYC. Tracked independently of `state` (unlike
-  // WithdrawalViewModel) so it doesn't interfere with the existing
-  // checkingPending/loading/success/error flow already driving this screen.
-  KycStatus? kycStatus;
-  bool isLoadingKyc = false;
-  bool get kycVerified => kycStatus?.isVerified ?? false;
-
-  // ── Fetch KYC ──────────────────────────────────────────────────────────────
-  Future<void> fetchKycStatus() async {
-    isLoadingKyc = true;
-    notifyListeners();
-    try {
-      kycStatus = await _repo.fetchKycStatus();
-    } catch (_) {
-      // Non-fatal — leave kycStatus null (treated as unverified) so the
-      // submit-time guard still blocks the request.
-    }
-    isLoadingKyc = false;
-    notifyListeners();
-  }
 
   // ── Async state ────────────────────────────────────────────────────────────
   DepositState state = DepositState.checkingPending;
@@ -152,7 +128,6 @@ class DepositViewModel extends ChangeNotifier {
 
   // ── Validation ─────────────────────────────────────────────────────────────
   String? validate() {
-    if (!kycVerified) return 'KYC verification is required to deposit.';
     if (amount <= 0) return 'Please enter a valid amount.';
     if (amount < AppConstants.minDepositAmount) {
       return AppConstants.minDepositAmountMessage;
